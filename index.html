@@ -1672,5 +1672,17 @@ function closeSuccessModal(){
   if(wishlist.length){b.textContent=wishlist.length;b.classList.remove('hidden');b.classList.add('flex');}
 })();
 </script>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  const supabaseUrl = 'https://fctmswfmuvqwueeumtgw.supabase.co'
+  const supabaseKey = 'sb_publishable_45vumZUaNKPC6TKEkM8lQQ_exUm9CB7'
+
+  const supabase = createClient(supabaseUrl, supabaseKey)
+
+  console.log("Supabase Connected:", supabase)
+</script>
+
 </body>
 </html>
