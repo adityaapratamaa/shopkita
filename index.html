@@ -1682,6 +1682,20 @@ function closeSuccessModal(){
   const supabase = createClient(supabaseUrl, supabaseKey)
 
   console.log("Supabase Connected:", supabase)
+
+  async function getProducts() {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+
+    if (error) {
+      console.error(error)
+    } else {
+      console.log("Products:", data)
+    }
+  }
+
+  getProducts()
 </script>
 
 </body>
