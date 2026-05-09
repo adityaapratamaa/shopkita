@@ -94,6 +94,15 @@
     /* Full-screen detail page */
     #detailPage { display: none; position: fixed; inset: 0; z-index: 60; background: #fff; overflow-y: auto; overscroll-behavior: contain; }
     #detailPage.open { display: block; }
+    #detailInnerWrap { background: white; }
+    /* Mobile: bottom bar fixed */
+    @media (max-width: 767px) {
+      #detailPage { background: #fff; }
+      #detailPage.open { display: block; }
+      #detailInnerWrap { padding-bottom: 80px; }
+      #detailBottomBar { position: fixed; bottom: 0; left: 0; right: 0; }
+      #detailMobileHeader { display: flex !important; }
+    }
 
     /* Progress bar */
     .progress-bar { transition: width 0.3s ease; }
@@ -104,12 +113,114 @@
     /* Search overlay */
     #searchOverlay { display: none; position: fixed; inset: 0; z-index: 55; background: white; overflow-y: auto; }
     #searchOverlay.open { display: block; }
+
+    /* ===== DESKTOP LAYOUT ===== */
+    @media (min-width: 768px) {
+      body { background: #f5f5f5; }
+
+      /* Header desktop - centered max-width container */
+      #mainHeader .header-inner { max-width: 1200px; margin: 0 auto; }
+
+      /* Main content container */
+      #mainPage { max-width: 1200px; margin: 0 auto; }
+
+      /* Hero banner - taller on desktop */
+      #mainPage > .bg-primary > div { min-height: 220px !important; }
+      #heroBannerTrack > div { min-height: 218px !important; }
+
+      /* Category icons - more columns */
+      #categoryIconGrid { grid-template-columns: repeat(10, 1fr) !important; }
+
+      /* Product grid - 5 columns like Shopee */
+      #productGrid, #skeletonGrid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 8px !important;
+        background: #f5f5f5 !important;
+        padding: 8px !important;
+      }
+
+      /* Product cards on desktop */
+      #productGrid > div, #skeletonGrid > div {
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      }
+
+      /* Bottom nav - hide on desktop */
+      nav.fixed.bottom-0 { display: none !important; }
+
+      /* Detail page - desktop modal style */
+      #detailPage {
+        background: rgba(0,0,0,0.6) !important;
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 40px 20px;
+      }
+      #detailPage.open { display: flex !important; }
+      #detailPage > .gradient-header { display: none; }
+      #detailInnerWrap {
+        background: white;
+        border-radius: 8px;
+        max-width: 900px;
+        width: 100%;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        position: relative;
+      }
+      /* Desktop detail: image + info side by side */
+      #detailDesktopLayout {
+        display: flex !important;
+        gap: 0;
+      }
+      #detailImgCol { width: 400px; flex-shrink: 0; }
+      #detailInfoCol { flex: 1; overflow-y: auto; max-height: calc(100vh - 160px); }
+      /* Desktop bottom bar inside detail */
+      #detailBottomBar {
+        position: sticky !important;
+        bottom: 0;
+      }
+      /* Sticky header inside desktop detail */
+      #detailDesktopHeader {
+        display: flex !important;
+      }
+      /* Footer more columns */
+      footer .grid.grid-cols-2 { grid-template-columns: repeat(4, 1fr) !important; }
+      /* Cart panel already works as side panel */
+      /* Modals - center on desktop */
+      #loginModal, #voucherModal, #wishlistModal, #checkoutModal {
+        align-items: center !important;
+      }
+      #loginModal > div, #voucherModal > div, #wishlistModal > div, #checkoutModal > div {
+        border-radius: 16px !important;
+        max-height: 90vh;
+      }
+      /* Section sort bar - not sticky offset issue on desktop */
+      #productsSection .sticky { top: 60px !important; }
+    }
+
+    /* Image lightbox */
+    #imgLightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+    }
+    #imgLightbox.open { display: flex; }
+    #imgLightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 4px; cursor: zoom-out; }
+    #imgLightbox .lb-close { position: absolute; top: 16px; right: 20px; color: white; font-size: 32px; cursor: pointer; line-height: 1; z-index: 2; }
+    #imgLightbox .lb-arrow { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 40px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
+    #imgLightbox .lb-prev { left: 16px; }
+    #imgLightbox .lb-next { right: 16px; }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
 
 <!-- ===================== HEADER ===================== -->
 <header class="gradient-header sticky top-0 z-50 shadow-sm" id="mainHeader">
+  <div class="header-inner">
   <div class="px-3 pt-3 pb-2">
     <div class="flex items-center gap-2.5">
       <!-- Logo -->
@@ -151,6 +262,7 @@
       <a href="#" onclick="setSortMode('price-asc');return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">💸 Termurah</a>
       <a href="#" onclick="filterCategory('Fashion');return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">🇮🇩 Produk Lokal</a>
     </div>
+  </div>
   </div>
 </header>
 
@@ -429,8 +541,8 @@
 
 <!-- ===================== PRODUCT DETAIL PAGE ===================== -->
 <div id="detailPage">
-  <!-- Header -->
-  <div class="gradient-header px-3 py-3 flex items-center gap-2.5 sticky top-0 z-10">
+  <!-- Mobile Header (hidden on desktop via CSS) -->
+  <div class="gradient-header px-3 py-3 flex items-center gap-2.5 sticky top-0 z-10" id="detailMobileHeader">
     <button onclick="closeDetailPage()" class="text-white">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
     </button>
@@ -440,15 +552,29 @@
     </button>
   </div>
 
-  <div id="detailContent"></div>
+  <!-- Desktop Wrapper -->
+  <div id="detailInnerWrap">
+    <!-- Desktop Header inside wrapper -->
+    <div id="detailDesktopHeader" class="hidden gradient-header px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
+      <button onclick="closeDetailPage()" class="text-white">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="text-white font-bold text-sm flex-1 truncate" id="detailHeaderTitleDesktop">Detail Produk</span>
+      <button onclick="shareProduct()" class="text-white p-1">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 1 1 0-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 1 0 5.367-2.684 3 3 0 0 0-5.367 2.684zm0 9.316a3 3 0 1 0 5.368 2.684 3 3 0 0 0-5.368-2.684z"/></svg>
+      </button>
+    </div>
 
-  <!-- Bottom Buy Bar -->
-  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-2.5 flex gap-2.5 z-20 bottom-nav" id="detailBottomBar">
-    <button onclick="toggleWishlistDetail()" id="detailWishlistBtn" class="w-10 h-10 border-2 border-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
-      <svg class="w-5 h-5 text-gray-400" id="detailHeartIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/></svg>
-    </button>
-    <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-primary text-primary font-black py-2.5 rounded-xl text-sm">+ Keranjang</button>
-    <button onclick="buyNowFromDetail()" class="flex-1 bg-primary text-white font-black py-2.5 rounded-xl text-sm">Beli Sekarang</button>
+    <div id="detailContent"></div>
+
+    <!-- Bottom Buy Bar -->
+    <div class="bg-white border-t border-gray-200 px-3 py-2.5 flex gap-2.5 z-20 bottom-nav" id="detailBottomBar">
+      <button onclick="toggleWishlistDetail()" id="detailWishlistBtn" class="w-10 h-10 border-2 border-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
+        <svg class="w-5 h-5 text-gray-400" id="detailHeartIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/></svg>
+      </button>
+      <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-primary text-primary font-black py-2.5 rounded-xl text-sm">+ Keranjang</button>
+      <button onclick="buyNowFromDetail()" class="flex-1 bg-primary text-white font-black py-2.5 rounded-xl text-sm">Beli Sekarang</button>
+    </div>
   </div>
 </div>
 
@@ -488,6 +614,14 @@
 
 <!-- ===================== NOTIFICATIONS ===================== -->
 <div id="notifContainer" class="fixed top-20 right-3 z-[70] space-y-2 pointer-events-none"></div>
+
+<!-- ===================== IMAGE LIGHTBOX ===================== -->
+<div id="imgLightbox" onclick="closeLightbox(event)">
+  <span class="lb-close" onclick="closeLightboxDirect()">&times;</span>
+  <span class="lb-arrow lb-prev" onclick="lightboxPrev(event)">&#8249;</span>
+  <img id="lightboxImg" src="" alt=""/>
+  <span class="lb-arrow lb-next" onclick="lightboxNext(event)">&#8250;</span>
+</div>
 
 <!-- ===================== LOGIN MODAL ===================== -->
 <div id="loginModal" class="fixed inset-0 z-50 hidden modal-overlay bg-black/50 items-end justify-center">
@@ -1081,26 +1215,39 @@ function openDetailPage(id) {
   if(!p) return;
   currentDetailProduct = p;
   detailCurrentImg = 0;
-  document.getElementById('detailHeaderTitle').textContent = p.name;
+  const titleEl = document.getElementById('detailHeaderTitle');
+  const titleElD = document.getElementById('detailHeaderTitleDesktop');
+  if(titleEl) titleEl.textContent = p.name;
+  if(titleElD) titleElD.textContent = p.name;
   // Update wishlist button state
   updateDetailWishlistBtn();
   // Build content
   document.getElementById('detailContent').innerHTML = buildDetailContent(p);
-  document.getElementById('detailPage').classList.add('open');
-  document.getElementById('detailPage').scrollTop = 0;
-  document.body.style.overflow = 'hidden';
+  const page = document.getElementById('detailPage');
+  page.classList.add('open');
+  // Scroll handling
+  const isDesktop = window.innerWidth >= 768;
+  if(isDesktop) {
+    document.body.style.overflow = 'hidden';
+    const wrap = document.getElementById('detailInnerWrap');
+    if(wrap) wrap.scrollTop = 0;
+  } else {
+    page.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
   // Attach swipe gesture
   attachImageSwipe();
 }
 
 function buildDetailContent(p) {
   const imgPct = p.images.length > 0 ? (1/p.images.length*100) : 100;
+  const isDesktop = window.innerWidth >= 768;
   return `
     <!-- Image Slider -->
     <div class="relative overflow-hidden bg-gray-100" style="padding-top:100%;" id="imgSliderWrap">
       <div id="detailImgTrack" class="absolute inset-0 flex" style="width:${p.images.length*100}%;">
         ${p.images.map((img,i)=>`
-          <div class="flex-shrink-0" style="width:${imgPct}%;">
+          <div class="flex-shrink-0 cursor-zoom-in" style="width:${imgPct}%;" onclick="openLightbox(${i})">
             <img src="${img}" alt="${p.name}" class="w-full h-full object-cover" style="height:inherit;"
               onerror="this.src='https://placehold.co/600x600/EE4D2D/white?text=ShopKita'"/>
           </div>
@@ -1108,6 +1255,8 @@ function buildDetailContent(p) {
       </div>
       <!-- Image counter -->
       <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full" id="imgCounter">1 / ${p.images.length}</div>
+      <!-- Tap to zoom hint -->
+      <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">🔍 Tap untuk perbesar</div>
       <!-- Dots -->
       <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         ${p.images.map((_,i)=>`<div class="img-dot w-1.5 h-1.5 rounded-full ${i===0?'bg-primary':'bg-white/70'}"></div>`).join('')}
@@ -1195,7 +1344,7 @@ function buildDetailContent(p) {
     </div>
 
     <!-- Reviews -->
-    <div class="bg-white mt-2 px-4 py-4 pb-32">
+    <div class="bg-white mt-2 px-4 py-4 pb-8">
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-gray-800 font-black text-sm">Penilaian Produk</h3>
         <span class="text-primary text-xs font-semibold">Lihat Semua →</span>
@@ -1272,6 +1421,64 @@ function attachImageSwipe() {
   }, {passive:true});
 }
 
+// ===================== IMAGE LIGHTBOX =====================
+let lightboxImgs = [];
+let lightboxIdx = 0;
+
+function openLightbox(idx) {
+  const p = currentDetailProduct;
+  if(!p) return;
+  lightboxImgs = p.images;
+  lightboxIdx = idx;
+  const lb = document.getElementById('imgLightbox');
+  const img = document.getElementById('lightboxImg');
+  img.src = lightboxImgs[lightboxIdx];
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  // Update arrows visibility
+  document.querySelector('.lb-prev').style.display = lightboxImgs.length > 1 ? 'flex' : 'none';
+  document.querySelector('.lb-next').style.display = lightboxImgs.length > 1 ? 'flex' : 'none';
+}
+
+function closeLightbox(e) {
+  if(e.target === document.getElementById('imgLightbox') || e.target === document.getElementById('lightboxImg')) {
+    closeLightboxDirect();
+  }
+}
+
+function closeLightboxDirect() {
+  document.getElementById('imgLightbox').classList.remove('open');
+  // Restore scroll only if detail page is also closed
+  if(!document.getElementById('detailPage').classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+}
+
+function lightboxPrev(e) {
+  e.stopPropagation();
+  if(lightboxIdx > 0) {
+    lightboxIdx--;
+    document.getElementById('lightboxImg').src = lightboxImgs[lightboxIdx];
+  }
+}
+
+function lightboxNext(e) {
+  e.stopPropagation();
+  if(lightboxIdx < lightboxImgs.length - 1) {
+    lightboxIdx++;
+    document.getElementById('lightboxImg').src = lightboxImgs[lightboxIdx];
+  }
+}
+
+// Keyboard lightbox
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('imgLightbox');
+  if(!lb.classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightboxDirect();
+  if(e.key === 'ArrowLeft') lightboxPrev(e);
+  if(e.key === 'ArrowRight') lightboxNext(e);
+});
+
 function selectVariant(btn) {
   document.querySelectorAll('.variant-btn').forEach(b => { b.classList.remove('border-primary','bg-primaryLight','text-primary'); b.classList.add('border-gray-200','text-gray-600'); });
   btn.classList.add('border-primary','bg-primaryLight','text-primary');
@@ -1285,6 +1492,7 @@ function selectColor(btn) {
 
 function closeDetailPage() {
   document.getElementById('detailPage').classList.remove('open');
+  document.getElementById('imgLightbox').classList.remove('open');
   document.body.style.overflow = '';
   currentDetailProduct = null;
 }
@@ -1682,20 +1890,6 @@ function closeSuccessModal(){
   const supabase = createClient(supabaseUrl, supabaseKey)
 
   console.log("Supabase Connected:", supabase)
-
-  async function getProducts() {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-
-    if (error) {
-      console.error(error)
-    } else {
-      console.log("Products:", data)
-    }
-  }
-
-  getProducts()
 </script>
 
 </body>
