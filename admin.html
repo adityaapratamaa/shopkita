@@ -10,67 +10,81 @@
 
 <body class="bg-gray-100 p-10">
 
-  <div class="max-w-5xl mx-auto">
+  <div class="max-w-6xl mx-auto">
 
-    <h1 class="text-3xl font-bold mb-8">
+    <!-- TITLE -->
+
+    <h1 class="text-4xl font-bold mb-10">
       Dashboard Admin
     </h1>
 
     <!-- FORM -->
 
-    <div class="bg-white p-6 rounded-xl shadow mb-10">
+    <div class="bg-white p-6 rounded-2xl shadow mb-10">
 
-      <h2 class="text-xl font-semibold mb-4">
+      <h2 class="text-2xl font-semibold mb-6">
         Tambah Produk
       </h2>
 
       <div class="grid gap-4">
 
         <input
-          id="name"
+          id="title"
           type="text"
           placeholder="Nama Produk"
-          class="border p-3 rounded-lg"
+          class="border p-4 rounded-xl"
         />
 
         <input
           id="price"
           type="number"
           placeholder="Harga"
-          class="border p-3 rounded-lg"
+          class="border p-4 rounded-xl"
         />
 
         <input
           id="image"
           type="text"
           placeholder="URL Gambar"
-          class="border p-3 rounded-lg"
+          class="border p-4 rounded-xl"
         />
 
         <input
           id="category"
           type="text"
           placeholder="Kategori"
-          class="border p-3 rounded-lg"
+          class="border p-4 rounded-xl"
         />
 
         <button
           onclick="addProduct()"
-          class="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-lg"
+          class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-semibold"
         >
           Tambah Produk
         </button>
 
       </div>
+
     </div>
 
-    <!-- LIST PRODUCT -->
+    <!-- PRODUCT LIST -->
 
-    <div class="bg-white p-6 rounded-xl shadow">
+    <div class="bg-white p-6 rounded-2xl shadow">
 
-      <h2 class="text-xl font-semibold mb-6">
-        List Produk
-      </h2>
+      <div class="flex justify-between items-center mb-6">
+
+        <h2 class="text-2xl font-semibold">
+          List Produk
+        </h2>
+
+        <button
+          onclick="loadProducts()"
+          class="bg-blue-500 text-white px-4 py-2 rounded-lg"
+        >
+          Refresh
+        </button>
+
+      </div>
 
       <div
         id="product-list"
@@ -86,6 +100,10 @@
     import { createClient }
     from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+    // =========================
+    // SUPABASE CONFIG
+    // =========================
+
     const supabaseUrl =
     'https://fctmswfmuvqwueeumtgw.supabase.co'
 
@@ -95,61 +113,88 @@
     const supabase =
     createClient(supabaseUrl, supabaseKey)
 
+    // =========================
     // LOAD PRODUCTS
+    // =========================
 
     async function loadProducts() {
 
       const { data, error } = await supabase
         .from('products')
         .select('*')
+        .order('id', { ascending: false })
 
       console.log(data)
+
+      if (error) {
+        console.log(error)
+        return
+      }
 
       const productList =
       document.getElementById('product-list')
 
       productList.innerHTML = ''
 
+      if (data.length === 0) {
+
+        productList.innerHTML = `
+          <p class="text-gray-500">
+            Belum ada produk
+          </p>
+        `
+
+        return
+      }
+
       data.forEach((product) => {
 
         productList.innerHTML += `
-          <div class="border rounded-xl p-4">
+
+          <div class="border rounded-2xl overflow-hidden shadow-sm">
 
             <img
               src="${product.image}"
-              class="w-full h-40 object-cover rounded-lg mb-3"
+              class="w-full h-52 object-cover"
             />
 
-            <h3 class="font-bold text-lg">
-              ${product.name}
-            </h3>
+            <div class="p-4">
 
-            <p class="text-orange-500 font-semibold">
-              Rp ${product.price}
-            </p>
+              <h3 class="text-xl font-bold mb-2">
+                ${product.title}
+              </h3>
 
-            <p class="text-gray-500 text-sm mb-4">
-              ${product.category}
-            </p>
+              <p class="text-orange-500 font-bold text-lg mb-2">
+                Rp ${Number(product.price).toLocaleString('id-ID')}
+              </p>
 
-            <button
-              onclick="deleteProduct(${product.id})"
-              class="bg-red-500 text-white px-4 py-2 rounded-lg"
-            >
-              Hapus
-            </button>
+              <p class="text-gray-500 mb-4">
+                ${product.category}
+              </p>
+
+              <button
+                onclick="deleteProduct(${product.id})"
+                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg w-full"
+              >
+                Hapus Produk
+              </button>
+
+            </div>
 
           </div>
+
         `
       })
     }
 
+    // =========================
     // ADD PRODUCT
+    // =========================
 
     window.addProduct = async function () {
 
-      const name =
-      document.getElementById('name').value
+      const title =
+      document.getElementById('title').value
 
       const price =
       document.getElementById('price').value
@@ -160,11 +205,25 @@
       const category =
       document.getElementById('category').value
 
+      // VALIDATION
+
+      if (
+        !title ||
+        !price ||
+        !image ||
+        !category
+      ) {
+        alert('Semua field wajib diisi!')
+        return
+      }
+
+      // INSERT TO DATABASE
+
       const { error } = await supabase
         .from('products')
         .insert([
           {
-            name,
+            title,
             price,
             image,
             category
@@ -172,24 +231,58 @@
         ])
 
       if (error) {
+
         console.log(error)
+        alert('Gagal tambah produk')
+
       } else {
+
         alert('Produk berhasil ditambah')
+
+        // RESET FORM
+
+        document.getElementById('title').value = ''
+        document.getElementById('price').value = ''
+        document.getElementById('image').value = ''
+        document.getElementById('category').value = ''
+
+        // RELOAD PRODUCTS
+
         loadProducts()
       }
     }
 
+    // =========================
     // DELETE PRODUCT
+    // =========================
 
     window.deleteProduct = async function(id) {
 
-      await supabase
+      const confirmDelete =
+      confirm('Yakin ingin hapus produk?')
+
+      if (!confirmDelete) return
+
+      const { error } = await supabase
         .from('products')
         .delete()
         .eq('id', id)
 
-      loadProducts()
+      if (error) {
+
+        console.log(error)
+        alert('Gagal hapus produk')
+
+      } else {
+
+        alert('Produk berhasil dihapus')
+        loadProducts()
+      }
     }
+
+    // =========================
+    // INITIAL LOAD
+    // =========================
 
     loadProducts()
 
