@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-10">
+
+  <div class="max-w-5xl mx-auto">
+
+    <h1 class="text-3xl font-bold mb-8">
+      Dashboard Admin
+    </h1>
+
+    <!-- FORM -->
+
+    <div class="bg-white p-6 rounded-xl shadow mb-10">
+
+      <h2 class="text-xl font-semibold mb-4">
+        Tambah Produk
+      </h2>
+
+      <div class="grid gap-4">
+
+        <input
+          id="name"
+          type="text"
+          placeholder="Nama Produk"
+          class="border p-3 rounded-lg"
+        />
+
+        <input
+          id="price"
+          type="number"
+          placeholder="Harga"
+          class="border p-3 rounded-lg"
+        />
+
+        <input
+          id="image"
+          type="text"
+          placeholder="URL Gambar"
+          class="border p-3 rounded-lg"
+        />
+
+        <input
+          id="category"
+          type="text"
+          placeholder="Kategori"
+          class="border p-3 rounded-lg"
+        />
+
+        <button
+          onclick="addProduct()"
+          class="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded-lg"
+        >
+          Tambah Produk
+        </button>
+
+      </div>
+    </div>
+
+    <!-- LIST PRODUCT -->
+
+    <div class="bg-white p-6 rounded-xl shadow">
+
+      <h2 class="text-xl font-semibold mb-6">
+        List Produk
+      </h2>
+
+      <div
+        id="product-list"
+        class="grid grid-cols-1 md:grid-cols-3 gap-6"
+      ></div>
+
+    </div>
+
+  </div>
+
+  <script type="module">
+
+    import { createClient }
+    from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabaseUrl =
+    'https://fctmswfmuvqwueeumtgw.supabase.co'
+
+    const supabaseKey =
+    'sb_publishable_45vumZUaNKPC6TKEkM8lQQ_exUm9CB7'
+
+    const supabase =
+    createClient(supabaseUrl, supabaseKey)
+
+    // LOAD PRODUCTS
+
+    async function loadProducts() {
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+
+      console.log(data)
+
+      const productList =
+      document.getElementById('product-list')
+
+      productList.innerHTML = ''
+
+      data.forEach((product) => {
+
+        productList.innerHTML += `
+          <div class="border rounded-xl p-4">
+
+            <img
+              src="${product.image}"
+              class="w-full h-40 object-cover rounded-lg mb-3"
+            />
+
+            <h3 class="font-bold text-lg">
+              ${product.name}
+            </h3>
+
+            <p class="text-orange-500 font-semibold">
+              Rp ${product.price}
+            </p>
+
+            <p class="text-gray-500 text-sm mb-4">
+              ${product.category}
+            </p>
+
+            <button
+              onclick="deleteProduct(${product.id})"
+              class="bg-red-500 text-white px-4 py-2 rounded-lg"
+            >
+              Hapus
+            </button>
+
+          </div>
+        `
+      })
+    }
+
+    // ADD PRODUCT
+
+    window.addProduct = async function () {
+
+      const name =
+      document.getElementById('name').value
+
+      const price =
+      document.getElementById('price').value
+
+      const image =
+      document.getElementById('image').value
+
+      const category =
+      document.getElementById('category').value
+
+      const { error } = await supabase
+        .from('products')
+        .insert([
+          {
+            name,
+            price,
+            image,
+            category
+          }
+        ])
+
+      if (error) {
+        console.log(error)
+      } else {
+        alert('Produk berhasil ditambah')
+        loadProducts()
+      }
+    }
+
+    // DELETE PRODUCT
+
+    window.deleteProduct = async function(id) {
+
+      await supabase
+        .from('products')
+        .delete()
+        .eq('id', id)
+
+      loadProducts()
+    }
+
+    loadProducts()
+
+  </script>
+
+</body>
+</html>
