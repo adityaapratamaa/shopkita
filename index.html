@@ -102,6 +102,7 @@
       #detailInnerWrap { padding-bottom: 80px; }
       #detailBottomBar { position: fixed; bottom: 0; left: 0; right: 0; }
       #detailMobileHeader { display: flex !important; }
+      #detailDesktopHeader { display: none !important; }
     }
 
     /* Progress bar */
@@ -148,44 +149,55 @@
       /* Bottom nav - hide on desktop */
       nav.fixed.bottom-0 { display: none !important; }
 
-      /* Detail page - desktop modal style */
+      /* ---- DESKTOP DETAIL PAGE — Shopee style ---- */
       #detailPage {
-        background: rgba(0,0,0,0.6) !important;
-        display: none;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 40px 20px;
+        background: rgba(0,0,0,0.65) !important;
+        overflow-y: auto;
       }
-      #detailPage.open { display: flex !important; }
-      #detailPage > .gradient-header { display: none; }
+      #detailPage.open { display: flex !important; align-items: flex-start; justify-content: center; padding: 24px 16px 40px; }
+      #detailMobileHeader { display: none !important; }
+      #detailDesktopHeader { display: flex !important; }
+
       #detailInnerWrap {
         background: white;
-        border-radius: 8px;
-        max-width: 900px;
+        border-radius: 4px;
         width: 100%;
-        max-height: calc(100vh - 80px);
-        overflow-y: auto;
+        max-width: 960px;
         position: relative;
+        overflow: hidden;
       }
-      /* Desktop detail: image + info side by side */
-      #detailDesktopLayout {
-        display: flex !important;
-        gap: 0;
+
+      /* Desktop: image slider — fixed size, no padding-top hack */
+      #detailInnerWrap #imgSliderWrap {
+        padding-top: 0 !important;
+        height: 420px !important;
+        position: relative !important;
       }
-      #detailImgCol { width: 400px; flex-shrink: 0; }
-      #detailInfoCol { flex: 1; overflow-y: auto; max-height: calc(100vh - 160px); }
-      /* Desktop bottom bar inside detail */
+      #detailInnerWrap #detailImgTrack {
+        position: absolute !important;
+        inset: 0 !important;
+        height: 100% !important;
+      }
+      #detailInnerWrap #detailImgTrack > div {
+        height: 100% !important;
+      }
+      #detailInnerWrap #detailImgTrack img {
+        height: 100% !important;
+        object-fit: contain !important;
+        background: #f5f5f5;
+      }
+
+      /* Desktop bottom bar — sticky */
       #detailBottomBar {
         position: sticky !important;
         bottom: 0;
+        left: unset !important;
+        right: unset !important;
       }
-      /* Sticky header inside desktop detail */
-      #detailDesktopHeader {
-        display: flex !important;
-      }
+
       /* Footer more columns */
       footer .grid.grid-cols-2 { grid-template-columns: repeat(4, 1fr) !important; }
-      /* Cart panel already works as side panel */
+
       /* Modals - center on desktop */
       #loginModal, #voucherModal, #wishlistModal, #checkoutModal {
         align-items: center !important;
@@ -194,26 +206,144 @@
         border-radius: 16px !important;
         max-height: 90vh;
       }
-      /* Section sort bar - not sticky offset issue on desktop */
+      /* Section sort bar */
       #productsSection .sticky { top: 60px !important; }
     }
 
-    /* Image lightbox */
+    /* ===== IMAGE LIGHTBOX — Shopee fullscreen style ===== */
     #imgLightbox {
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 999;
-      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      background: #000;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      touch-action: none;
     }
     #imgLightbox.open { display: flex; }
-    #imgLightbox img { max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 4px; cursor: zoom-out; }
-    #imgLightbox .lb-close { position: absolute; top: 16px; right: 20px; color: white; font-size: 32px; cursor: pointer; line-height: 1; z-index: 2; }
-    #imgLightbox .lb-arrow { position: absolute; top: 50%; transform: translateY(-50%); color: white; font-size: 40px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; }
-    #imgLightbox .lb-prev { left: 16px; }
-    #imgLightbox .lb-next { right: 16px; }
+
+    /* Top bar */
+    #lbTopBar {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      z-index: 2;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    }
+    #lbTopBar .lb-back { color: white; cursor: pointer; display: flex; align-items: center; padding: 8px; }
+    #lbTopBar .lb-counter { color: white; font-size: 14px; font-weight: 600; background: rgba(0,0,0,0.4); padding: 4px 12px; border-radius: 20px; }
+
+    /* Image container - fills screen */
+    #lbImgContainer {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* The sliding track */
+    #lbTrack {
+      display: flex;
+      height: 100%;
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      will-change: transform;
+    }
+    #lbTrack > div {
+      flex-shrink: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 56px 0 40px;
+    }
+    #lbTrack img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    /* Desktop arrows */
+    #lbArrowLeft, #lbArrowRight {
+      display: none;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      cursor: pointer;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      z-index: 3;
+      transition: background 0.2s;
+    }
+    #lbArrowLeft:hover, #lbArrowRight:hover { background: rgba(255,255,255,0.3); }
+    #lbArrowLeft { left: 16px; }
+    #lbArrowRight { right: 16px; }
+    @media(min-width:768px) {
+      #lbArrowLeft, #lbArrowRight { display: flex; }
+    }
+
+    /* Dot indicators at bottom */
+    #lbDots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 5px;
+      z-index: 2;
+    }
+    #lbDots span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: all 0.2s;
+    }
+    #lbDots span.active {
+      background: white;
+      width: 18px;
+      border-radius: 3px;
+    }
+
+    /* Thumbnail strip (desktop) */
+    #lbThumbStrip {
+      display: none;
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      gap: 6px;
+      z-index: 2;
+    }
+    #lbThumbStrip img {
+      width: 48px; height: 48px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.6;
+      transition: all 0.2s;
+    }
+    #lbThumbStrip img.active { border-color: white; opacity: 1; }
+    @media(min-width:768px) {
+      #lbDots { display: none; }
+      #lbThumbStrip { display: flex; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -615,12 +745,29 @@
 <!-- ===================== NOTIFICATIONS ===================== -->
 <div id="notifContainer" class="fixed top-20 right-3 z-[70] space-y-2 pointer-events-none"></div>
 
-<!-- ===================== IMAGE LIGHTBOX ===================== -->
-<div id="imgLightbox" onclick="closeLightbox(event)">
-  <span class="lb-close" onclick="closeLightboxDirect()">&times;</span>
-  <span class="lb-arrow lb-prev" onclick="lightboxPrev(event)">&#8249;</span>
-  <img id="lightboxImg" src="" alt=""/>
-  <span class="lb-arrow lb-next" onclick="lightboxNext(event)">&#8250;</span>
+<!-- ===================== IMAGE LIGHTBOX — Shopee Style ===================== -->
+<div id="imgLightbox">
+  <!-- Top bar -->
+  <div id="lbTopBar">
+    <div class="lb-back" onclick="closeLightboxDirect()">
+      <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    </div>
+    <div class="lb-counter" id="lbCounter">1 / 1</div>
+    <div style="width:40px;"></div>
+  </div>
+
+  <!-- Image track (swipeable) -->
+  <div id="lbImgContainer">
+    <div id="lbTrack"></div>
+  </div>
+
+  <!-- Desktop arrows -->
+  <div id="lbArrowLeft" onclick="lbGo(lightboxIdx-1)">&#8249;</div>
+  <div id="lbArrowRight" onclick="lbGo(lightboxIdx+1)">&#8250;</div>
+
+  <!-- Mobile dots / Desktop thumbnails -->
+  <div id="lbDots"></div>
+  <div id="lbThumbStrip"></div>
 </div>
 
 <!-- ===================== LOGIN MODAL ===================== -->
@@ -1255,8 +1402,8 @@ function buildDetailContent(p) {
       </div>
       <!-- Image counter -->
       <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full" id="imgCounter">1 / ${p.images.length}</div>
-      <!-- Tap to zoom hint -->
-      <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1">🔍 Tap untuk perbesar</div>
+      <!-- Tap to zoom hint (mobile only) -->
+      <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 md:hidden">🔍 Tap untuk perbesar</div>
       <!-- Dots -->
       <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         ${p.images.map((_,i)=>`<div class="img-dot w-1.5 h-1.5 rounded-full ${i===0?'bg-primary':'bg-white/70'}"></div>`).join('')}
@@ -1421,62 +1568,141 @@ function attachImageSwipe() {
   }, {passive:true});
 }
 
-// ===================== IMAGE LIGHTBOX =====================
+// ===================== IMAGE LIGHTBOX — Shopee Style =====================
 let lightboxImgs = [];
 let lightboxIdx = 0;
+let lbTouchStartX = 0;
+let lbTouchStartY = 0;
+let lbDragging = false;
+let lbDragDelta = 0;
 
-function openLightbox(idx) {
+function buildLightbox(imgs, idx) {
+  const track = document.getElementById('lbTrack');
+  const dots = document.getElementById('lbDots');
+  const thumbs = document.getElementById('lbThumbStrip');
+
+  // Build slides
+  track.innerHTML = imgs.map((src, i) => `
+    <div>
+      <img src="${src}" alt="Foto ${i+1}" draggable="false"
+        onerror="this.src='https://placehold.co/600x600/EE4D2D/white?text=ShopKita'"/>
+    </div>
+  `).join('');
+  track.style.width = (imgs.length * 100) + 'vw';
+
+  // Dots (mobile)
+  dots.innerHTML = imgs.map((_, i) => `<span class="${i===idx?'active':''}"></span>`).join('');
+
+  // Thumbnails (desktop)
+  thumbs.innerHTML = imgs.map((src, i) => `
+    <img src="${src}" class="${i===idx?'active':''}" onclick="lbGo(${i})"
+      onerror="this.src='https://placehold.co/60x60'"/>
+  `).join('');
+}
+
+function lbUpdateUI(idx) {
+  const imgs = lightboxImgs;
+  // Move track
+  document.getElementById('lbTrack').style.transform = `translateX(-${idx * 100}vw)`;
+  // Counter
+  document.getElementById('lbCounter').textContent = `${idx+1} / ${imgs.length}`;
+  // Dots
+  document.querySelectorAll('#lbDots span').forEach((d,i) => d.classList.toggle('active', i===idx));
+  // Thumbs
+  document.querySelectorAll('#lbThumbStrip img').forEach((t,i) => t.classList.toggle('active', i===idx));
+  // Arrows visibility
+  document.getElementById('lbArrowLeft').style.opacity = idx > 0 ? '1' : '0.3';
+  document.getElementById('lbArrowRight').style.opacity = idx < imgs.length-1 ? '1' : '0.3';
+  lightboxIdx = idx;
+}
+
+function lbGo(idx) {
+  const imgs = lightboxImgs;
+  if(idx < 0 || idx >= imgs.length) return;
+  lbUpdateUI(idx);
+}
+
+function openLightbox(startIdx) {
   const p = currentDetailProduct;
   if(!p) return;
   lightboxImgs = p.images;
-  lightboxIdx = idx;
+  lightboxIdx = startIdx;
+
+  buildLightbox(lightboxImgs, startIdx);
+
   const lb = document.getElementById('imgLightbox');
-  const img = document.getElementById('lightboxImg');
-  img.src = lightboxImgs[lightboxIdx];
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
-  // Update arrows visibility
-  document.querySelector('.lb-prev').style.display = lightboxImgs.length > 1 ? 'flex' : 'none';
-  document.querySelector('.lb-next').style.display = lightboxImgs.length > 1 ? 'flex' : 'none';
-}
 
-function closeLightbox(e) {
-  if(e.target === document.getElementById('imgLightbox') || e.target === document.getElementById('lightboxImg')) {
-    closeLightboxDirect();
-  }
+  // Set position without animation
+  const track = document.getElementById('lbTrack');
+  track.style.transition = 'none';
+  track.style.transform = `translateX(-${startIdx * 100}vw)`;
+  requestAnimationFrame(() => {
+    track.style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+  });
+
+  lbUpdateUI(startIdx);
+  attachLbSwipe();
 }
 
 function closeLightboxDirect() {
   document.getElementById('imgLightbox').classList.remove('open');
-  // Restore scroll only if detail page is also closed
   if(!document.getElementById('detailPage').classList.contains('open')) {
     document.body.style.overflow = '';
   }
 }
 
-function lightboxPrev(e) {
-  e.stopPropagation();
-  if(lightboxIdx > 0) {
-    lightboxIdx--;
-    document.getElementById('lightboxImg').src = lightboxImgs[lightboxIdx];
-  }
+function attachLbSwipe() {
+  const container = document.getElementById('lbImgContainer');
+  // Remove old listeners
+  container.replaceWith(container.cloneNode(true));
+  const c = document.getElementById('lbImgContainer');
+
+  c.addEventListener('touchstart', e => {
+    lbTouchStartX = e.touches[0].clientX;
+    lbTouchStartY = e.touches[0].clientY;
+    lbDragging = true;
+    lbDragDelta = 0;
+    document.getElementById('lbTrack').style.transition = 'none';
+  }, {passive:true});
+
+  c.addEventListener('touchmove', e => {
+    if(!lbDragging) return;
+    const dx = e.touches[0].clientX - lbTouchStartX;
+    const dy = e.touches[0].clientY - lbTouchStartY;
+    if(Math.abs(dy) > Math.abs(dx) && lbDragDelta === 0) { lbDragging = false; return; }
+    lbDragDelta = dx;
+    const baseOffset = -lightboxIdx * 100;
+    const pxOffset = (dx / window.innerWidth) * 100;
+    document.getElementById('lbTrack').style.transform = `translateX(${baseOffset + pxOffset}vw)`;
+  }, {passive:true});
+
+  c.addEventListener('touchend', e => {
+    if(!lbDragging) return;
+    lbDragging = false;
+    document.getElementById('lbTrack').style.transition = 'transform 0.3s cubic-bezier(.4,0,.2,1)';
+    if(lbDragDelta < -60 && lightboxIdx < lightboxImgs.length-1) lbGo(lightboxIdx+1);
+    else if(lbDragDelta > 60 && lightboxIdx > 0) lbGo(lightboxIdx-1);
+    else lbUpdateUI(lightboxIdx); // snap back
+    lbDragDelta = 0;
+  }, {passive:true});
+
+  // Tap to close (tap on background, not on image)
+  c.addEventListener('click', e => {
+    if(e.target === c || e.target.id === 'lbTrack' || e.target.closest('#lbTrack > div') && e.target.tagName !== 'IMG') {
+      closeLightboxDirect();
+    }
+  });
 }
 
-function lightboxNext(e) {
-  e.stopPropagation();
-  if(lightboxIdx < lightboxImgs.length - 1) {
-    lightboxIdx++;
-    document.getElementById('lightboxImg').src = lightboxImgs[lightboxIdx];
-  }
-}
-
-// Keyboard lightbox
+// Keyboard navigation
 document.addEventListener('keydown', e => {
   const lb = document.getElementById('imgLightbox');
   if(!lb.classList.contains('open')) return;
   if(e.key === 'Escape') closeLightboxDirect();
-  if(e.key === 'ArrowLeft') lightboxPrev(e);
-  if(e.key === 'ArrowRight') lightboxNext(e);
+  if(e.key === 'ArrowLeft') lbGo(lightboxIdx-1);
+  if(e.key === 'ArrowRight') lbGo(lightboxIdx+1);
 });
 
 function selectVariant(btn) {
