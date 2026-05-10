@@ -88,11 +88,13 @@
       /* Fix: ensure grid is never 0-height when visible */
       min-height: 200px;
     }
-    /* Fix: when hidden class is present, truly hide */
-    #productGrid.hidden {
+    /* Fix: when hidden class is present, truly hide — override display:grid !important */
+    #productGrid.hidden,
+    #skeletonGrid.hidden {
       display: none !important;
       min-height: 0;
     }
+    /* Fix: skeletonGrid uses same grid layout */
     #skeletonGrid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -642,7 +644,7 @@
       #categoryIconGrid { grid-template-columns:repeat(10,1fr) !important; }
 
       /* Product grid: 5 columns on desktop */
-      #productGrid, #skeletonGrid {
+      #productGrid:not(.hidden), #skeletonGrid:not(.hidden) {
         grid-template-columns: repeat(5,1fr) !important;
         gap: 8px !important;
         background: #f4f4f5 !important;
@@ -1176,7 +1178,7 @@
     </div>
 
     <!-- Actual product grid: populated by renderProducts() -->
-    <div id="productGrid" class="hidden"></div>
+    <div id="productGrid" class="hidden" style="display:none"></div>
 
     <!-- Empty state: shown when no products match filter/search -->
     <div id="emptyState" class="hidden bg-white py-16 text-center">
@@ -2125,12 +2127,17 @@ function renderProducts(list) {
 
   if (!list.length) {
     grid.innerHTML = '';
+    grid.style.display = 'none';
     grid.classList.add('hidden');
+    empty.style.display = '';
     empty.classList.remove('hidden');
     return;
   }
+
+  empty.style.display = 'none';
   empty.classList.add('hidden');
-  // Always force-remove hidden AND display:none so grid is visible
+
+  // Force show grid — use both style and class to beat any CSS specificity issues
   grid.classList.remove('hidden');
   grid.style.display = '';
 
@@ -3217,21 +3224,26 @@ function closeSuccessModal() {
   fixSortBarTop();
 
   // Simulate async product load (900ms skeleton then real data)
-  const skelTimer = setTimeout(() => {
+  setTimeout(() => {
+    // Hide skeleton using both style AND class — belt+suspenders approach
     const skel = document.getElementById('skeletonGrid');
-    if (skel) skel.classList.add('hidden');
+    if (skel) {
+      skel.style.display = 'none';
+      skel.classList.add('hidden');
+    }
+
+    // Show product grid explicitly before rendering
+    const grid = document.getElementById('productGrid');
+    if (grid) {
+      grid.classList.remove('hidden');
+      grid.style.display = '';  // let CSS grid rule take over
+    }
 
     try {
       applyFilters();
     } catch(e) {
-      // Fallback: force render all products if applyFilters throws
       console.warn('applyFilters error, falling back to full render', e);
-      const grid = document.getElementById('productGrid');
-      if (grid) {
-        grid.classList.remove('hidden');
-        grid.style.display = '';
-        renderProducts(products.slice(0, 10));
-      }
+      if (grid) renderProducts(products.slice(0, 10));
     }
 
     fixSortBarTop();
