@@ -74,6 +74,86 @@
     @media(hover:hover) { .product-img:hover { transform: scale(1.06); } }
     .product-img { transition: transform 0.4s ease; }
 
+    /* ================================================================
+       PRODUCT CARD — sk-card system
+       Native aspect-ratio (no padding-top hack). Fixed-height info rows
+       so both columns in a row are always the same height.
+    ================================================================ */
+    #productGrid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 1px !important;
+      background: #e5e7eb !important;
+      padding: 0 !important;
+    }
+    #skeletonGrid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: #e5e7eb;
+    }
+    .sk-card {
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s;
+    }
+    .sk-card:active { opacity: 0.85; }
+    /* Square image — native CSS aspect-ratio, universally supported */
+    .sk-card-img {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #f4f4f5;
+      flex-shrink: 0;
+    }
+    .sk-card-img img {
+      width: 100%; height: 100%;
+      object-fit: cover; display: block;
+      transition: transform 0.4s ease;
+    }
+    @media (hover:hover) { .sk-card:hover .sk-card-img img { transform: scale(1.05); } }
+    /* Discount badge */
+    .sk-badge {
+      position: absolute; top:6px; left:6px;
+      background: #D94B38; color:#fff;
+      font-size:10px; font-weight:800;
+      padding:2px 5px; border-radius:4px; line-height:1.4;
+      pointer-events:none;
+    }
+    /* Wishlist button */
+    .sk-wish {
+      position:absolute; top:5px; right:5px;
+      background:rgba(255,255,255,0.9);
+      border-radius:50%; width:26px; height:26px;
+      display:flex; align-items:center; justify-content:center;
+      border:none; cursor:pointer; backdrop-filter:blur(2px);
+    }
+    /* Info block: flex column, rigid row heights */
+    .sk-card-info { padding:8px 8px 10px; display:flex; flex-direction:column; flex:1; }
+    .sk-name {
+      font-size:11.5px; color:#1f2937; line-height:1.45;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+      overflow:hidden; height:calc(11.5px * 1.45 * 2);
+      margin-bottom:5px;
+    }
+    .sk-price {
+      font-size:13px; font-weight:800; color:#D94B38;
+      margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .sk-orig {
+      font-size:10px; color:#9ca3af; text-decoration:line-through;
+      height:14px; margin-bottom:4px; white-space:nowrap; overflow:hidden;
+    }
+    .sk-meta {
+      display:flex; align-items:center; gap:3px;
+      font-size:10px; color:#6b7280; margin-top:auto;
+    }
+    .sk-sep { color:#d1d5db; }
+
     /* ── Detail Image Slider ── */
     #detailImgTrack { transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
 
@@ -516,16 +596,23 @@
       /* Category icons grid: 10 columns on desktop */
       #categoryIconGrid { grid-template-columns:repeat(10,1fr) !important; }
 
-      /* Product grid: 5 columns on desktop (like major e-commerce sites) */
+      /* Product grid: 5 columns on desktop */
       #productGrid, #skeletonGrid {
         grid-template-columns: repeat(5,1fr) !important;
         gap: 8px !important;
         background: #f4f4f5 !important;
         padding: 8px !important;
       }
-      #productGrid > div, #skeletonGrid > div {
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      #productGrid > .sk-card, #skeletonGrid > div {
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      }
+      /* Slightly larger font on desktop */
+      @media (min-width:768px) {
+        .sk-name { font-size:12.5px; }
+        .sk-price { font-size:14px; }
+        .sk-card-info { padding: 10px 10px 12px; }
       }
 
       /* Hide bottom nav on desktop */
@@ -982,7 +1069,7 @@
     </div>
 
     <!-- Skeleton placeholder: shown for 900ms before real products -->
-    <div id="skeletonGrid" class="grid grid-cols-2 gap-px bg-gray-200">
+    <div id="skeletonGrid">
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
@@ -990,7 +1077,7 @@
     </div>
 
     <!-- Actual product grid: populated by renderProducts() -->
-    <div id="productGrid" class="grid grid-cols-2 gap-px bg-gray-200 hidden"></div>
+    <div id="productGrid" class="hidden"></div>
 
     <!-- Empty state: shown when no products match filter/search -->
     <div id="emptyState" class="hidden bg-white py-16 text-center">
@@ -1945,31 +2032,26 @@ function renderProducts(list) {
   const inWL = id => wishlist.some(w => w.id === id);
 
   grid.innerHTML = list.map(p => `
-    <div class="bg-white card-hover cursor-pointer" onclick="openDetailPage(${p.id})">
-      <!-- Product image (square aspect ratio via padding-top hack) -->
-      <div class="relative overflow-hidden" style="padding-top:100%;">
-        <img src="${p.images[0]}" alt="${p.name}"
-          class="product-img absolute inset-0 w-full h-full object-cover" loading="lazy"
+    <div class="sk-card" onclick="openDetailPage(${p.id})">
+      <div class="sk-card-img">
+        <img src="${p.images[0]}" alt="${p.name}" loading="lazy" decoding="async"
           onerror="this.src='https://placehold.co/300x300/D94B38/white?text=SK'"/>
-        ${p.discount ? `<div class="absolute top-1.5 left-1.5 bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded">${p.discount}%</div>` : ''}
-        <button class="absolute top-1.5 right-1.5 bg-white/90 rounded-full p-1.5"
-                onclick="event.stopPropagation();toggleWishlist(${p.id})">
-          <svg class="w-3.5 h-3.5 ${inWL(p.id)?'text-red-500':'text-gray-400'}"
-               fill="${inWL(p.id)?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24">
+        ${p.discount ? `<span class="sk-badge">${p.discount}%</span>` : ''}
+        <button class="sk-wish" onclick="event.stopPropagation();toggleWishlist(${p.id})" aria-label="Wishlist">
+          <svg class="w-3.5 h-3.5" fill="${inWL(p.id)?'#ef4444':'none'}" stroke="${inWL(p.id)?'#ef4444':'#9ca3af'}" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/>
           </svg>
         </button>
       </div>
-      <!-- Product info -->
-      <div class="p-2.5 pb-3">
-        <p class="text-gray-800 text-xs leading-relaxed line-clamp-2 min-h-[2.5rem] mb-1.5">${p.name}</p>
-        <p class="text-primary font-black text-sm mb-0.5">${fmt(p.price)}</p>
-        ${p.originalPrice ? `<p class="text-gray-400 text-[10px] line-through">${fmt(p.originalPrice)}</p>` : ''}
-        <div class="flex items-center gap-1 mt-1">
-          <span class="star-filled text-xs">★</span>
-          <span class="text-gray-500 text-[10px]">${p.rating}</span>
-          <span class="text-gray-300 text-[10px]">|</span>
-          <span class="text-gray-400 text-[10px]">Terjual ${fmtSold(p.sold)}</span>
+      <div class="sk-card-info">
+        <p class="sk-name">${p.name}</p>
+        <p class="sk-price">${fmt(p.price)}</p>
+        <p class="sk-orig">${p.originalPrice ? fmt(p.originalPrice) : '&nbsp;'}</p>
+        <div class="sk-meta">
+          <span class="star-filled" style="font-size:10px;">&#9733;</span>
+          <span>${p.rating}</span>
+          <span class="sk-sep">|</span>
+          <span>Terjual ${fmtSold(p.sold)}</span>
         </div>
       </div>
     </div>
