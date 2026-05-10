@@ -4,160 +4,527 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ShopKita - Belanja Online Terpercaya</title>
+
+  <!-- Tailwind CDN — used for utility classes throughout the app -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Google Fonts — Sora: distinctive rounded-geometric display font -->
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <script>
+    /* ── Tailwind Custom Config ─────────────────────────────────────
+       Add brand colors here so they work with Tailwind utility classes
+       e.g. bg-primary, text-primaryDark, bg-primaryLight
+    ─────────────────────────────────────────────────────────────── */
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            primary: '#EE4D2D',
-            primaryDark: '#C73E22',
-            primaryLight: '#FFF0ED',
-            secondary: '#FF7337',
+            primary:     '#D94B38',   /* Main brand red-coral */
+            primaryDark: '#B83328',   /* Hover / darker shade */
+            primaryLight:'#FFF0ED',   /* Tinted background */
+            secondary:   '#F47838',   /* Accent orange */
           },
-          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          fontFamily: { sans: ['Sora', 'sans-serif'] },
         }
       }
     }
   </script>
+
   <style>
-    * { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: #f5f5f5; }
+    /* ================================================================
+       GLOBAL RESETS & UTILITIES
+    ================================================================ */
+    * { font-family: 'Sora', sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { background: #f4f4f5; }
 
-    /* Gradient */
-    .gradient-header { background: linear-gradient(135deg, #EE4D2D 0%, #FF7337 100%); }
+    /* ── Brand Gradient (header + accents) ── */
+    .gradient-header { background: linear-gradient(135deg, #D94B38 0%, #F47838 100%); }
 
-    /* Hide scrollbar */
-    .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    /* ── Hide scrollbars on overflow containers ── */
+    .hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    .hide-scrollbar::-webkit-scrollbar { display:none; }
 
-    /* Skeleton */
-    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+    /* ── Skeleton loading shimmer animation ──
+       Usage: <div class="skeleton rounded-lg h-40"></div>
+    ── */
+    .skeleton {
+      background: linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
     @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-    /* Animations */
-    .modal-overlay { backdrop-filter: blur(4px); }
-    .cart-slide { animation: cartSlideIn 0.28s cubic-bezier(.4,0,.2,1); }
+    /* ── Modal & Panel Animations ── */
+    .modal-overlay   { backdrop-filter: blur(4px); }
+    .cart-slide      { animation: cartSlideIn 0.28s cubic-bezier(.4,0,.2,1); }
     @keyframes cartSlideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
-    .slide-up { animation: slideUp 0.3s cubic-bezier(.4,0,.2,1); }
+    .slide-up        { animation: slideUp 0.3s cubic-bezier(.4,0,.2,1); }
     @keyframes slideUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
-    .notif-enter { animation: notifSlide 0.3s cubic-bezier(.4,0,.2,1); }
+    .notif-enter     { animation: notifSlide 0.3s cubic-bezier(.4,0,.2,1); }
     @keyframes notifSlide { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
-    .notif-exit { animation: notifFade 0.25s cubic-bezier(.4,0,.2,1) forwards; }
+    .notif-exit      { animation: notifFade 0.25s cubic-bezier(.4,0,.2,1) forwards; }
     @keyframes notifFade { to{opacity:0;transform:translateX(60px)} }
+
+    /* ── Product Card / Banner ── */
     .banner-transition { transition: transform 0.45s cubic-bezier(.4,0,.2,1); }
     .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .card-hover:active { transform: scale(0.97); }
-
-    /* Stars */
     .star-filled { color: #FFAC00; }
-
-    /* Detail image slider */
-    #detailImgTrack { transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
-
-    /* Search suggestions */
-    #searchSuggestions { box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
-
-    /* Sort active */
-    .sort-btn.active { background: #EE4D2D; color: white; border-color: #EE4D2D; }
-
-    /* Category active */
-    .cat-item.active { background: #FFF0ED; }
-    .cat-item.active span { color: #EE4D2D; font-weight: 700; }
-
-    /* Tab active */
-    .review-tab.active { border-bottom: 2.5px solid #EE4D2D; color: #EE4D2D; font-weight: 700; }
-
-    /* Bottom nav safe area */
-    .bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0px); }
-
-    /* Checkout step */
-    .step-active { background: #EE4D2D; color: white; }
-    .step-done { background: #22c55e; color: white; }
-
-    /* Touch feedback */
-    button:active, a:active { opacity: 0.8; }
-
-    /* Hero Shopee style left/right panels */
-    .hero-panel-left { background: linear-gradient(135deg, #EE4D2D 0%, #FF7337 100%); }
-    .hero-panel-right-top { background: linear-gradient(135deg, #cc0000 0%, #ff4444 100%); }
-    .hero-panel-right-bot { background: linear-gradient(135deg, #6b21a8 0%, #a855f7 100%); }
-
-    /* Voucher card */
-    .voucher-card { background: linear-gradient(135deg, #EE4D2D, #FF7337); }
-
-    /* Product image zoom on hover (desktop only) */
     @media(hover:hover) { .product-img:hover { transform: scale(1.06); } }
     .product-img { transition: transform 0.4s ease; }
 
-    /* Full-screen detail page */
-    #detailPage { display: none; position: fixed; inset: 0; z-index: 60; background: #fff; overflow-y: auto; overscroll-behavior: contain; }
-    #detailPage.open { display: block; }
-    #detailInnerWrap { background: white; }
-    /* Mobile: bottom bar fixed */
-    @media (max-width: 767px) {
-      #detailPage { background: #fff; }
-      #detailPage.open { display: block; }
-      #detailInnerWrap { padding-bottom: 80px; }
-      #detailBottomBar { position: fixed; bottom: 0; left: 0; right: 0; }
-      #detailMobileHeader { display: flex !important; }
-      #detailDesktopHeader { display: none !important; }
+    /* ── Detail Image Slider ── */
+    #detailImgTrack { transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
+
+    /* ── Sort / Category / Tab Active States ── */
+    .sort-btn.active   { background:#D94B38; color:white; border-color:#D94B38; }
+    .cat-item.active   { background:#FFF0ED; }
+    .cat-item.active span { color:#D94B38; font-weight:700; }
+    .review-tab.active { border-bottom:2.5px solid #D94B38; color:#D94B38; font-weight:700; }
+
+    /* ── Bottom Nav Safe Area (iPhone home bar) ── */
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0px); }
+
+    /* ── Checkout Step Indicator Dots ── */
+    .step-active { background:#D94B38; color:white; }
+    .step-done   { background:#22c55e; color:white; }
+
+    /* ── Touch Feedback ── */
+    button:active, a:active { opacity:0.82; }
+
+    /* ── Voucher Card ── */
+    .voucher-card { background: linear-gradient(135deg,#D94B38,#F47838); }
+
+    /* ── Qty button tap color ── */
+    .qty-btn:active { background:#D94B38; color:white; }
+
+    /* ── Product Detail Page (full-screen overlay) ──
+       Opened by openDetailPage(), closed by closeDetailPage()
+    ── */
+    #detailPage { display:none; position:fixed; inset:0; z-index:60; background:#fff; overflow-y:auto; overscroll-behavior:contain; }
+    #detailPage.open { display:block; }
+    @media (max-width:767px) {
+      #detailInnerWrap { padding-bottom:80px; }
+      #detailBottomBar { position:fixed; bottom:0; left:0; right:0; }
+      #detailMobileHeader { display:flex !important; }
+      #detailDesktopHeader { display:none !important; }
     }
 
-    /* Progress bar */
-    .progress-bar { transition: width 0.3s ease; }
+    /* ── Progress bar (reviews rating chart) ── */
+    .progress-bar { transition:width 0.3s ease; }
 
-    /* Qty button */
-    .qty-btn:active { background: #EE4D2D; color: white; }
+    /* ── Search Overlay (full-screen search page) ── */
+    #searchOverlay { display:none; position:fixed; inset:0; z-index:55; background:white; overflow-y:auto; }
+    #searchOverlay.open { display:block; }
 
-    /* Search overlay */
-    #searchOverlay { display: none; position: fixed; inset: 0; z-index: 55; background: white; overflow-y: auto; }
-    #searchOverlay.open { display: block; }
 
-    /* ===== DESKTOP LAYOUT ===== */
+    /* ================================================================
+       HERO SECTION — "Nusantara Pulse" Design
+       ================================================================
+       Design concept: Dark, rich coral-to-amber gradient with animated
+       floating blobs, a bold editorial headline, and premium dark-themed
+       carousel cards — creating depth and visual drama.
+
+       Structure:
+         .hero-section
+           .hero-bg-blob × 3          ← decorative CSS circles
+           .hero-content-wrap
+             .hero-headline-panel      ← desktop-only left panel
+             .hero-cards-panel
+               .hero-cards-viewport
+                 #heroBannerTrack      ← MUST keep this id (used by goBanner() JS)
+                   .hero-slide × 3    ← each slide
+                     .hero-card       ← card component
+               .hero-dots             ← banner-dot elements (used by goBanner() JS)
+           .hero-quicklinks           ← horizontal scrollable quick links
+       ================================================================ */
+
+    /* ── Outer section: gradient + overflow clip for blob ── */
+    .hero-section {
+      background: linear-gradient(135deg, #B83328 0%, #D94B38 35%, #E86030 70%, #F47838 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Decorative animated background blobs (CSS circles) ──
+       These are purely visual — aria-hidden in HTML
+    ── */
+    .hero-bg-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      will-change: transform;
+    }
+    /* Large blob: top-right corner */
+    .hero-blob-1 {
+      width: 260px; height: 260px;
+      background: rgba(255, 230, 160, 0.13);
+      top: -80px; right: -80px;
+      animation: blobDrift 9s ease-in-out infinite;
+    }
+    /* Medium blob: bottom-left */
+    .hero-blob-2 {
+      width: 160px; height: 160px;
+      background: rgba(255, 255, 255, 0.09);
+      bottom: -50px; left: -20px;
+      animation: blobDrift 7s ease-in-out infinite reverse 1s;
+    }
+    /* Small blob: center top */
+    .hero-blob-3 {
+      width: 90px; height: 90px;
+      background: rgba(255, 230, 160, 0.1);
+      top: 20px; left: 42%;
+      animation: blobDrift 8s ease-in-out infinite 2.5s;
+    }
+    @keyframes blobDrift {
+      0%,100% { transform: translate(0,0) scale(1); }
+      33%      { transform: translate(10px,-14px) scale(1.06); }
+      66%      { transform: translate(-7px, 7px) scale(0.93); }
+    }
+
+    /* ── Content wrapper: column on mobile, row on desktop ── */
+    .hero-content-wrap {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 12px 6px;
+      gap: 10px;
+    }
     @media (min-width: 768px) {
-      body { background: #f5f5f5; }
+      .hero-content-wrap {
+        flex-direction: row;
+        align-items: center;
+        padding: 30px 28px 14px;
+        gap: 28px;
+        max-width: 1200px;
+        margin: 0 auto;
+        min-height: 210px;
+      }
+    }
 
-      /* Header desktop - centered max-width container */
-      #mainHeader .header-inner { max-width: 1200px; margin: 0 auto; }
+    /* ── Left headline panel: DESKTOP ONLY ──
+       Hidden on mobile (cards take full width instead)
+    ── */
+    .hero-headline-panel { display: none; }
+    @media (min-width: 768px) {
+      .hero-headline-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        flex: 1;
+        min-width: 0;
+      }
+    }
 
-      /* Main content container */
-      #mainPage { max-width: 1200px; margin: 0 auto; }
+    /* Live-indicator pill: "Flash Sale Aktif" */
+    .hero-live-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(6px);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 13px;
+      border-radius: 20px;
+      width: fit-content;
+      letter-spacing: 0.02em;
+    }
+    /* Pulsing green dot inside the live tag */
+    .hero-live-dot {
+      width: 7px; height: 7px;
+      background: #72F093;
+      border-radius: 50%;
+      animation: livePulse 1.6s ease-in-out infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.4; transform:scale(1.5); }
+    }
 
-      /* Hero banner - taller on desktop */
-      #mainPage > .bg-primary > div { min-height: 220px !important; }
-      #heroBannerTrack > div { min-height: 218px !important; }
+    /* Big bold headline */
+    .hero-headline {
+      color: white;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.12;
+      letter-spacing: -0.5px;
+    }
+    /* Animated cycling word (gold color, slides up on change) */
+    .hero-word-cycle {
+      display: block;
+      color: #FFD166;
+      animation: wordReveal 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    @keyframes wordReveal {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0);    }
+    }
 
-      /* Category icons - more columns */
-      #categoryIconGrid { grid-template-columns: repeat(10, 1fr) !important; }
+    .hero-subtext {
+      color: rgba(255,255,255,0.78);
+      font-size: 12.5px;
+      line-height: 1.55;
+      max-width: 260px;
+    }
 
-      /* Product grid - 5 columns like Shopee */
+    /* CTA button: white pill with coral text */
+    .hero-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      color: #B83328;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 11px 24px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+      transition: transform 0.2s, box-shadow 0.2s;
+      width: fit-content;
+    }
+    .hero-cta-btn:hover  { transform:translateY(-2px); box-shadow:0 10px 30px rgba(0,0,0,0.22); }
+    .hero-cta-btn:active { transform:scale(0.97); }
+
+    /* ── Right cards panel: holds the carousel ── */
+    .hero-cards-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    @media (min-width: 768px) {
+      .hero-cards-panel { max-width: 360px; }
+    }
+
+    /* Clip the sliding track */
+    .hero-cards-viewport {
+      overflow: hidden;
+      border-radius: 18px;
+      /* Layered shadow for depth effect */
+      box-shadow:
+        0 2px 8px rgba(0,0,0,0.12),
+        0 12px 40px rgba(0,0,0,0.22);
+    }
+
+    /* Each slide: full-width (JS sets 33.333% via width:300% on track) */
+    .hero-slide { flex-shrink: 0; }
+
+    /* ── Promo card component ──
+       Each card has a dark gradient + decorative circle in corner
+       Three themes: --fire, --tech, --fresh
+    ── */
+    .hero-card {
+      padding: 20px 22px;
+      min-height: 148px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Decorative glowing circle in corner of each card */
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; right: 20px;
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    /* Theme: warm dark — slide 0 (main promo) */
+    .hero-card--fire  { background: linear-gradient(135deg,#1C0A00,#3A1800,#5A2A00); }
+    /* Theme: deep navy — slide 1 (electronics) */
+    .hero-card--tech  { background: linear-gradient(135deg,#060D1E,#0C2040,#103860); }
+    /* Theme: deep forest — slide 2 (free shipping) */
+    .hero-card--fresh { background: linear-gradient(135deg,#041E12,#08391F,#0C5430); }
+
+    /* Pill badge inside each card */
+    .hero-card-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.10);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.88);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      width: fit-content;
+      margin-bottom: 5px;
+      letter-spacing: 0.02em;
+    }
+    /* Large emoji icon positioned at right side of card */
+    .hero-card-icon {
+      font-size: 50px;
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.18;
+      pointer-events: none;
+      user-select: none;
+    }
+    .hero-card-label {
+      color: rgba(255,255,255,0.65);
+      font-size: 11.5px;
+      font-weight: 500;
+    }
+    .hero-card-value {
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.3px;
+    }
+    /* Gold highlight for numbers/key words inside card value */
+    .hero-card-value strong { color:#FFD166; font-weight:900; }
+
+    /* Glass button inside the card */
+    .hero-card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.13);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.18);
+      cursor: pointer;
+      margin-top: 7px;
+      width: fit-content;
+      transition: background 0.2s;
+    }
+    .hero-card-btn:hover  { background: rgba(255,255,255,0.22); }
+    .hero-card-btn:active { background: rgba(255,255,255,0.3);  }
+
+    /* ── Carousel dots ──
+       Note: goBanner() JS adds/removes Tailwind's w-4 (active) and w-1.5 (inactive)
+       These override the initial sizing set below.
+    ── */
+    .hero-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 0;
+    }
+    /* Initial state: first dot is active (w-4=16px), others inactive (w-1.5=6px) */
+    .hero-dots .banner-dot {
+      height: 5px;
+      border-radius: 3px;
+      background: rgba(255,255,255,0.35);
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: width 0.3s cubic-bezier(.4,0,.2,1), background 0.3s, opacity 0.3s;
+    }
+    /* Active dot (w-4 class added by JS): wider + full white */
+    .hero-dots .banner-dot.w-4 {
+      background: white !important;
+      opacity: 1 !important;
+    }
+
+    /* ── Quick links row (horizontal scroll) ──
+       These are pill buttons at the bottom of the hero
+    ── */
+    .hero-quicklinks {
+      display: flex;
+      gap: 6px;
+      padding: 4px 12px 12px;
+      overflow-x: auto;
+      position: relative;
+      z-index: 1;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .hero-quicklinks::-webkit-scrollbar { display: none; }
+    .hero-quicklink {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 13px;
+      background: rgba(255,255,255,0.14);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      color: white;
+      font-size: 10.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .hero-quicklink:hover  { background: rgba(255,255,255,0.24); }
+    .hero-quicklink:active { background: rgba(255,255,255,0.32); }
+
+
+    /* ================================================================
+       DESKTOP LAYOUT OVERRIDES
+    ================================================================ */
+    @media (min-width: 768px) {
+      body { background: #f4f4f5; }
+
+      /* Header inner: max-width container */
+      #mainHeader .header-inner { max-width:1200px; margin:0 auto; }
+
+      /* Main page container: constrain to 1200px */
+      #mainPage { max-width:1200px; margin:0 auto; }
+
+      /* Category icons grid: 10 columns on desktop */
+      #categoryIconGrid { grid-template-columns:repeat(10,1fr) !important; }
+
+      /* Product grid: 5 columns on desktop (like major e-commerce sites) */
       #productGrid, #skeletonGrid {
-        grid-template-columns: repeat(5, 1fr) !important;
+        grid-template-columns: repeat(5,1fr) !important;
         gap: 8px !important;
-        background: #f5f5f5 !important;
+        background: #f4f4f5 !important;
         padding: 8px !important;
       }
-
-      /* Product cards on desktop */
       #productGrid > div, #skeletonGrid > div {
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.08);
       }
 
-      /* Bottom nav - hide on desktop */
-      nav.fixed.bottom-0 { display: none !important; }
+      /* Hide bottom nav on desktop */
+      nav.fixed.bottom-0 { display:none !important; }
 
-      /* ---- DESKTOP DETAIL PAGE — Shopee style ---- */
+      /* Sort bar sticky offset: below header */
+      #productsSection .sticky { top:60px !important; }
+
+      /* ── Desktop Detail Page: shown as modal ── */
       #detailPage {
         background: rgba(0,0,0,0.65) !important;
         overflow-y: auto;
       }
-      #detailPage.open { display: flex !important; align-items: flex-start; justify-content: center; padding: 24px 16px 40px; }
-      #detailMobileHeader { display: none !important; }
-      #detailDesktopHeader { display: flex !important; }
-
+      #detailPage.open {
+        display: flex !important;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 24px 16px 40px;
+      }
+      #detailMobileHeader { display:none !important; }
+      #detailDesktopHeader { display:flex !important; }
       #detailInnerWrap {
         background: white;
         border-radius: 4px;
@@ -166,51 +533,34 @@
         position: relative;
         overflow: hidden;
       }
-
-      /* Desktop: image slider — fixed size, no padding-top hack */
+      /* Desktop product image: fixed height instead of padding-top hack */
       #detailInnerWrap #imgSliderWrap {
         padding-top: 0 !important;
         height: 420px !important;
         position: relative !important;
       }
-      #detailInnerWrap #detailImgTrack {
-        position: absolute !important;
-        inset: 0 !important;
-        height: 100% !important;
-      }
-      #detailInnerWrap #detailImgTrack > div {
-        height: 100% !important;
-      }
-      #detailInnerWrap #detailImgTrack img {
-        height: 100% !important;
-        object-fit: contain !important;
-        background: #f5f5f5;
-      }
+      #detailInnerWrap #detailImgTrack { position:absolute !important; inset:0 !important; height:100% !important; }
+      #detailInnerWrap #detailImgTrack > div { height:100% !important; }
+      #detailInnerWrap #detailImgTrack img { height:100% !important; object-fit:contain !important; background:#f4f4f5; }
+      /* Bottom bar sticky (not fixed) on desktop */
+      #detailBottomBar { position:sticky !important; bottom:0; left:unset !important; right:unset !important; }
 
-      /* Desktop bottom bar — sticky */
-      #detailBottomBar {
-        position: sticky !important;
-        bottom: 0;
-        left: unset !important;
-        right: unset !important;
-      }
+      /* Footer: 4 columns on desktop */
+      footer .grid.grid-cols-2 { grid-template-columns:repeat(4,1fr) !important; }
 
-      /* Footer more columns */
-      footer .grid.grid-cols-2 { grid-template-columns: repeat(4, 1fr) !important; }
-
-      /* Modals - center on desktop */
-      #loginModal, #voucherModal, #wishlistModal, #checkoutModal {
-        align-items: center !important;
-      }
+      /* Modals: vertically centered on desktop */
+      #loginModal, #voucherModal, #wishlistModal, #checkoutModal { align-items:center !important; }
       #loginModal > div, #voucherModal > div, #wishlistModal > div, #checkoutModal > div {
         border-radius: 16px !important;
         max-height: 90vh;
       }
-      /* Section sort bar */
-      #productsSection .sticky { top: 60px !important; }
     }
 
-    /* ===== IMAGE LIGHTBOX — Shopee fullscreen style ===== */
+
+    /* ================================================================
+       IMAGE LIGHTBOX — Full-screen photo viewer
+       Opened by openLightbox(), closed by closeLightboxDirect()
+    ================================================================ */
     #imgLightbox {
       display: none;
       position: fixed;
@@ -220,310 +570,358 @@
       overflow: hidden;
     }
     #imgLightbox.open { display: block; }
-
-    /* Top bar */
     #lbTopBar {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 56px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 10;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      position: absolute; top:0; left:0; right:0; height:56px;
+      display: flex; align-items:center; justify-content:space-between;
+      padding: 0 16px; z-index:10;
+      background: linear-gradient(to bottom,rgba(0,0,0,0.7),transparent);
     }
     #lbTopBar .lb-back {
-      color: white; cursor: pointer;
-      display: flex; align-items: center;
-      padding: 8px; margin-left: -8px;
+      color:white; cursor:pointer; display:flex; align-items:center;
+      padding:8px; margin-left:-8px;
     }
     #lbTopBar .lb-counter {
-      color: white; font-size: 14px; font-weight: 600;
-      background: rgba(0,0,0,0.45);
-      padding: 4px 14px; border-radius: 20px;
+      color:white; font-size:14px; font-weight:600;
+      background:rgba(0,0,0,0.45); padding:4px 14px; border-radius:20px;
     }
-
-    /* Viewport wrapper — exactly fullscreen, clips the track */
-    #lbViewport {
-      position: absolute;
-      inset: 0;
-      overflow: hidden;
-    }
-
-    /* Sliding track — n slides side by side, width set by JS */
-    #lbTrack {
-      display: flex;
-      height: 100%;
-      will-change: transform;
-      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-    }
-
-    /* Each slide = exactly 100% of viewport width */
+    #lbViewport { position:absolute; inset:0; overflow:hidden; }
+    #lbTrack { display:flex; height:100%; will-change:transform; transition:transform 0.3s cubic-bezier(.4,0,.2,1); }
     #lbTrack > .lb-slide {
-      flex-shrink: 0;
-      width: 100%; /* will be overridden by JS inline style */
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 0 60px;
-      box-sizing: border-box;
+      flex-shrink:0; width:100%; height:100%;
+      display:flex; align-items:center; justify-content:center;
+      padding:60px 0; box-sizing:border-box;
     }
-
     #lbTrack > .lb-slide img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      display: block;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
+      max-width:100%; max-height:100%; object-fit:contain; display:block;
+      user-select:none; -webkit-user-drag:none; pointer-events:none;
     }
-
     /* Desktop arrows */
     #lbArrowLeft, #lbArrowRight {
-      display: none;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: white;
-      cursor: pointer;
-      background: rgba(255,255,255,0.18);
-      border-radius: 50%;
-      width: 48px; height: 48px;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-      z-index: 10;
-      transition: background 0.2s;
-      user-select: none;
+      display:none; position:absolute; top:50%; transform:translateY(-50%);
+      color:white; cursor:pointer;
+      background:rgba(255,255,255,0.18); border-radius:50%;
+      width:48px; height:48px; align-items:center; justify-content:center;
+      font-size:30px; z-index:10; transition:background 0.2s; user-select:none;
     }
-    #lbArrowLeft:hover, #lbArrowRight:hover { background: rgba(255,255,255,0.35); }
-    #lbArrowLeft { left: 20px; }
-    #lbArrowRight { right: 20px; }
-    @media(min-width:768px) {
-      #lbArrowLeft, #lbArrowRight { display: flex; }
-    }
-
-    /* Dot indicators (mobile) */
-    #lbDots {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 6px;
-      z-index: 10;
-    }
-    #lbDots span {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.4);
-      transition: all 0.25s;
-      display: block;
-    }
-    #lbDots span.active {
-      background: white;
-      width: 20px;
-      border-radius: 3px;
-    }
-    @media(min-width:768px) { #lbDots { display: none; } }
-
-    /* Thumbnail strip (desktop) */
-    #lbThumbStrip {
-      display: none;
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      gap: 6px;
-      z-index: 10;
-    }
-    #lbThumbStrip img {
-      width: 52px; height: 52px;
-      object-fit: cover;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      opacity: 0.55;
-      transition: all 0.2s;
-    }
-    #lbThumbStrip img.active { border-color: white; opacity: 1; }
-    @media(min-width:768px) { #lbThumbStrip { display: flex; } }
+    #lbArrowLeft:hover, #lbArrowRight:hover { background:rgba(255,255,255,0.35); }
+    #lbArrowLeft  { left:20px; }
+    #lbArrowRight { right:20px; }
+    @media(min-width:768px) { #lbArrowLeft, #lbArrowRight { display:flex; } }
+    /* Mobile dots */
+    #lbDots { position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:6px; z-index:10; }
+    #lbDots span { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.4); transition:all 0.25s; display:block; }
+    #lbDots span.active { background:white; width:20px; border-radius:3px; }
+    @media(min-width:768px) { #lbDots { display:none; } }
+    /* Desktop thumbnail strip */
+    #lbThumbStrip { display:none; position:absolute; bottom:14px; left:50%; transform:translateX(-50%); gap:6px; z-index:10; }
+    #lbThumbStrip img { width:52px; height:52px; object-fit:cover; border-radius:4px; cursor:pointer; border:2px solid transparent; opacity:0.55; transition:all 0.2s; }
+    #lbThumbStrip img.active { border-color:white; opacity:1; }
+    @media(min-width:768px) { #lbThumbStrip { display:flex; } }
   </style>
 </head>
+
 <body class="bg-gray-100 min-h-screen">
 
-<!-- ===================== HEADER ===================== -->
+
+<!-- ================================================================
+     HEADER — Sticky top navigation
+     [HOW TO EDIT]
+     - Logo: change the "SK" letter and "ShopKita" text below
+     - Nav links: edit the <a> tags in the nav strip
+     - Colors: controlled by .gradient-header CSS class
+================================================================ -->
 <header class="gradient-header sticky top-0 z-50 shadow-sm" id="mainHeader">
   <div class="header-inner">
-  <div class="px-3 pt-3 pb-2">
-    <div class="flex items-center gap-2.5">
-      <!-- Logo -->
-      <button class="flex-shrink-0 flex items-center gap-1.5" onclick="goHome()">
-        <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow">
-          <span class="text-primary font-black text-base">S</span>
-        </div>
-        <span class="text-white font-black text-[17px] tracking-tight">ShopKita</span>
-      </button>
+    <div class="px-3 pt-3 pb-2">
 
-      <!-- Search Bar -->
-      <div class="flex-1 flex" onclick="openSearchOverlay()">
-        <div class="w-full flex bg-white rounded-lg overflow-hidden shadow-sm cursor-text">
-          <div class="flex-1 px-3 py-2.5 text-sm text-gray-400 select-none flex items-center gap-2">
-            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/></svg>
-            <span id="searchPlaceholder">Cari produk di ShopKita...</span>
+      <!-- Top row: Logo + Search + Icons -->
+      <div class="flex items-center gap-2.5">
+
+        <!-- Logo button: clicking goes to home (goHome() resets filters) -->
+        <button class="flex-shrink-0 flex items-center gap-1.5" onclick="goHome()">
+          <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow">
+            <span class="text-primary font-black text-base">SK</span>
+          </div>
+          <span class="text-white font-black text-[17px] tracking-tight">ShopKita</span>
+        </button>
+
+        <!-- Search bar: clicking opens the full-screen search overlay -->
+        <div class="flex-1 flex" onclick="openSearchOverlay()">
+          <div class="w-full flex bg-white rounded-lg overflow-hidden shadow-sm cursor-text">
+            <div class="flex-1 px-3 py-2.5 text-sm text-gray-400 select-none flex items-center gap-2">
+              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+              </svg>
+              <span id="searchPlaceholder">Cari produk di ShopKita...</span>
+            </div>
           </div>
         </div>
+
+        <!-- Icon buttons: Wishlist + Cart -->
+        <div class="flex items-center gap-1">
+
+          <!-- Wishlist: badge count updated by toggleWishlist() -->
+          <button onclick="openWishlistModal()" class="relative p-2">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/>
+            </svg>
+            <span id="wishlistBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-gray-900 text-[10px] font-black rounded-full w-4 h-4 items-center justify-center hidden">0</span>
+          </button>
+
+          <!-- Cart: badge count updated by updateCartUI() -->
+          <button onclick="toggleCart()" class="relative p-2">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6h13M10 21a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm9 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+            </svg>
+            <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-gray-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
+          </button>
+        </div>
       </div>
 
-      <!-- Icons -->
-      <div class="flex items-center gap-1">
-        <button onclick="openWishlistModal()" class="relative p-2">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/></svg>
-          <span id="wishlistBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-gray-900 text-[10px] font-black rounded-full w-4 h-4 items-center justify-center hidden">0</span>
-        </button>
-        <button onclick="toggleCart()" class="relative p-2">
-          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6h13M10 21a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm9 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/></svg>
-          <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-yellow-400 text-gray-900 text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center hidden">0</span>
-        </button>
+      <!-- Nav strip: quick category links -->
+      <div class="flex items-center gap-4 mt-2 overflow-x-auto hide-scrollbar pb-0.5">
+        <a href="#" onclick="openVoucherModal();return false;"              class="text-white/90 text-xs font-medium whitespace-nowrap">🎟️ Voucher</a>
+        <a href="#"                                                         class="text-white/90 text-xs font-medium whitespace-nowrap">🚚 Gratis Ongkir</a>
+        <a href="#" onclick="setSortMode('sold');return false;"             class="text-white/90 text-xs font-medium whitespace-nowrap">🔥 Terlaris</a>
+        <a href="#" onclick="setSortMode('price-asc');return false;"        class="text-white/90 text-xs font-medium whitespace-nowrap">💸 Termurah</a>
+        <a href="#" onclick="filterCategory('Fashion');return false;"       class="text-white/90 text-xs font-medium whitespace-nowrap">🇮🇩 Produk Lokal</a>
       </div>
     </div>
-
-    <!-- Nav strip -->
-    <div class="flex items-center gap-4 mt-2 overflow-x-auto hide-scrollbar pb-0.5">
-      <a href="#" onclick="openVoucherModal();return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">🎟️ Voucher</a>
-      <a href="#" class="text-white/90 text-xs font-medium whitespace-nowrap">🚚 Gratis Ongkir</a>
-      <a href="#" onclick="setSortMode('sold');return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">🔥 Terlaris</a>
-      <a href="#" onclick="setSortMode('price-asc');return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">💸 Termurah</a>
-      <a href="#" onclick="filterCategory('Fashion');return false;" class="text-white/90 text-xs font-medium whitespace-nowrap">🇮🇩 Produk Lokal</a>
-    </div>
-  </div>
   </div>
 </header>
 
-<!-- ===================== MAIN ===================== -->
+
+<!-- ================================================================
+     MAIN PAGE CONTENT
+================================================================ -->
 <main id="mainPage">
 
-  <!-- HERO BANNER - Shopee style grid -->
-  <div class="bg-primary">
-    <div class="flex gap-1 p-1" style="min-height:160px;">
-      <!-- Left: big banner carousel -->
-      <div class="flex-1 relative overflow-hidden rounded-l-lg" style="min-width:0;">
-        <div id="heroBannerTrack" class="flex banner-transition" style="width:300%;">
-          <!-- Slide 0 -->
-          <div class="flex-shrink-0 w-1/3 h-full hero-panel-left flex flex-col justify-center px-4 py-4 relative" style="min-height:158px;">
-            <div class="inline-flex items-center gap-1.5 bg-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 w-fit">🔥 Promo Hari Ini</div>
-            <h2 class="text-white font-black text-xl leading-tight">Belanja Hemat<br/>s/d <span class="text-yellow-300">90% OFF</span></h2>
-            <p class="text-white/80 text-xs mt-1.5">Penawaran terbatas!</p>
-            <button onclick="filterCategory('')" class="mt-3 bg-white text-primary font-black text-xs px-4 py-2 rounded-full w-fit">Belanja →</button>
-            <div class="absolute right-3 bottom-3 text-5xl opacity-20 select-none">🛍️</div>
-          </div>
-          <!-- Slide 1 -->
-          <div class="flex-shrink-0 w-1/3 h-full flex flex-col justify-center px-4 py-4 relative" style="background:linear-gradient(135deg,#1a1a2e,#0f3460);min-height:158px;">
-            <div class="inline-flex items-center gap-1.5 bg-white/10 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 w-fit">⚡ Gadget Hits</div>
-            <h2 class="text-white font-black text-xl leading-tight">Elektronik<br/><span class="text-blue-300">Harga Terbaik</span></h2>
-            <p class="text-white/70 text-xs mt-1.5">iPhone, Samsung & lebih</p>
-            <button onclick="filterCategory('Elektronik')" class="mt-3 bg-blue-400 text-white font-black text-xs px-4 py-2 rounded-full w-fit">Lihat →</button>
-            <div class="absolute right-3 bottom-3 text-5xl opacity-15 select-none">📱</div>
-          </div>
-          <!-- Slide 2 -->
-          <div class="flex-shrink-0 w-1/3 h-full flex flex-col justify-center px-4 py-4 relative" style="background:linear-gradient(135deg,#134e4a,#065f46);min-height:158px;">
-            <div class="inline-flex items-center gap-1.5 bg-white/10 text-white text-[10px] font-bold px-2.5 py-1 rounded-full mb-2 w-fit">🌿 Gratis Ongkir</div>
-            <h2 class="text-white font-black text-xl leading-tight">Gratis Ongkir<br/><span class="text-green-300">Tanpa Minimum!</span></h2>
-            <p class="text-white/70 text-xs mt-1.5">Khusus hari ini</p>
-            <button class="mt-3 bg-green-400 text-white font-black text-xs px-4 py-2 rounded-full w-fit">Klaim →</button>
-            <div class="absolute right-3 bottom-3 text-5xl opacity-15 select-none">🚚</div>
-          </div>
-        </div>
-        <!-- Banner dots -->
-        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
-          <button class="banner-dot w-4 h-1.5 bg-white rounded-full" data-dot="0" onclick="goBanner(0)"></button>
-          <button class="banner-dot w-1.5 h-1.5 bg-white/50 rounded-full" data-dot="1" onclick="goBanner(1)"></button>
-          <button class="banner-dot w-1.5 h-1.5 bg-white/50 rounded-full" data-dot="2" onclick="goBanner(2)"></button>
-        </div>
-      </div>
-      <!-- Right: 2 small banners -->
-      <div class="flex flex-col gap-1 flex-shrink-0 rounded-r-lg overflow-hidden" style="width:110px;">
-        <div class="hero-panel-right-top flex-1 flex flex-col justify-center px-2.5 py-2 rounded-tr-lg cursor-pointer" onclick="">
-          <p class="text-white font-black text-[11px] leading-tight">Shopee Mall</p>
-          <p class="text-white/90 text-[10px]">100% ORI</p>
-          <div class="text-2xl mt-1">🏪</div>
-        </div>
-        <div class="hero-panel-right-bot flex-1 flex flex-col justify-center px-2.5 py-2 rounded-br-lg cursor-pointer" onclick="openVoucherModal()">
-          <p class="text-white font-black text-[11px] leading-tight">Voucher</p>
-          <p class="text-yellow-300 font-black text-[10px]">s/d 100RB</p>
-          <div class="text-2xl mt-1">🎟️</div>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- STATS BAR -->
+  <!-- ================================================================
+       HERO SECTION — "Nusantara Pulse"
+       [HOW TO EDIT]
+       - Banner slides: edit each .hero-card div inside #heroBannerTrack
+       - Card colors: change class from --fire / --tech / --fresh
+       - Headline words: edit heroWords array in the <script> below
+       - CTA button: update onclick and text of .hero-cta-btn
+       - Quick links: add/remove .hero-quicklink buttons
+       - Auto-rotate speed: change the setInterval delay (currently 4500ms)
+  ================================================================ -->
+  <section class="hero-section" id="heroSection">
+
+    <!-- Background decoration: animated CSS blobs (purely visual) -->
+    <div class="hero-bg-blob hero-blob-1" aria-hidden="true"></div>
+    <div class="hero-bg-blob hero-blob-2" aria-hidden="true"></div>
+    <div class="hero-bg-blob hero-blob-3" aria-hidden="true"></div>
+
+    <!-- Main content: headline (desktop) + carousel cards -->
+    <div class="hero-content-wrap">
+
+      <!-- LEFT PANEL: Editorial headline + CTA — DESKTOP ONLY -->
+      <div class="hero-headline-panel">
+
+        <!-- Live sale indicator pill -->
+        <div class="hero-live-tag">
+          <span class="hero-live-dot" aria-hidden="true"></span>
+          ⚡ Flash Sale Aktif
+        </div>
+
+        <!-- Headline with animated cycling word -->
+        <h1 class="hero-headline">
+          Belanja<br/>
+          <!-- Cycling word changed by heroWordCycle() JS every 3 seconds -->
+          <span id="heroWord" class="hero-word-cycle">Lebih Hemat</span>
+        </h1>
+
+        <p class="hero-subtext">Jutaan produk terpercaya, dikirim ke seluruh Nusantara</p>
+
+        <button onclick="filterCategory('')" class="hero-cta-btn">
+          Mulai Belanja
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- RIGHT PANEL: Promo card carousel -->
+      <div class="hero-cards-panel">
+        <div class="hero-cards-viewport">
+
+          <!-- !! IMPORTANT: Do NOT change #heroBannerTrack or style="width:300%"
+               This structure is required by goBanner() and setInterval auto-rotate.
+               Each slide must be width:33.333% of the 300%-wide track.
+          !! -->
+          <div id="heroBannerTrack" class="flex banner-transition" style="width:300%;">
+
+            <!-- ── Slide 0: Main Flash Sale ── -->
+            <div class="hero-slide" style="width:33.333%;">
+              <div class="hero-card hero-card--fire">
+                <div class="hero-card-badge">⚡ Hari Ini Saja</div>
+                <div class="hero-card-icon" aria-hidden="true">🛍️</div>
+                <p class="hero-card-label">Promo Spesial</p>
+                <p class="hero-card-value">Hemat hingga<br/><strong>90% OFF</strong></p>
+                <button onclick="filterCategory('')" class="hero-card-btn">Lihat Semua Promo →</button>
+              </div>
+            </div>
+
+            <!-- ── Slide 1: Electronics ── -->
+            <div class="hero-slide" style="width:33.333%;">
+              <div class="hero-card hero-card--tech">
+                <div class="hero-card-badge">📱 Gadget Pilihan</div>
+                <div class="hero-card-icon" aria-hidden="true">💻</div>
+                <p class="hero-card-label">Elektronik Terbaik</p>
+                <p class="hero-card-value">Harga<br/><strong>Paling Murah</strong></p>
+                <button onclick="filterCategory('Elektronik')" class="hero-card-btn">Cek Sekarang →</button>
+              </div>
+            </div>
+
+            <!-- ── Slide 2: Free Shipping ── -->
+            <div class="hero-slide" style="width:33.333%;">
+              <div class="hero-card hero-card--fresh">
+                <div class="hero-card-badge">🌿 Promo Ongkir</div>
+                <div class="hero-card-icon" aria-hidden="true">🚚</div>
+                <p class="hero-card-label">Gratis Ongkir</p>
+                <p class="hero-card-value"><strong>Tanpa</strong><br/>Minimum Belanja</p>
+                <button onclick="openVoucherModal()" class="hero-card-btn">Klaim Voucher →</button>
+              </div>
+            </div>
+
+          </div><!-- / #heroBannerTrack -->
+        </div><!-- / .hero-cards-viewport -->
+
+        <!-- Carousel dots: goBanner() toggles w-4 (active) and w-1.5 (inactive) -->
+        <div class="hero-dots">
+          <button class="banner-dot w-4 h-1.5 rounded-full bg-white transition-all duration-300"   data-dot="0" onclick="goBanner(0)"></button>
+          <button class="banner-dot w-1.5 h-1.5 rounded-full bg-white transition-all duration-300" data-dot="1" onclick="goBanner(1)"></button>
+          <button class="banner-dot w-1.5 h-1.5 rounded-full bg-white transition-all duration-300" data-dot="2" onclick="goBanner(2)"></button>
+        </div>
+      </div><!-- / .hero-cards-panel -->
+
+    </div><!-- / .hero-content-wrap -->
+
+    <!-- Quick links row: horizontally scrollable pill buttons -->
+    <div class="hero-quicklinks">
+      <button onclick="openVoucherModal()"            class="hero-quicklink">🎟️ Voucher</button>
+      <button onclick="setSortMode('sold')"           class="hero-quicklink">🔥 Terlaris</button>
+      <button onclick="filterCategory('Elektronik')" class="hero-quicklink">📱 Gadget</button>
+      <button onclick="filterCategory('Fashion')"    class="hero-quicklink">👗 Fashion</button>
+      <button onclick="filterCategory('Kecantikan')" class="hero-quicklink">💄 Kecantikan</button>
+      <button onclick="setSortMode('price-asc')"     class="hero-quicklink">💸 Termurah</button>
+      <button onclick="filterCategory('Makanan')"    class="hero-quicklink">🍜 Kuliner</button>
+    </div>
+
+  </section>
+  <!-- / HERO SECTION -->
+
+
+  <!-- ================================================================
+       STATS BAR — Trust indicators below hero
+  ================================================================ -->
   <div class="bg-white flex border-b border-gray-100">
     <div class="flex-1 flex items-center gap-2 px-3 py-2.5 border-r border-gray-100">
       <span class="text-base">🚚</span>
-      <div><p class="text-gray-800 text-[11px] font-bold">Gratis Ongkir</p><p class="text-gray-400 text-[10px]">Min. 0</p></div>
+      <div>
+        <p class="text-gray-800 text-[11px] font-bold">Gratis Ongkir</p>
+        <p class="text-gray-400 text-[10px]">Min. 0</p>
+      </div>
     </div>
     <div class="flex-1 flex items-center gap-2 px-3 py-2.5 border-r border-gray-100">
       <span class="text-base">✅</span>
-      <div><p class="text-gray-800 text-[11px] font-bold">100% Original</p><p class="text-gray-400 text-[10px]">Bergaransi</p></div>
+      <div>
+        <p class="text-gray-800 text-[11px] font-bold">100% Original</p>
+        <p class="text-gray-400 text-[10px]">Bergaransi</p>
+      </div>
     </div>
     <div class="flex-1 flex items-center gap-2 px-3 py-2.5">
       <span class="text-base">🔄</span>
-      <div><p class="text-gray-800 text-[11px] font-bold">Retur Mudah</p><p class="text-gray-400 text-[10px]">7 Hari</p></div>
+      <div>
+        <p class="text-gray-800 text-[11px] font-bold">Retur Mudah</p>
+        <p class="text-gray-400 text-[10px]">7 Hari</p>
+      </div>
     </div>
   </div>
 
-  <!-- QUICK ICONS - Shopee style -->
+
+  <!-- ================================================================
+       CATEGORY ICONS GRID
+       [HOW TO EDIT]
+       - Add a category: copy a <button> block and change the emoji,
+         label, and onclick="filterCategory('YourCategory')"
+       - Active style: controlled by .cat-item.active CSS
+       - desktop columns: #categoryIconGrid override in CSS above
+  ================================================================ -->
   <div class="bg-white px-2 py-3 mt-2">
     <div class="grid grid-cols-5 gap-1" id="categoryIconGrid">
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl active" onclick="filterCategory('')" data-cat="">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl active"
+              onclick="filterCategory('')" data-cat="">
         <div class="w-11 h-11 bg-red-50 rounded-full flex items-center justify-center text-xl shadow-sm">🏪</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Semua</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Elektronik')" data-cat="Elektronik">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Elektronik')" data-cat="Elektronik">
         <div class="w-11 h-11 bg-orange-50 rounded-full flex items-center justify-center text-xl shadow-sm">📱</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Elektronik</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Fashion')" data-cat="Fashion">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Fashion')" data-cat="Fashion">
         <div class="w-11 h-11 bg-pink-50 rounded-full flex items-center justify-center text-xl shadow-sm">👗</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Fashion</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Rumah')" data-cat="Rumah">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Rumah')" data-cat="Rumah">
         <div class="w-11 h-11 bg-green-50 rounded-full flex items-center justify-center text-xl shadow-sm">🏠</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Rumah</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Kecantikan')" data-cat="Kecantikan">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Kecantikan')" data-cat="Kecantikan">
         <div class="w-11 h-11 bg-red-50 rounded-full flex items-center justify-center text-xl shadow-sm">💄</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Kecantikan</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Olahraga')" data-cat="Olahraga">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Olahraga')" data-cat="Olahraga">
         <div class="w-11 h-11 bg-yellow-50 rounded-full flex items-center justify-center text-xl shadow-sm">⚽</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Olahraga</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Buku')" data-cat="Buku">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Buku')" data-cat="Buku">
         <div class="w-11 h-11 bg-blue-50 rounded-full flex items-center justify-center text-xl shadow-sm">📚</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Buku</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Gaming')" data-cat="Gaming">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Gaming')" data-cat="Gaming">
         <div class="w-11 h-11 bg-purple-50 rounded-full flex items-center justify-center text-xl shadow-sm">🎮</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Gaming</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Makanan')" data-cat="Makanan">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Makanan')" data-cat="Makanan">
         <div class="w-11 h-11 bg-teal-50 rounded-full flex items-center justify-center text-xl shadow-sm">🍜</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Makanan</span>
       </button>
-      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl" onclick="filterCategory('Otomotif')" data-cat="Otomotif">
+
+      <button class="cat-item flex flex-col items-center gap-1 p-2 rounded-xl"
+              onclick="filterCategory('Otomotif')" data-cat="Otomotif">
         <div class="w-11 h-11 bg-indigo-50 rounded-full flex items-center justify-center text-xl shadow-sm">🚗</div>
         <span class="text-[10px] text-gray-600 font-medium text-center leading-tight">Otomotif</span>
       </button>
+
     </div>
   </div>
 
-  <!-- VOUCHER BANNER -->
-  <div class="mx-2 mt-2 voucher-card rounded-xl p-3.5 flex items-center gap-3 cursor-pointer" onclick="openVoucherModal()">
+
+  <!-- ================================================================
+       VOUCHER BANNER — Clickable banner linking to voucher modal
+  ================================================================ -->
+  <div class="mx-2 mt-2 voucher-card rounded-xl p-3.5 flex items-center gap-3 cursor-pointer"
+       onclick="openVoucherModal()">
     <div class="text-3xl">🎟️</div>
     <div class="flex-1">
       <p class="text-white font-black text-sm">Klaim Voucher Hari Ini!</p>
@@ -532,21 +930,31 @@
     <div class="bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex-shrink-0">Klaim →</div>
   </div>
 
-  <!-- PRODUCTS SECTION -->
+
+  <!-- ================================================================
+       PRODUCTS SECTION — Main product grid
+       [HOW IT WORKS]
+       - Products rendered by renderProducts() into #productGrid
+       - Skeleton shown during simulated 900ms load time
+       - Sort controlled by setSortMode(), filter by filterCategory()
+       - "Load More" shows 10 more via loadMore()
+  ================================================================ -->
   <section class="mt-2" id="productsSection">
+
+    <!-- Sort / filter bar: sticky below header -->
     <div class="bg-white px-3 py-2.5 flex items-center justify-between border-b border-gray-100 sticky top-[96px] z-30">
       <h3 id="sectionTitle" class="text-gray-800 font-black text-[13px] flex items-center gap-1.5">
         <span class="w-1 h-4 bg-primary rounded-full inline-block"></span>
         Produk Populer
       </h3>
       <div class="flex gap-1">
-        <button onclick="setSortMode('default')" class="sort-btn active text-[11px] px-2 py-1 rounded-lg border border-gray-200 font-semibold" data-sort="default">Relevan</button>
-        <button onclick="setSortMode('sold')" class="sort-btn text-[11px] px-2 py-1 rounded-lg border border-gray-200 bg-white text-gray-600 font-semibold" data-sort="sold">Terlaris</button>
-        <button onclick="setSortMode('price-asc')" class="sort-btn text-[11px] px-2 py-1 rounded-lg border border-gray-200 bg-white text-gray-600 font-semibold" data-sort="price-asc">Termurah</button>
+        <button onclick="setSortMode('default')"    class="sort-btn active text-[11px] px-2 py-1 rounded-lg border border-gray-200 font-semibold"              data-sort="default">Relevan</button>
+        <button onclick="setSortMode('sold')"       class="sort-btn text-[11px] px-2 py-1 rounded-lg border border-gray-200 bg-white text-gray-600 font-semibold" data-sort="sold">Terlaris</button>
+        <button onclick="setSortMode('price-asc')"  class="sort-btn text-[11px] px-2 py-1 rounded-lg border border-gray-200 bg-white text-gray-600 font-semibold" data-sort="price-asc">Termurah</button>
       </div>
     </div>
 
-    <!-- Skeleton -->
+    <!-- Skeleton placeholder: shown for 900ms before real products -->
     <div id="skeletonGrid" class="grid grid-cols-2 gap-px bg-gray-200">
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
@@ -554,10 +962,10 @@
       <div class="bg-white p-3"><div class="skeleton rounded-lg h-40 mb-2"></div><div class="skeleton rounded h-3 mb-1.5 w-full"></div><div class="skeleton rounded h-3 mb-2 w-3/4"></div><div class="skeleton rounded h-4 w-1/2"></div></div>
     </div>
 
-    <!-- Product Grid -->
+    <!-- Actual product grid: populated by renderProducts() -->
     <div id="productGrid" class="grid grid-cols-2 gap-px bg-gray-200 hidden"></div>
 
-    <!-- Empty -->
+    <!-- Empty state: shown when no products match filter/search -->
     <div id="emptyState" class="hidden bg-white py-16 text-center">
       <div class="text-5xl mb-3">🔍</div>
       <p class="text-gray-600 font-bold">Produk tidak ditemukan</p>
@@ -565,20 +973,29 @@
       <button onclick="resetAll()" class="mt-4 bg-primary text-white text-sm font-bold px-5 py-2 rounded-xl">Reset Filter</button>
     </div>
 
-    <!-- Load More -->
+    <!-- Load more button: visible when filteredProducts.length > visibleCount -->
     <div id="loadMoreWrap" class="hidden p-4 flex justify-center">
       <button onclick="loadMore()" class="w-full bg-white border-2 border-primary text-primary font-bold py-3 rounded-xl text-sm">Tampilkan Lebih Banyak</button>
     </div>
   </section>
 
-  <!-- FOOTER -->
+
+  <!-- ================================================================
+       FOOTER
+  ================================================================ -->
   <footer class="bg-gray-900 text-gray-400 mt-4 pb-20">
     <div class="px-4 py-8">
+
+      <!-- Brand -->
       <div class="flex items-center gap-2 mb-3">
-        <div class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-black text-sm">S</span></div>
+        <div class="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
+          <span class="text-white font-black text-sm">SK</span>
+        </div>
         <span class="text-white font-black text-base">ShopKita</span>
       </div>
       <p class="text-xs leading-relaxed mb-4">Platform belanja online terpercaya dengan jutaan produk pilihan terlengkap.</p>
+
+      <!-- Links grid -->
       <div class="grid grid-cols-2 gap-6 text-xs mb-6">
         <div>
           <h4 class="text-white font-bold mb-2">Bantuan</h4>
@@ -599,6 +1016,8 @@
           </ul>
         </div>
       </div>
+
+      <!-- Payment methods -->
       <h4 class="text-white font-bold text-xs mb-2">Metode Pembayaran</h4>
       <div class="flex flex-wrap gap-1.5 mb-4">
         <span class="bg-gray-800 text-xs px-2 py-1 rounded">VISA</span>
@@ -608,12 +1027,17 @@
         <span class="bg-gray-800 text-xs px-2 py-1 rounded">DANA</span>
         <span class="bg-gray-800 text-xs px-2 py-1 rounded">COD</span>
       </div>
+
       <p class="text-xs text-center mt-4 border-t border-gray-800 pt-4">© 2025 ShopKita. Dibuat dengan ❤️ di Indonesia.</p>
     </div>
   </footer>
-</main>
 
-<!-- ===================== BOTTOM NAV ===================== -->
+</main><!-- / #mainPage -->
+
+
+<!-- ================================================================
+     BOTTOM NAVIGATION — Fixed on mobile, hidden on desktop (via CSS)
+================================================================ -->
 <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 bottom-nav">
   <div class="flex">
     <button onclick="goHome()" class="flex-1 flex flex-col items-center gap-0.5 py-2.5 text-primary">
@@ -640,7 +1064,14 @@
   </div>
 </nav>
 
-<!-- ===================== SEARCH OVERLAY ===================== -->
+
+<!-- ================================================================
+     SEARCH OVERLAY — Full-screen search experience
+     [HOW IT WORKS]
+     - Opened by openSearchOverlay(), closed by closeSearchOverlay()
+     - handleSearch() runs fuzzy search on each keystroke
+     - doSearch() applies filters and closes overlay
+================================================================ -->
 <div id="searchOverlay">
   <div class="gradient-header px-3 py-3 flex items-center gap-2.5 sticky top-0 z-10">
     <button onclick="closeSearchOverlay()" class="text-white flex-shrink-0">
@@ -657,7 +1088,7 @@
     <button onclick="clearSearch()" class="text-white text-sm font-semibold flex-shrink-0">Batal</button>
   </div>
 
-  <!-- Suggestions -->
+  <!-- Popular searches + live suggestions -->
   <div id="searchSuggestionsWrap" class="p-4">
     <p class="text-xs text-gray-500 font-semibold mb-2 uppercase tracking-wide">Pencarian Populer</p>
     <div id="popularSearches" class="flex flex-wrap gap-2">
@@ -670,16 +1101,24 @@
       <button class="bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full font-medium" onclick="setSearch('celana')">celana</button>
       <button class="bg-gray-100 text-gray-700 text-xs px-3 py-1.5 rounded-full font-medium" onclick="setSearch('headphone')">headphone</button>
     </div>
-
     <p class="text-xs text-gray-500 font-semibold mb-2 mt-4 uppercase tracking-wide">Saran Pencarian</p>
     <div id="liveSearchResults"></div>
   </div>
 </div>
 
-<!-- ===================== PRODUCT DETAIL PAGE ===================== -->
+
+<!-- ================================================================
+     PRODUCT DETAIL PAGE — Full-screen product view
+     [HOW IT WORKS]
+     - Opened by openDetailPage(id), content built by buildDetailContent(p)
+     - Image slider: goDetailImg(idx) changes the active image
+     - Swipe gesture: attachImageSwipe() adds touch events
+     - Lightbox: openLightbox(startIdx) shows fullscreen photo
+================================================================ -->
 <div id="detailPage">
-  <!-- Mobile Header (hidden on desktop via CSS) -->
-  <div class="gradient-header px-3 py-3 flex items-center gap-2.5 sticky top-0 z-10" id="detailMobileHeader">
+
+  <!-- Mobile header (hidden on desktop via CSS) -->
+  <div class="gradient-header px-3 py-3 flex items-center gap-2.5 sticky top-0 z-10" id="detailMobileHeader" style="display:none;">
     <button onclick="closeDetailPage()" class="text-white">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
     </button>
@@ -689,9 +1128,10 @@
     </button>
   </div>
 
-  <!-- Desktop Wrapper -->
+  <!-- Desktop wrapper: shown as modal on desktop -->
   <div id="detailInnerWrap">
-    <!-- Desktop Header inside wrapper -->
+
+    <!-- Desktop header (hidden on mobile via CSS) -->
     <div id="detailDesktopHeader" class="hidden gradient-header px-4 py-3 flex items-center gap-3 sticky top-0 z-10">
       <button onclick="closeDetailPage()" class="text-white">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
@@ -702,22 +1142,35 @@
       </button>
     </div>
 
+    <!-- Dynamic content injected by buildDetailContent() -->
     <div id="detailContent"></div>
 
-    <!-- Bottom Buy Bar -->
+    <!-- Bottom action bar: Wishlist + Add to Cart + Buy Now -->
     <div class="bg-white border-t border-gray-200 px-3 py-2.5 flex gap-2.5 z-20 bottom-nav" id="detailBottomBar">
       <button onclick="toggleWishlistDetail()" id="detailWishlistBtn" class="w-10 h-10 border-2 border-gray-200 rounded-xl flex items-center justify-center flex-shrink-0">
-        <svg class="w-5 h-5 text-gray-400" id="detailHeartIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/></svg>
+        <svg class="w-5 h-5 text-gray-400" id="detailHeartIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/>
+        </svg>
       </button>
       <button onclick="addToCartFromDetail()" class="flex-1 border-2 border-primary text-primary font-black py-2.5 rounded-xl text-sm">+ Keranjang</button>
-      <button onclick="buyNowFromDetail()" class="flex-1 bg-primary text-white font-black py-2.5 rounded-xl text-sm">Beli Sekarang</button>
+      <button onclick="buyNowFromDetail()"    class="flex-1 bg-primary text-white font-black py-2.5 rounded-xl text-sm">Beli Sekarang</button>
     </div>
   </div>
 </div>
 
-<!-- ===================== CART PANEL ===================== -->
+
+<!-- ================================================================
+     CART PANEL — Slide-in from right
+     [HOW IT WORKS]
+     - Toggled by toggleCart() — closes on overlay click via closeCartOutside()
+     - Items rendered by updateCartUI()
+     - Voucher: applyVoucher() validates codes and sets voucherDiscount
+     - Checkout: openCheckout() starts 3-step checkout flow
+================================================================ -->
 <div id="cartOverlay" class="fixed inset-0 z-50 hidden modal-overlay bg-black/40" onclick="closeCartOutside(event)">
   <div id="cartPanel" class="absolute right-0 top-0 h-full w-full max-w-sm bg-white flex flex-col cart-slide">
+
+    <!-- Cart header -->
     <div class="gradient-header px-4 py-3.5 flex items-center gap-3">
       <button onclick="toggleCart()">
         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
@@ -728,33 +1181,54 @@
       </div>
       <button onclick="clearCart()" class="ml-auto text-white/70 text-xs font-medium">Hapus Semua</button>
     </div>
+
+    <!-- Cart items (scrollable) -->
     <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3 hidden"></div>
+
+    <!-- Empty cart state -->
     <div id="emptyCart" class="flex-1 flex flex-col items-center justify-center text-center px-8">
       <div class="text-6xl mb-4">🛒</div>
       <p class="text-gray-700 font-bold">Keranjangmu kosong</p>
       <p class="text-gray-400 text-sm mt-1">Yuk, temukan produk favoritmu!</p>
       <button onclick="toggleCart()" class="mt-4 bg-primary text-white font-bold px-6 py-2.5 rounded-xl text-sm">Mulai Belanja</button>
     </div>
+
+    <!-- Cart footer: voucher + totals + checkout button -->
     <div id="cartFooter" class="border-t border-gray-100 p-4 bg-white hidden">
       <div class="flex gap-2 mb-3">
-        <input id="voucherInput" type="text" placeholder="Kode voucher..." class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary"/>
+        <input id="voucherInput" type="text" placeholder="Kode voucher..."
+          class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-primary"/>
         <button onclick="applyVoucher()" class="bg-primary text-white text-sm font-bold px-3 py-2 rounded-lg">Pakai</button>
       </div>
       <div class="flex justify-between text-sm mb-1.5"><span class="text-gray-500">Subtotal</span><span id="cartSubtotal" class="font-semibold text-gray-800"></span></div>
       <div class="flex justify-between text-sm mb-1.5"><span class="text-gray-500">Ongkos Kirim</span><span class="text-green-600 font-semibold">Gratis</span></div>
       <div id="discountRow" class="flex justify-between text-sm mb-1.5 hidden"><span class="text-gray-500">Diskon Voucher</span><span id="discountAmt" class="text-green-600 font-semibold"></span></div>
-      <div class="flex justify-between mb-4 pt-3 border-t border-gray-100"><span class="text-gray-800 font-black">Total</span><span id="cartTotal" class="text-primary font-black text-base"></span></div>
+      <div class="flex justify-between mb-4 pt-3 border-t border-gray-100">
+        <span class="text-gray-800 font-black">Total</span>
+        <span id="cartTotal" class="text-primary font-black text-base"></span>
+      </div>
       <button onclick="openCheckout()" class="w-full bg-primary text-white font-black py-3.5 rounded-xl text-base">Checkout Sekarang →</button>
     </div>
   </div>
 </div>
 
-<!-- ===================== NOTIFICATIONS ===================== -->
+
+<!-- ================================================================
+     NOTIFICATIONS — Toast messages (top-right)
+     [HOW IT WORKS]
+     - showNotif(msg) creates a toast, auto-removes after 2.8s
+================================================================ -->
 <div id="notifContainer" class="fixed top-20 right-3 z-[70] space-y-2 pointer-events-none"></div>
 
-<!-- ===================== IMAGE LIGHTBOX — Shopee Style ===================== -->
+
+<!-- ================================================================
+     IMAGE LIGHTBOX — Full-screen photo viewer
+     [HOW IT WORKS]
+     - Opened by openLightbox(startIdx), closed by closeLightboxDirect()
+     - Touch swipe: attachLbSwipe() handles drag + threshold
+     - Keyboard: ArrowLeft/Right to navigate, Escape to close
+================================================================ -->
 <div id="imgLightbox">
-  <!-- Top bar -->
   <div id="lbTopBar">
     <div class="lb-back" onclick="closeLightboxDirect()">
       <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
@@ -762,22 +1236,19 @@
     <div class="lb-counter" id="lbCounter">1 / 1</div>
     <div style="width:40px;"></div>
   </div>
-
-  <!-- Viewport clips the sliding track -->
   <div id="lbViewport">
     <div id="lbTrack"></div>
   </div>
-
-  <!-- Desktop arrows -->
-  <div id="lbArrowLeft" onclick="lbGo(lightboxIdx-1)">&#8249;</div>
+  <div id="lbArrowLeft"  onclick="lbGo(lightboxIdx-1)">&#8249;</div>
   <div id="lbArrowRight" onclick="lbGo(lightboxIdx+1)">&#8250;</div>
-
-  <!-- Mobile dots / Desktop thumbnails -->
   <div id="lbDots"></div>
   <div id="lbThumbStrip"></div>
 </div>
 
-<!-- ===================== LOGIN MODAL ===================== -->
+
+<!-- ================================================================
+     LOGIN MODAL — Masuk / Daftar form
+================================================================ -->
 <div id="loginModal" class="fixed inset-0 z-50 hidden modal-overlay bg-black/50 items-end justify-center">
   <div class="bg-white rounded-t-3xl w-full max-w-sm slide-up">
     <div class="gradient-header px-5 py-4 rounded-t-3xl">
@@ -786,15 +1257,16 @@
         <button onclick="closeLoginModal()" class="text-white/70 text-xl">✕</button>
       </div>
       <div class="flex mt-3 border-b border-white/20">
-        <button onclick="switchAuthTab('login')" id="tabLogin" class="flex-1 text-white text-sm font-bold pb-2.5 border-b-2 border-white">Masuk</button>
+        <button onclick="switchAuthTab('login')"    id="tabLogin"    class="flex-1 text-white text-sm font-bold pb-2.5 border-b-2 border-white">Masuk</button>
         <button onclick="switchAuthTab('register')" id="tabRegister" class="flex-1 text-white/70 text-sm font-bold pb-2.5">Daftar</button>
       </div>
     </div>
     <div class="p-5 pb-8">
+      <!-- Login form -->
       <div id="loginForm">
         <div class="space-y-3">
-          <input type="text" placeholder="Email / No. HP" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-          <input type="password" placeholder="Password" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+          <input type="text"     placeholder="Email / No. HP"          class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+          <input type="password" placeholder="Password"                class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
           <div class="flex justify-end"><a href="#" class="text-primary text-xs font-medium">Lupa password?</a></div>
         </div>
         <button onclick="doLogin()" class="w-full bg-primary text-white font-black py-3 rounded-xl mt-3">Masuk</button>
@@ -804,10 +1276,11 @@
           <button class="border border-gray-200 rounded-xl py-2.5 text-sm font-medium flex items-center justify-center gap-1.5">📘 Facebook</button>
         </div>
       </div>
+      <!-- Register form -->
       <div id="registerForm" class="hidden space-y-3">
-        <input type="text" placeholder="Nama Lengkap" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-        <input type="email" placeholder="Email" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-        <input type="tel" placeholder="+62..." class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+        <input type="text"     placeholder="Nama Lengkap"               class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+        <input type="email"    placeholder="Email"                      class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+        <input type="tel"      placeholder="+62..."                     class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
         <input type="password" placeholder="Password (min. 8 karakter)" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
         <button onclick="doRegister()" class="w-full bg-primary text-white font-black py-3 rounded-xl">Daftar Sekarang</button>
       </div>
@@ -815,7 +1288,13 @@
   </div>
 </div>
 
-<!-- ===================== VOUCHER MODAL ===================== -->
+
+<!-- ================================================================
+     VOUCHER MODAL — Klaim & salin kode voucher
+     [HOW TO EDIT]
+     - Add more vouchers: copy a voucher block and update code/value
+     - Voucher logic: edit applyVoucher() in the JS below
+================================================================ -->
 <div id="voucherModal" class="fixed inset-0 z-50 hidden modal-overlay bg-black/50 items-end justify-center">
   <div class="bg-white rounded-t-3xl w-full max-w-sm slide-up">
     <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -823,6 +1302,7 @@
       <button onclick="closeVoucherModal()" class="text-gray-400 text-xl">✕</button>
     </div>
     <div class="p-4 space-y-3 pb-10">
+      <!-- Voucher 1 -->
       <div class="voucher-card rounded-xl p-4 text-white">
         <div class="flex items-center justify-between">
           <div><p class="font-black text-lg">HEMAT50K</p><p class="text-white/80 text-xs mt-0.5">Potongan Rp 50.000, min. Rp 200.000</p></div>
@@ -830,6 +1310,7 @@
         </div>
         <p class="text-white/60 text-xs mt-2">Berlaku hingga 31 Des 2025</p>
       </div>
+      <!-- Voucher 2 -->
       <div class="border-2 border-dashed border-orange-200 rounded-xl p-4 bg-orange-50">
         <div class="flex items-center justify-between">
           <div><p class="font-black text-primary text-lg">GRATIS10K</p><p class="text-gray-500 text-xs mt-0.5">Gratis ongkir hingga Rp 10.000</p></div>
@@ -837,6 +1318,7 @@
         </div>
         <p class="text-gray-400 text-xs mt-2">Berlaku hingga 31 Des 2025</p>
       </div>
+      <!-- Voucher 3 -->
       <div class="border-2 border-dashed border-gray-200 rounded-xl p-4 bg-gray-50">
         <div class="flex items-center justify-between">
           <div><p class="font-black text-gray-700 text-lg">NEWUSER</p><p class="text-gray-500 text-xs mt-0.5">Diskon 10% untuk pengguna baru</p></div>
@@ -848,7 +1330,10 @@
   </div>
 </div>
 
-<!-- ===================== WISHLIST MODAL ===================== -->
+
+<!-- ================================================================
+     WISHLIST MODAL — Daftar produk yang disukai
+================================================================ -->
 <div id="wishlistModal" class="fixed inset-0 z-50 hidden modal-overlay bg-black/50 items-end justify-center">
   <div class="bg-white rounded-t-3xl w-full max-w-sm slide-up" style="max-height:80vh;overflow-y:auto;">
     <div class="gradient-header px-5 py-4 rounded-t-3xl flex items-center justify-between sticky top-0">
@@ -859,7 +1344,16 @@
   </div>
 </div>
 
-<!-- ===================== CHECKOUT MODAL ===================== -->
+
+<!-- ================================================================
+     CHECKOUT MODAL — 3-step checkout flow
+     Steps: 1=Alamat → 2=Pengiriman → 3=Pembayaran
+     [HOW IT WORKS]
+     - renderCheckoutStep() renders the current step content
+     - checkoutNext() validates and advances to next step
+     - checkoutPrev() goes back one step
+     - processOrder() runs on step 3 completion
+================================================================ -->
 <div id="checkoutModal" class="fixed inset-0 z-50 hidden modal-overlay bg-black/50 items-end justify-center">
   <div class="bg-white rounded-t-3xl w-full max-w-sm flex flex-col slide-up" style="max-height:92vh;">
     <div class="gradient-header px-5 py-4 rounded-t-3xl flex-shrink-0">
@@ -867,6 +1361,7 @@
         <h2 class="text-white font-black text-base">Checkout</h2>
         <button onclick="closeCheckout()" class="text-white/70 text-xl">✕</button>
       </div>
+      <!-- Step indicator dots -->
       <div class="flex items-center gap-0">
         <div id="step1dot" class="step-active w-7 h-7 rounded-full flex items-center justify-center text-xs font-black">1</div>
         <div id="stepLine1" class="flex-1 h-0.5 bg-white/30"></div>
@@ -883,7 +1378,10 @@
   </div>
 </div>
 
-<!-- ===================== SUCCESS MODAL ===================== -->
+
+<!-- ================================================================
+     SUCCESS MODAL — Order confirmation screen
+================================================================ -->
 <div id="successModal" class="fixed inset-0 z-[70] hidden modal-overlay bg-black/50 items-center justify-center px-4">
   <div class="bg-white rounded-2xl w-full max-w-sm text-center p-7 slide-up">
     <div class="text-6xl mb-3">🎉</div>
@@ -894,7 +1392,7 @@
       <div class="flex justify-between text-sm mb-1.5"><span class="text-gray-500">Total Bayar</span><span id="successTotal" class="text-primary font-black"></span></div>
       <div class="flex justify-between text-sm"><span class="text-gray-500">Estimasi Tiba</span><span class="text-gray-800 font-semibold">2-3 Hari Kerja</span></div>
     </div>
-    <!-- PAYMENT GATEWAY HOOK POINT -->
+    <!-- HOOK: Payment gateway confirmation (shown if payResult.reference exists) -->
     <div id="paymentGatewayStatus" class="bg-green-50 rounded-xl p-3 mb-4 text-left hidden">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -906,7 +1404,7 @@
         </div>
       </div>
     </div>
-    <!-- RESI HOOK POINT -->
+    <!-- HOOK: Shipping resi number (shown if shipResult.resiNumber exists) -->
     <div id="resiStatus" class="bg-blue-50 rounded-xl p-3 mb-5 text-left hidden">
       <div class="flex items-center gap-2">
         <span class="text-xl">📦</span>
@@ -920,328 +1418,429 @@
   </div>
 </div>
 
-<script>
-// ===================== PAYMENT GATEWAY INTEGRATION HOOKS =====================
-// These functions are designed to be connected to real payment gateways.
-// Replace the mock implementations with your actual payment provider SDK calls.
 
+<!-- ================================================================
+     JAVASCRIPT
+================================================================ -->
+<script>
+
+/* ================================================================
+   PAYMENT GATEWAY INTEGRATION HOOKS
+   ================================================================
+   [WHAT IT IS] Abstraction layer for payment processing.
+   [HOW TO CONNECT] Replace the mock Promise in initiatePayment()
+   with your real payment provider API call.
+   Supported providers: Midtrans, Xendit, Duitku, iPaymu
+   [BACKEND REQUIRED] You'll need a server endpoint that talks to
+   the payment gateway and returns token/redirectUrl/reference.
+================================================================ */
 const PaymentGateway = {
-  // Supported providers: midtrans, xendit, duitku, ipaymu
-  provider: 'midtrans', // Set your provider here
+  provider: 'midtrans', // Change to your provider
 
   /**
-   * Initiate a payment transaction
+   * Start a payment transaction.
    * @param {Object} order - { orderId, amount, customer, items, paymentMethod }
-   * @returns {Promise<{token: string, redirectUrl: string, reference: string}>}
+   * @returns {Promise<{token, redirectUrl, reference}>}
+   *
+   * ── INTEGRATION POINT ──
+   * Replace the mock below with your real API call, e.g.:
+   *   const res = await fetch('/api/payment/create', {
+   *     method: 'POST',
+   *     headers: {'Content-Type':'application/json'},
+   *     body: JSON.stringify(order)
+   *   });
+   *   const data = await res.json();
+   *   return { token: data.token, reference: data.transaction_id };
    */
   async initiatePayment(order) {
-    // === INTEGRATION POINT: Replace this with your payment gateway API call ===
-    // Example for Midtrans:
-    // const response = await fetch('/api/payment/create', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({
-    //     order_id: order.orderId,
-    //     gross_amount: order.amount,
-    //     customer_details: order.customer,
-    //     item_details: order.items,
-    //     payment_type: order.paymentMethod
-    //   })
-    // });
-    // const data = await response.json();
-    // return { token: data.token, redirectUrl: data.redirect_url, reference: data.transaction_id };
-
-    // Example for Xendit:
-    // const response = await fetch('/api/xendit/create-invoice', { ... });
-
-    // Mock response for demo:
+    // MOCK: returns a fake reference after 800ms delay
     return new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          token: 'mock_token_' + Date.now(),
-          redirectUrl: null,
-          reference: 'PG-' + Math.random().toString(36).substr(2,9).toUpperCase()
-        });
-      }, 800);
+      setTimeout(() => resolve({
+        token: 'mock_' + Date.now(),
+        redirectUrl: null,
+        reference: 'PG-' + Math.random().toString(36).substr(2,9).toUpperCase()
+      }), 800);
     });
   },
 
   /**
-   * Check payment status
+   * Check payment status by order ID.
    * @param {string} orderId
-   * @returns {Promise<{status: 'success'|'pending'|'failed', reference: string}>}
+   * @returns {Promise<{status:'success'|'pending'|'failed', reference:string}>}
    */
   async checkStatus(orderId) {
-    // === INTEGRATION POINT: Poll your payment gateway status endpoint ===
-    return { status: 'success', reference: 'PG-DEMO-' + orderId };
+    // ── INTEGRATION POINT: Poll your gateway status endpoint ──
+    return { status: 'success', reference: 'PG-' + orderId };
   },
 
-  /**
-   * Handle payment notification (webhook)
-   * This should be implemented server-side at your /api/payment/notification endpoint
-   */
-  webhookHandler: null // Server-side only
+  /* webhookHandler: implement server-side at /api/payment/notification */
+  webhookHandler: null
 };
 
-// ===================== SHIPPING & RESI INTEGRATION HOOKS =====================
+
+/* ================================================================
+   SHIPPING & RESI INTEGRATION HOOKS
+   ================================================================
+   [WHAT IT IS] Abstraction for courier APIs (JNE, J&T, SiCepat, etc.)
+   [HOW TO CONNECT] Replace mocks with RajaOngkir or courier direct API.
+================================================================ */
 const ShippingService = {
-  // Supported providers: jne, jnt, sicepat, anteraja, pos
   defaultProvider: 'jne',
 
   /**
-   * Get shipping cost
+   * Get shipping rates.
    * @param {Object} params - { origin, destination, weight, courier }
-   * @returns {Promise<{cost: number, etd: string}>}
+   * @returns {Promise<{cost:number, etd:string}>}
+   *
+   * ── INTEGRATION POINT: connect to RajaOngkir ──
+   * const res = await fetch('/api/shipping/rates', { method:'POST', body: JSON.stringify(params) });
    */
   async getRates(params) {
-    // === INTEGRATION POINT: Connect to RajaOngkir or shipping API ===
-    // const response = await fetch('/api/shipping/rates', {
-    //   method: 'POST',
-    //   body: JSON.stringify(params)
-    // });
-    // Mock:
-    return { cost: 0, etd: '2-3 hari' };
+    return { cost: 0, etd: '2-3 hari' }; // MOCK: free shipping
   },
 
   /**
-   * Create shipping order & get resi number
+   * Create shipment and get resi/tracking number.
    * @param {Object} order - { orderId, sender, recipient, items, courier }
-   * @returns {Promise<{resiNumber: string, trackingUrl: string}>}
+   * @returns {Promise<{resiNumber:string, trackingUrl:string}>}
+   *
+   * ── INTEGRATION POINT: auto-create via courier API ──
+   * Called automatically AFTER payment is confirmed in processOrder()
    */
   async createShipment(order) {
-    // === INTEGRATION POINT: Auto-create shipment via courier API ===
-    // This is triggered after payment is confirmed
-    // Supports: JNE, J&T, SiCepat, Anteraja
-    // Mock:
     return new Promise(resolve => {
       setTimeout(() => {
-        const couriers = { jne: 'JNE', jnt: 'JNT', sicepat: 'SCP', anteraja: 'ANT' };
-        const prefix = couriers[order.courier] || 'JNE';
+        const pfx = { jne:'JNE', jnt:'JNT', sicepat:'SCP', anteraja:'ANT' }[order.courier] || 'JNE';
         resolve({
-          resiNumber: prefix + Math.floor(Math.random() * 9000000000 + 1000000000),
-          trackingUrl: `https://cekresi.com/?noresi=${prefix}` + Math.floor(Math.random() * 9000000000)
+          resiNumber: pfx + Math.floor(Math.random() * 9e9 + 1e9),
+          trackingUrl: `https://cekresi.com/?noresi=${pfx}` + Math.floor(Math.random() * 9e9)
         });
       }, 1200);
     });
-  },
-
-  /**
-   * Track a shipment
-   * @param {string} resiNumber
-   * @param {string} courier
-   */
-  async track(resiNumber, courier) {
-    // === INTEGRATION POINT: Connect to tracking API ===
-    return { status: 'in_transit', location: 'Jakarta Selatan', timestamp: new Date() };
   }
 };
 
-// ===================== PRODUCT DATA =====================
+
+/* ================================================================
+   PRODUCT DATA
+   ================================================================
+   [HOW TO EDIT] Add/edit products in this array.
+   Each product needs: id, name, price, originalPrice, images[],
+   rating, sold, discount(%), category, shop, description,
+   reviews[], variants[], colors[]
+================================================================ */
 const products = [
-  { id:1, name:"iPhone 15 Pro Max 256GB Natural Titanium", price:21999000, originalPrice:24999000,
-    images:["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80","https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=600&q=80","https://images.unsplash.com/photo-1512499617640-c74ae3a79d37?w=600&q=80"],
-    rating:4.9, sold:3421, discount:12, category:"Elektronik", shop:"iStore Official",
-    description:"iPhone 15 Pro Max dengan chip A17 Pro, kamera 48MP, layar Super Retina XDR 6.7 inci. Baterai tahan seharian, desain titanium premium. Tersedia dalam warna Natural Titanium.",
-    reviews:[{user:"andi_p",rating:5,text:"Baterai tahan lama banget, kamera buat foto makanan hasilnya stunning!",date:"2024-03-15"},{user:"siti_r",rating:5,text:"Pengiriman cepat, barang original bergaransi resmi. Sangat puas!",date:"2024-02-28"},{user:"budi_k",rating:4,text:"Kualitas top, harga sesuai. Agak berat tapi normal buat ukuran segini.",date:"2024-01-10"}],
-    variants:["128GB","256GB","512GB"], colors:["Natural Titanium","White","Black","Blue"] },
-  { id:2, name:"Samsung Galaxy S24 Ultra 512GB Phantom Black", price:19499000, originalPrice:22000000,
-    images:["https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=600&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"],
-    rating:4.8, sold:2156, discount:11, category:"Elektronik", shop:"Samsung Store ID",
-    description:"Samsung Galaxy S24 Ultra dengan S Pen, kamera 200MP, layar Dynamic AMOLED 2X 6.8 inci, baterai 5000mAh.",
-    reviews:[{user:"dewi_m",rating:5,text:"S Pen sangat membantu untuk note-taking. Layar super jernih!",date:"2024-04-01"},{user:"reza_f",rating:4,text:"Kamera 200MP incredible. Tapi agak panas kalau dipakai lama.",date:"2024-03-20"}],
-    variants:["256GB","512GB","1TB"], colors:["Phantom Black","Titanium Gray","Violet"] },
-  { id:3, name:"Nike Air Max 270 Sneakers Original", price:1650000, originalPrice:2200000,
-    images:["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80","https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&q=80"],
-    rating:4.7, sold:8902, discount:25, category:"Fashion", shop:"Nike Indonesia",
-    description:"Nike Air Max 270 dengan unit udara 270° terbesar sepanjang sejarah Air Max. Ringan, nyaman, dan stylish untuk aktivitas sehari-hari.",
-    reviews:[{user:"galih_s",rating:5,text:"Nyaman banget dipakai jalan jauh. Soal kualitas memang Nike juara!",date:"2024-04-10"},{user:"putri_n",rating:5,text:"Ukurannya pas, warnanya sesuai foto. Highly recommended!",date:"2024-03-05"}],
-    variants:["39","40","41","42","43","44"], colors:["Hitam","Putih","Merah"] },
-  { id:4, name:"Kemeja Flanel Premium Kotak-kotak Pria", price:189000, originalPrice:350000,
-    images:["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=80","https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&q=80"],
-    rating:4.5, sold:12040, discount:46, category:"Fashion", shop:"FashionKu Store",
-    description:"Kemeja flannel premium bahan tebal anti-dingin, cocok untuk aktivitas outdoor dan casual. Tersedia ukuran S-XXL.",
-    reviews:[{user:"hendra_w",rating:5,text:"Bahan tebal berkualitas, jahitan rapi. Worth it banget harganya!",date:"2024-04-08"},{user:"farah_d",rating:4,text:"Dibeliin buat suami, suka banget! Minta dibeliin lagi yang warna lain.",date:"2024-03-22"}],
-    variants:["S","M","L","XL","XXL"], colors:["Merah Kotak","Hijau Kotak","Biru Kotak","Abu Kotak"] },
-  { id:5, name:"Sony WH-1000XM5 Wireless Noise Cancelling", price:4799000, originalPrice:5500000,
-    images:["https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&q=80","https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80"],
-    rating:4.9, sold:1893, discount:13, category:"Elektronik", shop:"Sony Indonesia",
-    description:"Sony WH-1000XM5 headphone wireless terdepan dengan noise cancelling industry-leading. Baterai 30 jam, kualitas suara Hi-Res Audio.",
-    reviews:[{user:"ivan_c",rating:5,text:"Noise cancelling terbaik yang pernah saya pakai. Cocok buat WFH dan perjalanan.",date:"2024-04-12"}],
-    variants:["Hitam","Putih"], colors:["Hitam","Putih"] },
-  { id:6, name:"Kursi Gaming Ergonomis RGB Lumbar Support", price:2350000, originalPrice:3200000,
-    images:["https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&q=80"],
-    rating:4.6, sold:4500, discount:27, category:"Gaming", shop:"GamingZone ID",
-    description:"Kursi gaming dengan desain ergonomis, sandaran lumbar yang bisa diatur, arm rest 4D, dan RGB lighting yang bisa dikustomisasi.",
-    reviews:[{user:"rizki_a",rating:5,text:"Lumbar support sangat membantu, tidak sakit punggung meski duduk lama gaming.",date:"2024-03-18"}],
+  { id:1,  name:"iPhone 15 Pro Max 256GB Natural Titanium",
+    price:21999000, originalPrice:24999000,
+    images:["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"],
+    rating:4.9, sold:1523, discount:12, category:"Elektronik", shop:"Apple Reseller ID",
+    description:"iPhone 15 Pro Max dengan chip A17 Pro, kamera 48MP dengan optical zoom 5x, layar Super Retina XDR 6.7 inci, dan titanium grade 5.",
+    reviews:[{user:"reza_m",rating:5,text:"Kamera zoom 5x-nya luar biasa! Worth it banget buat konten creator.",date:"2024-04-10"},{user:"dina_s",rating:5,text:"Baterai awet seharian penuh, charging MagSafe cepat. Puas banget.",date:"2024-04-02"}],
+    variants:["128GB","256GB","512GB","1TB"], colors:["Natural Titanium","Blue Titanium","White Titanium","Black Titanium"] },
+  { id:2,  name:"Nike Air Jordan 1 Retro High OG Chicago",
+    price:2850000, originalPrice:3500000,
+    images:["https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=600&q=80","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
+    rating:4.8, sold:3241, discount:19, category:"Fashion", shop:"Nike Indonesia Official",
+    description:"Air Jordan 1 Retro High OG Chicago original. Upper kulit premium, unit Air-Sole cushioning legendaris. Hadir dengan box original Nike.",
+    reviews:[{user:"alif_n",rating:5,text:"Authentic 100%, kondisi sempurna. Packing rapih banget. Recommended!",date:"2024-04-08"}],
+    variants:["40","41","42","43","44","45"], colors:["Chicago Red/White","Bred","Royal Blue"] },
+  { id:3,  name:"Samsung Galaxy Tab S9 Ultra 12GB/256GB WiFi",
+    price:17500000, originalPrice:20000000,
+    images:["https://images.unsplash.com/photo-1589739900266-43b2843f4c12?w=600&q=80"],
+    rating:4.7, sold:872, discount:12, category:"Elektronik", shop:"Samsung Official ID",
+    description:"Tab S9 Ultra dengan layar AMOLED 14.6 inci, chip Snapdragon 8 Gen 2, S Pen included, dan baterai 11200mAh. Produktivitas tak terbatas.",
+    reviews:[{user:"ari_w",rating:5,text:"Layarnya incredible, S Pen makin responsif. Best tablet Android 2024!",date:"2024-03-25"}],
+    variants:["8GB/128GB","12GB/256GB","12GB/512GB"], colors:["Graphite","Beige","Lime"] },
+  { id:4,  name:"Kemeja Flanel Pria Premium Lengan Panjang",
+    price:189000, originalPrice:299000,
+    images:["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=80"],
+    rating:4.5, sold:12400, discount:37, category:"Fashion", shop:"FashionID Official",
+    description:"Kemeja flanel bahan cotton brushed tebal premium, tidak mudah kusut, nyaman untuk kerja maupun casual. Tersedia berbagai warna.",
+    reviews:[{user:"bayu_p",rating:5,text:"Bahan tebal dan lembut, jahitan rapih. Ukuran sesuai chart. Repeat order!",date:"2024-04-05"}],
+    variants:["S","M","L","XL","XXL"], colors:["Merah Kotak","Biru Kotak","Hijau Kotak","Abu-abu"] },
+  { id:5,  name:"Sony WH-1000XM5 Wireless Noise Cancelling",
+    price:4850000, originalPrice:5999000,
+    images:["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80","https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80"],
+    rating:4.9, sold:5621, discount:19, category:"Elektronik", shop:"Sony Center Indonesia",
+    description:"WH-1000XM5 dengan ANC industry-leading, 30 jam baterai, quick charge 3 menit untuk 3 jam playback, dan suara Hi-Res Audio.",
+    reviews:[{user:"petra_k",rating:5,text:"ANC-nya gila banget, kantor berisik jadi hening total. Suara jernih dan detail.",date:"2024-04-12"},{user:"tommy_h",rating:5,text:"Battery life 30 jam bukan bohong. Sudah pakai 2 minggu, puas banget!",date:"2024-04-01"}],
+    variants:["Standard"], colors:["Hitam","Putih","Midnight Blue"] },
+  { id:6,  name:"Sepatu Lari Nike React Infinity Run 4",
+    price:1750000, originalPrice:2400000,
+    images:["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
+    rating:4.6, sold:4890, discount:27, category:"Olahraga", shop:"Nike Indonesia Official",
+    description:"Nike React Infinity Run 4 dirancang khusus untuk lari jarak jauh. React foam memberikan bantalan optimal dan return energy terbaik.",
+    reviews:[{user:"yoga_s",rating:5,text:"Cocok buat half marathon, kaki tidak sakit sama sekali. Sol React-nya empuk banget.",date:"2024-03-30"}],
     variants:["Standard"], colors:["Hitam Merah","Hitam Biru","Hitam Putih"] },
-  { id:7, name:"Blender Smoothie 1200W Anti-Gores Premium", price:399000, originalPrice:650000,
+  { id:7,  name:"Blender Smoothie 1200W Anti-Gores Premium",
+    price:399000, originalPrice:650000,
     images:["https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80"],
     rating:4.4, sold:7320, discount:39, category:"Rumah", shop:"Dapur Jaya",
     description:"Blender 1200W dengan pisau anti-karat 6 blade, tabung kaca borosilikat anti-gores. Cocok untuk smoothie, jus, dan bumbu masak.",
     reviews:[{user:"lisa_w",rating:4,text:"Kuat banget, buah keras pun hancur. Tapi agak berisik.",date:"2024-02-20"}],
     variants:["1L","1.5L"], colors:["Silver"] },
-  { id:8, name:"Tas Ransel Laptop Waterproof 15.6 inch Anti Air", price:275000, originalPrice:420000,
+  { id:8,  name:"Tas Ransel Laptop Waterproof 15.6 inch",
+    price:275000, originalPrice:420000,
     images:["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80","https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80"],
     rating:4.6, sold:19203, discount:35, category:"Fashion", shop:"BagShop Indonesia",
     description:"Tas ransel laptop waterproof dengan kompartemen khusus laptop 15.6\", USB charging port, bahan anti-air berkualitas tinggi.",
     reviews:[{user:"eko_b",rating:5,text:"Hujan deras barang di dalam aman. USB port sangat berguna!",date:"2024-04-05"},{user:"mira_s",rating:5,text:"Kapasitas besar, banyak pocket, desain keren. Beli 2 sekalian!",date:"2024-03-30"}],
     variants:["Standard"], colors:["Hitam","Abu-abu","Navy"] },
-  { id:9, name:"Serum Wajah Vitamin C 30ml Brightening", price:145000, originalPrice:280000,
+  { id:9,  name:"Serum Wajah Vitamin C 30ml Brightening",
+    price:145000, originalPrice:280000,
     images:["https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80","https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&q=80"],
     rating:4.8, sold:25000, discount:48, category:"Kecantikan", shop:"Skin Care Official",
-    description:"Serum Vitamin C 20% dengan niacinamide 5% untuk mencerahkan, meratakan tone kulit, dan memudarkan flek hitam. Cocok untuk semua jenis kulit.",
-    reviews:[{user:"anisa_k",rating:5,text:"Kulit cerah dalam 2 minggu! Flek memang belum hilang total tapi sudah memudar.",date:"2024-04-15"},{user:"retno_p",rating:5,text:"Best skincare di harga segini. Sudah repeat order 3x.",date:"2024-03-25"}],
+    description:"Serum Vitamin C 20% dengan niacinamide 5% untuk mencerahkan, meratakan tone kulit, dan memudarkan flek hitam.",
+    reviews:[{user:"anisa_k",rating:5,text:"Kulit cerah dalam 2 minggu! Flek belum hilang total tapi sudah memudar.",date:"2024-04-15"},{user:"retno_p",rating:5,text:"Best skincare di harga segini. Sudah repeat order 3x.",date:"2024-03-25"}],
     variants:["30ml"], colors:[""] },
-  { id:10, name:"Sepatu Lari Running Adidas Ultraboost 22", price:1899000, originalPrice:2600000,
+  { id:10, name:"Sepatu Lari Adidas Ultraboost 22",
+    price:1899000, originalPrice:2600000,
     images:["https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
     rating:4.7, sold:6710, discount:27, category:"Olahraga", shop:"Adidas Official",
-    description:"Adidas Ultraboost 22 dengan teknologi BOOST midsole untuk energi pengembalian maksimal. Upper Primeknit yang breathable dan nyaman.",
+    description:"Adidas Ultraboost 22 dengan teknologi BOOST midsole untuk energi pengembalian maksimal. Upper Primeknit yang breathable.",
     reviews:[{user:"tono_h",rating:5,text:"Lari 10K tanpa sakit kaki. Boost memang bedanya nyata!",date:"2024-04-03"}],
     variants:["39","40","41","42","43","44"], colors:["Putih","Hitam","Biru"] },
-  { id:11, name:"MacBook Air M2 13 inch 8GB 256GB Midnight", price:16999000, originalPrice:18999000,
+  { id:11, name:"MacBook Air M2 13 inch 8GB 256GB Midnight",
+    price:16999000, originalPrice:18999000,
     images:["https://images.unsplash.com/photo-1611186871525-9d8df2a7d1ec?w=600&q=80"],
     rating:4.9, sold:981, discount:11, category:"Elektronik", shop:"Apple Reseller ID",
     description:"MacBook Air M2 dengan chip Apple M2, layar Liquid Retina 13.6 inci, baterai 18 jam, dan desain ultra-tipis.",
-    reviews:[{user:"dian_l",rating:5,text:"Best laptop untuk mahasiswa dan profesional. Kencang, tipis, baterai awet banget!",date:"2024-04-07"}],
+    reviews:[{user:"dian_l",rating:5,text:"Best laptop untuk mahasiswa dan profesional. Kencang, tipis, baterai awet!",date:"2024-04-07"}],
     variants:["8GB/256GB","8GB/512GB","16GB/512GB"], colors:["Midnight","Starlight","Silver","Space Gray"] },
-  { id:12, name:"Matcha Latte Powder Premium 250g Japan Grade", price:85000, originalPrice:120000,
+  { id:12, name:"Matcha Latte Powder Premium 250g Japan Grade",
+    price:85000, originalPrice:120000,
     images:["https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&q=80"],
     rating:4.7, sold:33210, discount:29, category:"Makanan", shop:"TeaShop Nusantara",
     description:"Matcha grade premium dari Uji, Kyoto Jepang. Warna hijau cerah, rasa smooth tidak pahit. Cocok untuk minuman dan baking.",
     reviews:[{user:"yuni_a",rating:5,text:"Warnanya hijau segar, rasanya enak tidak pahit. Bikin matcha latte rumahan jadi enak!",date:"2024-04-11"}],
     variants:["100g","250g","500g"], colors:[""] },
-  { id:13, name:"Celana Jogger Pria Slim Fit Premium", price:159000, originalPrice:250000,
+  { id:13, name:"Celana Jogger Pria Slim Fit Premium",
+    price:159000, originalPrice:250000,
     images:["https://images.unsplash.com/photo-1542219550-37153d387c27?w=600&q=80"],
     rating:4.5, sold:9800, discount:36, category:"Fashion", shop:"MenStyle ID",
     description:"Celana jogger slim fit bahan cotton premium stretch. Nyaman untuk olahraga, santai di rumah, atau hang out casual.",
     reviews:[{user:"fajar_s",rating:5,text:"Bahan adem dan stretch, ukuran pas sesuai chart. Udah beli 3 warna!",date:"2024-03-28"}],
     variants:["S","M","L","XL","XXL"], colors:["Hitam","Abu","Navy","Olive"] },
-  { id:14, name:"Skincare Set Paket Lengkap Acne Clear", price:320000, originalPrice:480000,
+  { id:14, name:"Skincare Set Paket Lengkap Acne Clear",
+    price:320000, originalPrice:480000,
     images:["https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80","https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80"],
     rating:4.8, sold:15600, discount:33, category:"Kecantikan", shop:"Beauty Lab",
     description:"Paket skincare 5-step untuk kulit berjerawat: facial wash, toner, serum, moisturizer, dan SPF. Diformulasikan oleh dermatologis.",
     reviews:[{user:"maya_r",rating:5,text:"Jerawat berkurang drastis dalam 2 minggu! Kulit jadi lebih bersih dan cerah.",date:"2024-04-09"}],
     variants:["Normal Kit","Oily Kit"], colors:[""] },
-  { id:15, name:"Meja Belajar Minimalis Kayu Jati 120cm", price:1250000, originalPrice:1800000,
+  { id:15, name:"Meja Belajar Minimalis Kayu Jati 120cm",
+    price:1250000, originalPrice:1800000,
     images:["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80"],
     rating:4.6, sold:2300, discount:31, category:"Rumah", shop:"FurnitureMas",
     description:"Meja belajar kayu jati solid 120x60cm, finishing natural oil. Dilengkapi laci penyimpanan dan rak buku. Sangat sturdy dan tahan lama.",
     reviews:[{user:"pandu_g",rating:5,text:"Kayu solid, berat tapi kokoh. Finishing bagus, hampir tidak ada bau cat.",date:"2024-03-14"}],
     variants:["100cm","120cm","150cm"], colors:["Natural","Walnut","White"] },
-  { id:16, name:"Dumbbell Set 5-25kg Hex Chrome", price:2890000, originalPrice:3800000,
+  { id:16, name:"Dumbbell Set 5-25kg Hex Chrome",
+    price:2890000, originalPrice:3800000,
     images:["https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"],
     rating:4.7, sold:3450, discount:24, category:"Olahraga", shop:"Sport Center ID",
     description:"Set dumbbell hex chrome 5 pasang (5/10/15/20/25kg) + rack besi. Material rubber coating anti-roll, nyaman digenggam.",
     reviews:[{user:"arif_p",rating:5,text:"Kualitas premium, chrome tidak mudah pudar. Cocok untuk home gym.",date:"2024-04-02"}],
     variants:["5-25kg Set","5-30kg Set"], colors:["Chrome"] },
-  { id:17, name:"Buku Atomic Habits James Clear Bahasa Indonesia", price:98000, originalPrice:139000,
+  { id:17, name:"Buku Atomic Habits James Clear",
+    price:98000, originalPrice:139000,
     images:["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80"],
     rating:4.9, sold:42000, discount:29, category:"Buku", shop:"Gramedia Online",
-    description:"Buku self-improvement terlaris tentang cara membangun kebiasaan baik dan menghilangkan kebiasaan buruk. Terjemahan resmi bahasa Indonesia.",
-    reviews:[{user:"clara_d",rating:5,text:"Buku yang mengubah cara pandang saya soal produktivitas. Wajib dibaca!",date:"2024-04-13"},{user:"hadi_n",rating:5,text:"Sudah beli 3x untuk dihadiahkan ke teman. Kontennya luar biasa!",date:"2024-03-31"}],
+    description:"Buku self-improvement terlaris tentang cara membangun kebiasaan baik dan menghilangkan kebiasaan buruk. Terjemahan resmi.",
+    reviews:[{user:"clara_d",rating:5,text:"Buku yang mengubah cara pandang saya soal produktivitas. Wajib dibaca!",date:"2024-04-13"}],
     variants:["Softcover","Hardcover"], colors:[""] },
-  { id:18, name:"Controller PS5 DualSense Midnight Black", price:1050000, originalPrice:1300000,
+  { id:18, name:"Controller PS5 DualSense Midnight Black",
+    price:1050000, originalPrice:1300000,
     images:["https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=600&q=80"],
     rating:4.8, sold:7800, discount:19, category:"Gaming", shop:"PlayStation ID",
-    description:"DualSense controller PS5 original dengan adaptive triggers dan haptic feedback generasi terbaru. Baterai built-in rechargeable.",
+    description:"DualSense controller PS5 original dengan adaptive triggers dan haptic feedback generasi terbaru. Baterai rechargeable.",
     reviews:[{user:"bagas_w",rating:5,text:"Haptic feedback-nya bikin gaming makin immersive. Original 100%!",date:"2024-04-06"}],
     variants:["Standard"], colors:["Midnight Black","White","Cosmic Red","Galactic Purple"] },
-  { id:19, name:"Helm Full Face Shoei GT-Air 2 Original", price:4500000, originalPrice:5800000,
+  { id:19, name:"Helm Full Face Shoei GT-Air 2 Original",
+    price:4500000, originalPrice:5800000,
     images:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"],
     rating:4.9, sold:1200, discount:22, category:"Otomotif", shop:"MotoGear ID",
     description:"Helm full face premium Shoei GT-Air 2, sertifikasi SNELL dan ECE 22.06. Ventilasi udara optimal, visor Pinlock anti-fog.",
-    reviews:[{user:"candra_s",rating:5,text:"Ringan dan nyaman dipakai jarak jauh. Investasi terbaik untuk keselamatan berkendara.",date:"2024-03-27"}],
+    reviews:[{user:"candra_s",rating:5,text:"Ringan dan nyaman dipakai jarak jauh. Investasi terbaik untuk keselamatan.",date:"2024-03-27"}],
     variants:["S","M","L","XL"], colors:["Hitam","Putih","Abu-abu"] },
-  { id:20, name:"Parfum Pria La Vie Est Belle 75ml EDP", price:890000, originalPrice:1200000,
+  { id:20, name:"Parfum Pria La Vie Est Belle 75ml EDP",
+    price:890000, originalPrice:1200000,
     images:["https://images.unsplash.com/photo-1541643600914-78b084683702?w=600&q=80"],
     rating:4.7, sold:5600, discount:26, category:"Kecantikan", shop:"Parfum World",
-    description:"Eau de Parfum La Vie Est Belle 75ml, aroma flowery gourmand dengan iris, patchouli, dan vanilla. Tahan lama hingga 8 jam.",
-    reviews:[{user:"tia_f",rating:5,text:"Aromanya sophisticated, banyak yang tanya pakai parfum apa. Tahan lama banget!",date:"2024-04-14"}],
+    description:"Eau de Parfum 75ml, aroma flowery gourmand dengan iris, patchouli, dan vanilla. Tahan lama hingga 8 jam.",
+    reviews:[{user:"tia_f",rating:5,text:"Aromanya sophisticated, banyak yang tanya pakai parfum apa. Tahan lama!",date:"2024-04-14"}],
     variants:["30ml","50ml","75ml"], colors:[""] },
 ];
 
-// ===================== STATE =====================
-let cart = JSON.parse(localStorage.getItem('sk_cart') || '[]');
-let wishlist = JSON.parse(localStorage.getItem('sk_wishlist') || '[]');
-let isCartOpen = false;
-let filteredProducts = [...products];
-let currentCategory = '';
-let currentSort = 'default';
-let visibleCount = 10;
-let voucherDiscount = 0;
-let currentBanner = 0;
-let currentDetailProduct = null;
-let detailCurrentImg = 0;
-let checkoutStep = 1;
-const checkoutData = { address: {}, shipping: {}, payment: '' };
 
-// ===================== HELPERS =====================
+/* ================================================================
+   APP STATE — Global mutable state
+   ================================================================
+   All state lives here. When debugging, check these first.
+================================================================ */
+let cart            = JSON.parse(localStorage.getItem('sk_cart')     || '[]');
+let wishlist        = JSON.parse(localStorage.getItem('sk_wishlist') || '[]');
+let isCartOpen      = false;
+let filteredProducts = [...products];
+let currentCategory  = '';
+let currentSort      = 'default';
+let visibleCount     = 10;
+let voucherDiscount  = 0;
+let currentBanner    = 0;
+let currentDetailProduct = null;
+let detailCurrentImg     = 0;
+let checkoutStep         = 1;
+const checkoutData = { address:{}, shipping:{}, payment:'' };
+
+
+/* ================================================================
+   HELPER FUNCTIONS
+================================================================ */
+
+/** Format a number as Indonesian Rupiah. e.g. 50000 → "Rp 50.000" */
 const fmt = n => 'Rp ' + n.toLocaleString('id-ID');
+
+/** Format sold count: 12400 → "12.4rb" */
 const fmtSold = n => n >= 1000 ? (n/1000).toFixed(1)+'rb' : n;
-const stars = (r) => {
+
+/** Generate star rating HTML. r=4 → "★★★★☆" */
+const stars = r => {
   let s = '';
-  for(let i=1;i<=5;i++) s += `<span class="${i<=r?'star-filled text-sm':'text-gray-300 text-sm'}">★</span>`;
+  for(let i=1;i<=5;i++) s+=`<span class="${i<=r?'star-filled text-sm':'text-gray-300 text-sm'}">★</span>`;
   return s;
 };
-const saveCart = () => localStorage.setItem('sk_cart', JSON.stringify(cart));
+
+/** Persist cart to localStorage */
+const saveCart     = () => localStorage.setItem('sk_cart',     JSON.stringify(cart));
+
+/** Persist wishlist to localStorage */
 const saveWishlist = () => localStorage.setItem('sk_wishlist', JSON.stringify(wishlist));
 
-// ===================== BANNER =====================
+
+/* ================================================================
+   HERO BANNER CAROUSEL
+   ================================================================
+   goBanner(idx) — switches the active slide.
+   Called by: dot buttons (onclick="goBanner(n)") and setInterval auto-rotate.
+   !! Do NOT rename this function or #heroBannerTrack !!
+================================================================ */
+
+/**
+ * Navigate to a specific banner slide.
+ * @param {number} idx - 0, 1, or 2
+ */
 function goBanner(idx) {
   const track = document.getElementById('heroBannerTrack');
   track.style.transform = `translateX(-${idx * 33.333}%)`;
+
+  // Update dot widths: active → w-4 (wider), inactive → w-1.5 (narrow)
   document.querySelectorAll('.banner-dot').forEach((d,i) => {
-    d.classList.toggle('w-4', i===idx);
+    d.classList.toggle('w-4',   i===idx);
     d.classList.toggle('bg-white', true);
     d.classList.toggle('w-1.5', i!==idx);
     d.style.opacity = i===idx ? '1' : '0.5';
   });
   currentBanner = idx;
 }
-setInterval(() => goBanner((currentBanner+1)%3), 4500);
 
-// ===================== FILTER / SORT =====================
+/* Auto-rotate banner every 4.5 seconds */
+setInterval(() => goBanner((currentBanner + 1) % 3), 4500);
+
+
+/* ================================================================
+   HERO WORD CYCLING
+   ================================================================
+   [WHAT IT DOES] Cycles through promotional words in the hero headline.
+   [HOW TO EDIT] Add/remove words from the heroWords array.
+   [TIMING] Every 3 seconds.
+================================================================ */
+const heroWords = ['Lebih Hemat', 'Lebih Mudah', 'Lebih Terpercaya', 'Lebih Berkualitas'];
+let heroWordIdx = 0;
+
+function heroWordCycle() {
+  heroWordIdx = (heroWordIdx + 1) % heroWords.length;
+  const el = document.getElementById('heroWord');
+  if (!el) return;
+  // Restart CSS animation by forcing reflow
+  el.style.animation = 'none';
+  el.offsetHeight; // trigger reflow
+  el.textContent = heroWords[heroWordIdx];
+  el.style.animation = ''; // re-apply wordReveal keyframe
+}
+setInterval(heroWordCycle, 3000);
+
+
+/* ================================================================
+   FILTER & SORT
+================================================================ */
+
+/**
+ * Filter products by category.
+ * Updates active cat-item highlight and re-renders grid.
+ * @param {string} cat - category name, or '' for all
+ */
 function filterCategory(cat) {
   currentCategory = cat;
   document.querySelectorAll('.cat-item').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
-  document.getElementById('sectionTitle').innerHTML = `<span class="w-1 h-4 bg-primary rounded-full inline-block"></span> ${cat || 'Produk Populer'}`;
+  document.getElementById('sectionTitle').innerHTML =
+    `<span class="w-1 h-4 bg-primary rounded-full inline-block"></span> ${cat || 'Produk Populer'}`;
   applyFilters();
   document.getElementById('productsSection').scrollIntoView({behavior:'smooth'});
 }
 
+/**
+ * Change sort mode and re-render grid.
+ * @param {'default'|'sold'|'price-asc'|'price-desc'} mode
+ */
 function setSortMode(mode) {
   currentSort = mode;
   document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === mode));
   applyFilters();
 }
 
-// ===================== FUZZY SEARCH =====================
+
+/* ================================================================
+   FUZZY SEARCH
+   ================================================================
+   [HOW IT WORKS] Scores each product against the query string.
+   Higher score = better match. Products with score=0 are excluded.
+   Score tiers: 100 (direct contains) → 80 (word match) →
+                60 (alias match) → 40 (partial char match)
+================================================================ */
+
+/**
+ * Calculate fuzzy match score between a string and query.
+ * @param {string} str - product field to search
+ * @param {string} query - user's search term
+ * @returns {number} score 0-100
+ */
 function fuzzyScore(str, query) {
-  str = str.toLowerCase();
+  str   = str.toLowerCase();
   query = query.toLowerCase();
-  // Direct contains: highest score
-  if (str.includes(query)) return 100;
-  // Word-by-word matching
+  if (str.includes(query)) return 100; // direct hit
+
   const words = query.split(/\s+/);
   let matched = 0;
   words.forEach(w => { if(str.includes(w)) matched++; });
-  if (matched > 0) return (matched / words.length) * 80;
-  // Category aliases
+  if (matched > 0) return (matched / words.length) * 80; // word hit
+
+  // Category alias mapping — add aliases here as needed
   const aliases = {
-    'baju':['fashion','kemeja','kaos','celana','dress'],
-    'hp':['elektronik','iphone','samsung','handphone'],
-    'sepatu':['fashion','olahraga'],
-    'makan':['makanan'],
-    'kecantikan':['skincare','serum','parfum'],
-    'motor':['otomotif'],
-    'laptop':['elektronik','macbook'],
+    'baju':    ['fashion','kemeja','kaos','celana'],
+    'hp':      ['elektronik','iphone','samsung','handphone'],
+    'sepatu':  ['fashion','olahraga'],
+    'makan':   ['makanan'],
+    'kecantikan': ['skincare','serum','parfum'],
+    'motor':   ['otomotif'],
+    'laptop':  ['elektronik','macbook'],
   };
   for(const [alias, cats] of Object.entries(aliases)) {
     if(query.includes(alias) && cats.some(c => str.includes(c))) return 60;
   }
-  // Partial char match (at least 3 chars)
+
+  // Partial character match (for typos)
   if(query.length >= 3) {
-    for(let i=0; i<=str.length - query.length; i++) {
+    for(let i=0; i<=str.length-query.length; i++) {
       let m = 0;
       for(let j=0;j<query.length;j++) if(str[i+j]===query[j]) m++;
       if(m/query.length > 0.7) return 40;
@@ -1250,43 +1849,71 @@ function fuzzyScore(str, query) {
   return 0;
 }
 
+/**
+ * Apply current category + search + sort filters and render results.
+ * Called by filterCategory(), setSortMode(), doSearch(), resetAll().
+ */
 function applyFilters() {
   let list = [...products];
+
+  // 1. Category filter
   if (currentCategory) list = list.filter(p => p.category === currentCategory);
+
+  // 2. Search filter (fuzzy score)
   const q = (document.getElementById('searchInput')?.value || '').trim();
   if (q) {
-    list = list.map(p => ({ ...p, _score: Math.max(
-      fuzzyScore(p.name, q),
-      fuzzyScore(p.category, q),
-      fuzzyScore(p.shop, q)
-    )})).filter(p => p._score > 0).sort((a,b) => b._score - a._score);
+    list = list
+      .map(p => ({ ...p, _score: Math.max(
+        fuzzyScore(p.name, q),
+        fuzzyScore(p.category, q),
+        fuzzyScore(p.shop, q)
+      )}))
+      .filter(p => p._score > 0)
+      .sort((a,b) => b._score - a._score);
   }
-  if (currentSort === 'sold') list.sort((a,b) => b.sold - a.sold);
-  else if (currentSort === 'price-asc') list.sort((a,b) => a.price - b.price);
+
+  // 3. Sort
+  if      (currentSort === 'sold')       list.sort((a,b) => b.sold - a.sold);
+  else if (currentSort === 'price-asc')  list.sort((a,b) => a.price - b.price);
   else if (currentSort === 'price-desc') list.sort((a,b) => b.price - a.price);
+
   filteredProducts = list;
   visibleCount = 10;
   renderProducts(filteredProducts.slice(0, visibleCount));
   document.getElementById('loadMoreWrap').classList.toggle('hidden', filteredProducts.length <= visibleCount);
 }
 
+/** Show 10 more products in the grid */
 function loadMore() {
   visibleCount += 10;
   renderProducts(filteredProducts.slice(0, visibleCount));
   document.getElementById('loadMoreWrap').classList.toggle('hidden', filteredProducts.length <= visibleCount);
 }
 
+/** Reset all filters, search, and sort to default state */
 function resetAll() {
   currentCategory = '';
-  currentSort = 'default';
+  currentSort     = 'default';
   if(document.getElementById('searchInput')) document.getElementById('searchInput').value = '';
   filterCategory('');
 }
 
-// ===================== RENDER PRODUCTS =====================
+
+/* ================================================================
+   RENDER PRODUCTS
+   ================================================================
+   Injects product cards HTML into #productGrid.
+   Each card: image → name → price → rating/sold
+================================================================ */
+
+/**
+ * Render a list of products into the product grid.
+ * @param {Array} list - filtered/sorted product array
+ */
 function renderProducts(list) {
-  const grid = document.getElementById('productGrid');
+  const grid  = document.getElementById('productGrid');
   const empty = document.getElementById('emptyState');
+
   if (!list.length) {
     grid.classList.add('hidden');
     empty.classList.remove('hidden');
@@ -1294,17 +1921,26 @@ function renderProducts(list) {
   }
   empty.classList.add('hidden');
   grid.classList.remove('hidden');
+
   const inWL = id => wishlist.some(w => w.id === id);
+
   grid.innerHTML = list.map(p => `
     <div class="bg-white card-hover cursor-pointer" onclick="openDetailPage(${p.id})">
+      <!-- Product image (square aspect ratio via padding-top hack) -->
       <div class="relative overflow-hidden" style="padding-top:100%;">
-        <img src="${p.images[0]}" alt="${p.name}" class="product-img absolute inset-0 w-full h-full object-cover" loading="lazy"
-          onerror="this.src='https://placehold.co/300x300/EE4D2D/white?text=S'"/>
+        <img src="${p.images[0]}" alt="${p.name}"
+          class="product-img absolute inset-0 w-full h-full object-cover" loading="lazy"
+          onerror="this.src='https://placehold.co/300x300/D94B38/white?text=SK'"/>
         ${p.discount ? `<div class="absolute top-1.5 left-1.5 bg-primary text-white text-[10px] font-black px-1.5 py-0.5 rounded">${p.discount}%</div>` : ''}
-        <button class="absolute top-1.5 right-1.5 bg-white/90 rounded-full p-1.5" onclick="event.stopPropagation();toggleWishlist(${p.id})">
-          <svg class="w-3.5 h-3.5 ${inWL(p.id)?'text-red-500':'text-gray-400'}" fill="${inWL(p.id)?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/></svg>
+        <button class="absolute top-1.5 right-1.5 bg-white/90 rounded-full p-1.5"
+                onclick="event.stopPropagation();toggleWishlist(${p.id})">
+          <svg class="w-3.5 h-3.5 ${inWL(p.id)?'text-red-500':'text-gray-400'}"
+               fill="${inWL(p.id)?'currentColor':'none'}" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z"/>
+          </svg>
         </button>
       </div>
+      <!-- Product info -->
       <div class="p-2.5 pb-3">
         <p class="text-gray-800 text-xs leading-relaxed line-clamp-2 min-h-[2.5rem] mb-1.5">${p.name}</p>
         <p class="text-primary font-black text-sm mb-0.5">${fmt(p.price)}</p>
@@ -1320,114 +1956,150 @@ function renderProducts(list) {
   `).join('');
 }
 
-// ===================== SEARCH OVERLAY =====================
+
+/* ================================================================
+   SEARCH OVERLAY
+================================================================ */
+
+/** Open the full-screen search overlay and focus the input */
 function openSearchOverlay() {
   document.getElementById('searchOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
   setTimeout(() => document.getElementById('searchInput')?.focus(), 100);
 }
+
+/** Close the search overlay */
 function closeSearchOverlay() {
   document.getElementById('searchOverlay').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+/** Clear search input and close overlay */
 function clearSearch() {
   document.getElementById('searchInput').value = '';
   document.getElementById('liveSearchResults').innerHTML = '';
   closeSearchOverlay();
 }
+
+/** Set search input to a predefined query (popular searches) */
 function setSearch(q) {
   document.getElementById('searchInput').value = q;
   handleSearch();
 }
-function doSearch() {
-  applyFilters();
-}
 
+/** Apply search filters to product grid */
+function doSearch() { applyFilters(); }
+
+/**
+ * Handle live search input — shows instant suggestions in the overlay.
+ * Runs on every keystroke (oninput event on #searchInput).
+ */
 function handleSearch() {
   const q = document.getElementById('searchInput').value.trim();
   const resultsEl = document.getElementById('liveSearchResults');
   if(!q) { resultsEl.innerHTML=''; return; }
-  const suggestions = products.map(p => ({...p, _score: Math.max(fuzzyScore(p.name,q),fuzzyScore(p.category,q))}))
-    .filter(p=>p._score>0).sort((a,b)=>b._score-a._score).slice(0,5);
-  if(!suggestions.length) { resultsEl.innerHTML='<p class="text-gray-400 text-sm py-4 text-center">Tidak ada hasil</p>'; return; }
+
+  const suggestions = products
+    .map(p => ({...p, _score: Math.max(fuzzyScore(p.name,q), fuzzyScore(p.category,q))}))
+    .filter(p => p._score > 0)
+    .sort((a,b) => b._score - a._score)
+    .slice(0,5);
+
+  if(!suggestions.length) {
+    resultsEl.innerHTML='<p class="text-gray-400 text-sm py-4 text-center">Tidak ada hasil</p>';
+    return;
+  }
   resultsEl.innerHTML = suggestions.map(p=>`
-    <button class="w-full flex items-center gap-3 py-3 border-b border-gray-100 text-left" onclick="openDetailPage(${p.id});closeSearchOverlay()">
-      <img src="${p.images[0]}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0" onerror="this.src='https://placehold.co/60x60/EE4D2D/white?text=S'"/>
+    <button class="w-full flex items-center gap-3 py-3 border-b border-gray-100 text-left"
+            onclick="openDetailPage(${p.id});closeSearchOverlay()">
+      <img src="${p.images[0]}" class="w-12 h-12 object-cover rounded-lg flex-shrink-0"
+           onerror="this.src='https://placehold.co/60x60/D94B38/white?text=SK'"/>
       <div class="flex-1 min-w-0">
         <p class="text-gray-800 text-sm font-medium line-clamp-1">${p.name}</p>
         <p class="text-primary font-black text-sm">${fmt(p.price)}</p>
         <p class="text-gray-400 text-xs">${p.category}</p>
       </div>
-      <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
     </button>
   `).join('');
 }
 
-// ===================== DETAIL PAGE =====================
+
+/* ================================================================
+   PRODUCT DETAIL PAGE
+================================================================ */
+
+/**
+ * Open the product detail page for a given product ID.
+ * Builds HTML via buildDetailContent() and opens the overlay.
+ * @param {number} id - product id from products array
+ */
 function openDetailPage(id) {
-  const p = products.find(x=>x.id===id);
+  const p = products.find(x => x.id === id);
   if(!p) return;
   currentDetailProduct = p;
   detailCurrentImg = 0;
-  const titleEl = document.getElementById('detailHeaderTitle');
-  const titleElD = document.getElementById('detailHeaderTitleDesktop');
-  if(titleEl) titleEl.textContent = p.name;
-  if(titleElD) titleElD.textContent = p.name;
-  // Update wishlist button state
+
+  // Set page title
+  const t1 = document.getElementById('detailHeaderTitle');
+  const t2 = document.getElementById('detailHeaderTitleDesktop');
+  if(t1) t1.textContent = p.name;
+  if(t2) t2.textContent = p.name;
+
   updateDetailWishlistBtn();
-  // Build content
   document.getElementById('detailContent').innerHTML = buildDetailContent(p);
+
   const page = document.getElementById('detailPage');
   page.classList.add('open');
-  // Scroll handling
-  const isDesktop = window.innerWidth >= 768;
-  if(isDesktop) {
+
+  // Scroll to top
+  if(window.innerWidth >= 768) {
     document.body.style.overflow = 'hidden';
-    const wrap = document.getElementById('detailInnerWrap');
-    if(wrap) wrap.scrollTop = 0;
+    document.getElementById('detailInnerWrap')?.scrollTo(0,0);
   } else {
     page.scrollTop = 0;
     document.body.style.overflow = 'hidden';
   }
-  // Attach swipe gesture
+
   attachImageSwipe();
 }
 
+/**
+ * Build the inner HTML for the detail page.
+ * @param {Object} p - product object
+ * @returns {string} HTML string
+ */
 function buildDetailContent(p) {
   const imgPct = p.images.length > 0 ? (1/p.images.length*100) : 100;
-  const isDesktop = window.innerWidth >= 768;
   return `
-    <!-- Image Slider -->
+    <!-- Image slider -->
     <div class="relative overflow-hidden bg-gray-100" style="padding-top:100%;" id="imgSliderWrap">
       <div id="detailImgTrack" class="absolute inset-0 flex" style="width:${p.images.length*100}%;">
         ${p.images.map((img,i)=>`
           <div class="flex-shrink-0 cursor-zoom-in" style="width:${imgPct}%;" onclick="openLightbox(${i})">
             <img src="${img}" alt="${p.name}" class="w-full h-full object-cover" style="height:inherit;"
-              onerror="this.src='https://placehold.co/600x600/EE4D2D/white?text=ShopKita'"/>
-          </div>
-        `).join('')}
+              onerror="this.src='https://placehold.co/600x600/D94B38/white?text=ShopKita'"/>
+          </div>`).join('')}
       </div>
-      <!-- Image counter -->
       <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full" id="imgCounter">1 / ${p.images.length}</div>
-      <!-- Tap to zoom hint (mobile only) -->
       <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 md:hidden">🔍 Tap untuk perbesar</div>
-      <!-- Dots -->
       <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
         ${p.images.map((_,i)=>`<div class="img-dot w-1.5 h-1.5 rounded-full ${i===0?'bg-primary':'bg-white/70'}"></div>`).join('')}
       </div>
     </div>
 
-    <!-- Thumbnails -->
+    <!-- Thumbnail strip -->
     ${p.images.length > 1 ? `
     <div class="flex gap-2 px-3 py-2 bg-white border-b border-gray-100 overflow-x-auto hide-scrollbar">
       ${p.images.map((img,i)=>`
         <button onclick="goDetailImg(${i})" class="detail-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 ${i===0?'border-primary':'border-gray-200'}">
           <img src="${img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/60x60'"/>
-        </button>
-      `).join('')}
+        </button>`).join('')}
     </div>` : ''}
 
-    <!-- Price & Info -->
+    <!-- Price & rating -->
     <div class="bg-white px-4 py-4">
       <div class="flex items-center gap-2 mb-1">
         <span class="text-primary font-black text-2xl">${fmt(p.price)}</span>
@@ -1443,7 +2115,7 @@ function buildDetailContent(p) {
       <p class="text-gray-800 font-bold text-base leading-snug">${p.name}</p>
     </div>
 
-    <!-- Shipping -->
+    <!-- Shipping & guarantee -->
     <div class="bg-white mt-2 px-4 py-3">
       <div class="flex items-center gap-3 py-1.5 border-b border-gray-100">
         <span class="text-base">🚚</span>
@@ -1455,7 +2127,10 @@ function buildDetailContent(p) {
       </div>
       <div class="flex items-center gap-3 py-1.5">
         <span class="text-base">🔄</span>
-        <div class="flex-1"><p class="text-gray-800 text-sm font-semibold">Jaminan ShopKita</p><p class="text-gray-500 text-xs">Bebas Pengembalian 7 Hari · Produk Bergaransi</p></div>
+        <div class="flex-1">
+          <p class="text-gray-800 text-sm font-semibold">Jaminan ShopKita</p>
+          <p class="text-gray-500 text-xs">Bebas Pengembalian 7 Hari · Produk Bergaransi</p>
+        </div>
       </div>
     </div>
 
@@ -1463,10 +2138,10 @@ function buildDetailContent(p) {
     ${(p.variants && p.variants.length > 0 && p.variants[0]) ? `
     <div class="bg-white mt-2 px-4 py-3">
       <p class="text-gray-700 font-bold text-sm mb-2">Pilihan Produk</p>
-      <div class="flex flex-wrap gap-2" id="variantBtns">
+      <div class="flex flex-wrap gap-2">
         ${p.variants.map((v,i)=>`
-          <button onclick="selectVariant(this)" class="variant-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${v}</button>
-        `).join('')}
+          <button onclick="selectVariant(this)"
+            class="variant-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${v}</button>`).join('')}
       </div>
     </div>` : ''}
 
@@ -1474,19 +2149,19 @@ function buildDetailContent(p) {
     ${(p.colors && p.colors.length > 0 && p.colors[0]) ? `
     <div class="bg-white mt-px px-4 py-3">
       <p class="text-gray-700 font-bold text-sm mb-2">Warna</p>
-      <div class="flex flex-wrap gap-2" id="colorBtns">
+      <div class="flex flex-wrap gap-2">
         ${p.colors.map((c,i)=>`
-          <button onclick="selectColor(this)" class="color-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${c}</button>
-        `).join('')}
+          <button onclick="selectColor(this)"
+            class="color-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${c}</button>`).join('')}
       </div>
     </div>` : ''}
 
-    <!-- Shop Info -->
+    <!-- Shop info -->
     <div class="bg-white mt-2 px-4 py-3 flex items-center gap-3">
       <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">${p.shop.charAt(0)}</div>
       <div class="flex-1">
         <p class="text-gray-800 font-bold text-sm">${p.shop}</p>
-        <p class="text-gray-400 text-xs flex items-center gap-1">⭐ Official Store · Tangerang, Banten</p>
+        <p class="text-gray-400 text-xs">⭐ Official Store · Tangerang, Banten</p>
       </div>
       <button class="border border-gray-200 text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-lg">Kunjungi</button>
     </div>
@@ -1494,7 +2169,7 @@ function buildDetailContent(p) {
     <!-- Description -->
     <div class="bg-white mt-2 px-4 py-4">
       <h3 class="text-gray-800 font-black text-sm mb-3">Deskripsi Produk</h3>
-      <p class="text-gray-600 text-sm leading-relaxed" id="descText">${p.description}</p>
+      <p class="text-gray-600 text-sm leading-relaxed">${p.description}</p>
     </div>
 
     <!-- Reviews -->
@@ -1523,7 +2198,6 @@ function buildDetailContent(p) {
           }).join('')}
         </div>
       </div>
-      <!-- Review items -->
       <div class="space-y-4">
         ${p.reviews.map(r=>`
           <div class="border-b border-gray-100 pb-4">
@@ -1536,13 +2210,16 @@ function buildDetailContent(p) {
               <p class="text-gray-400 text-[10px] ml-auto">${r.date}</p>
             </div>
             <p class="text-gray-600 text-xs leading-relaxed">${r.text}</p>
-          </div>
-        `).join('')}
+          </div>`).join('')}
       </div>
     </div>
   `;
 }
 
+/**
+ * Switch active image in the detail page slider.
+ * @param {number} idx - image index
+ */
 function goDetailImg(idx) {
   const p = currentDetailProduct;
   if(!p) return;
@@ -1561,6 +2238,10 @@ function goDetailImg(idx) {
   });
 }
 
+/**
+ * Attach touch swipe gesture handler to the detail image slider.
+ * Swipe left/right switches images by 1.
+ */
 function attachImageSwipe() {
   const wrap = document.getElementById('imgSliderWrap');
   if(!wrap) return;
@@ -1568,61 +2249,48 @@ function attachImageSwipe() {
   wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive:true});
   wrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - startX;
-    const p = currentDetailProduct;
+    const p  = currentDetailProduct;
     if(!p) return;
     if(dx < -40 && detailCurrentImg < p.images.length-1) goDetailImg(detailCurrentImg+1);
-    if(dx > 40 && detailCurrentImg > 0) goDetailImg(detailCurrentImg-1);
+    if(dx >  40 && detailCurrentImg > 0)                 goDetailImg(detailCurrentImg-1);
   }, {passive:true});
 }
 
-// ===================== IMAGE LIGHTBOX — Shopee Style =====================
-let lightboxImgs = [];
-let lightboxIdx = 0;
-let lbW = 0; // slide width in px
+
+/* ================================================================
+   IMAGE LIGHTBOX — Full-screen photo viewer
+================================================================ */
+let lightboxImgs  = [];
+let lightboxIdx   = 0;
+let lbW           = 0;
 let lbTouchStartX = 0;
 let lbTouchStartY = 0;
-let lbIsDragging = false;
-let lbDragDelta = 0;
+let lbIsDragging  = false;
+let lbDragDelta   = 0;
 
-function lbGetW() {
-  return window.innerWidth;
-}
+const lbGetW = () => window.innerWidth;
 
 function buildLightbox(imgs, startIdx) {
   lbW = lbGetW();
-  const track = document.getElementById('lbTrack');
-  const dots = document.getElementById('lbDots');
+  const track  = document.getElementById('lbTrack');
+  const dots   = document.getElementById('lbDots');
   const thumbs = document.getElementById('lbThumbStrip');
-
-  // Set track total width
   track.style.width = (imgs.length * lbW) + 'px';
-
-  // Build slides — each exactly lbW px wide
-  track.innerHTML = imgs.map((src, i) => `
-    <div class="lb-slide" style="width:${lbW}px;">
+  track.innerHTML = imgs.map((src,i) =>
+    `<div class="lb-slide" style="width:${lbW}px;">
       <img src="${src}" alt="Foto ${i+1}" draggable="false"
-        onerror="this.src='https://placehold.co/600x600/EE4D2D/white?text=S'"/>
-    </div>
-  `).join('');
-
-  // Dots
-  dots.innerHTML = imgs.map((_, i) =>
-    `<span class="${i===startIdx?'active':''}"></span>`
-  ).join('');
-
-  // Thumbnails
-  thumbs.innerHTML = imgs.map((src, i) => `
-    <img src="${src}" class="${i===startIdx?'active':''}" onclick="lbGo(${i})"
-      onerror="this.src='https://placehold.co/60x60'"/>
-  `).join('');
+        onerror="this.src='https://placehold.co/600x600/D94B38/white?text=SK'"/>
+    </div>`).join('');
+  dots.innerHTML   = imgs.map((_,i) => `<span class="${i===startIdx?'active':''}"></span>`).join('');
+  thumbs.innerHTML = imgs.map((src,i) =>
+    `<img src="${src}" class="${i===startIdx?'active':''}" onclick="lbGo(${i})"
+       onerror="this.src='https://placehold.co/60x60'"/>`).join('');
 }
 
 function lbSetPos(idx, animate) {
   const track = document.getElementById('lbTrack');
-  track.style.transition = animate
-    ? 'transform 0.32s cubic-bezier(.4,0,.2,1)'
-    : 'none';
-  track.style.transform = `translateX(${-idx * lbW}px)`;
+  track.style.transition = animate ? 'transform 0.32s cubic-bezier(.4,0,.2,1)' : 'none';
+  track.style.transform  = `translateX(${-idx * lbW}px)`;
 }
 
 function lbUpdateUI(idx) {
@@ -1636,23 +2304,21 @@ function lbUpdateUI(idx) {
   if(rEl) rEl.style.opacity = idx < lightboxImgs.length-1 ? '1' : '0.25';
 }
 
+/** Navigate lightbox to a specific image */
 function lbGo(idx) {
   if(idx < 0 || idx >= lightboxImgs.length) return;
   lbSetPos(idx, true);
   lbUpdateUI(idx);
 }
 
+/** Open lightbox at a specific image index */
 function openLightbox(startIdx) {
   const p = currentDetailProduct;
   if(!p) return;
   lightboxImgs = p.images;
-  lightboxIdx = startIdx;
-
-  const lb = document.getElementById('imgLightbox');
-  lb.classList.add('open');
+  lightboxIdx  = startIdx;
+  document.getElementById('imgLightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
-
-  // Build after display:block so dimensions are known
   requestAnimationFrame(() => {
     buildLightbox(lightboxImgs, startIdx);
     lbSetPos(startIdx, false);
@@ -1661,6 +2327,7 @@ function openLightbox(startIdx) {
   });
 }
 
+/** Close lightbox */
 function closeLightboxDirect() {
   document.getElementById('imgLightbox').classList.remove('open');
   if(!document.getElementById('detailPage').classList.contains('open')) {
@@ -1668,83 +2335,87 @@ function closeLightboxDirect() {
   }
 }
 
+/** Attach touch swipe to lightbox viewport */
 function attachLbSwipe() {
-  // Use the viewport element for touch
-  const vp = document.getElementById('lbViewport');
-  // Clone to remove old listeners
+  const vp    = document.getElementById('lbViewport');
   const fresh = vp.cloneNode(true);
   vp.parentNode.replaceChild(fresh, vp);
-  // Re-get lbTrack (it moved into fresh)
   const c = document.getElementById('lbViewport');
 
   c.addEventListener('touchstart', e => {
     lbW = lbGetW();
     lbTouchStartX = e.touches[0].clientX;
     lbTouchStartY = e.touches[0].clientY;
-    lbIsDragging = true;
-    lbDragDelta = 0;
+    lbIsDragging  = true;
+    lbDragDelta   = 0;
     document.getElementById('lbTrack').style.transition = 'none';
-  }, {passive: true});
+  }, {passive:true});
 
   c.addEventListener('touchmove', e => {
     if(!lbIsDragging) return;
     const dx = e.touches[0].clientX - lbTouchStartX;
     const dy = e.touches[0].clientY - lbTouchStartY;
-    // If vertical scroll is dominant on first move, cancel
-    if(Math.abs(dy) > Math.abs(dx) + 5 && lbDragDelta === 0) {
-      lbIsDragging = false;
-      return;
-    }
+    if(Math.abs(dy) > Math.abs(dx) + 5 && lbDragDelta === 0) { lbIsDragging=false; return; }
     lbDragDelta = dx;
-    const px = -(lightboxIdx * lbW) + dx;
-    document.getElementById('lbTrack').style.transform = `translateX(${px}px)`;
-  }, {passive: true});
+    document.getElementById('lbTrack').style.transform = `translateX(${-(lightboxIdx * lbW) + dx}px)`;
+  }, {passive:true});
 
   c.addEventListener('touchend', () => {
     if(!lbIsDragging) return;
     lbIsDragging = false;
     const threshold = lbW * 0.25;
-    if(lbDragDelta < -threshold && lightboxIdx < lightboxImgs.length-1) {
-      lbGo(lightboxIdx + 1);
-    } else if(lbDragDelta > threshold && lightboxIdx > 0) {
-      lbGo(lightboxIdx - 1);
-    } else {
-      lbSetPos(lightboxIdx, true); // snap back
-    }
+    if     (lbDragDelta < -threshold && lightboxIdx < lightboxImgs.length-1) lbGo(lightboxIdx+1);
+    else if(lbDragDelta >  threshold && lightboxIdx > 0)                     lbGo(lightboxIdx-1);
+    else lbSetPos(lightboxIdx, true);
     lbDragDelta = 0;
-  }, {passive: true});
+  }, {passive:true});
 }
 
-// Resize: recalculate slide widths
+/* Resize: recalculate slide widths if lightbox is open */
 window.addEventListener('resize', () => {
   if(!document.getElementById('imgLightbox').classList.contains('open')) return;
   lbW = lbGetW();
   const track = document.getElementById('lbTrack');
   track.style.transition = 'none';
   track.style.width = (lightboxImgs.length * lbW) + 'px';
-  document.querySelectorAll('#lbTrack .lb-slide').forEach(s => s.style.width = lbW + 'px');
+  document.querySelectorAll('#lbTrack .lb-slide').forEach(s => s.style.width = lbW+'px');
   lbSetPos(lightboxIdx, false);
 });
 
-// Keyboard
+/* Keyboard navigation for lightbox */
 document.addEventListener('keydown', e => {
   if(!document.getElementById('imgLightbox').classList.contains('open')) return;
-  if(e.key === 'Escape') closeLightboxDirect();
-  if(e.key === 'ArrowLeft') lbGo(lightboxIdx - 1);
-  if(e.key === 'ArrowRight') lbGo(lightboxIdx + 1);
+  if(e.key==='Escape')     closeLightboxDirect();
+  if(e.key==='ArrowLeft')  lbGo(lightboxIdx-1);
+  if(e.key==='ArrowRight') lbGo(lightboxIdx+1);
 });
 
+
+/* ================================================================
+   VARIANT & COLOR SELECTION
+================================================================ */
+
+/** Select a product variant (size, storage, etc.) */
 function selectVariant(btn) {
-  document.querySelectorAll('.variant-btn').forEach(b => { b.classList.remove('border-primary','bg-primaryLight','text-primary'); b.classList.add('border-gray-200','text-gray-600'); });
-  btn.classList.add('border-primary','bg-primaryLight','text-primary');
-  btn.classList.remove('border-gray-200','text-gray-600');
-}
-function selectColor(btn) {
-  document.querySelectorAll('.color-btn').forEach(b => { b.classList.remove('border-primary','bg-primaryLight','text-primary'); b.classList.add('border-gray-200','text-gray-600'); });
+  document.querySelectorAll('.variant-btn').forEach(b => {
+    b.classList.remove('border-primary','bg-primaryLight','text-primary');
+    b.classList.add('border-gray-200','text-gray-600');
+  });
   btn.classList.add('border-primary','bg-primaryLight','text-primary');
   btn.classList.remove('border-gray-200','text-gray-600');
 }
 
+/** Select a product color */
+function selectColor(btn) {
+  document.querySelectorAll('.color-btn').forEach(b => {
+    b.classList.remove('border-primary','bg-primaryLight','text-primary');
+    b.classList.add('border-gray-200','text-gray-600');
+  });
+  btn.classList.add('border-primary','bg-primaryLight','text-primary');
+  btn.classList.remove('border-gray-200','text-gray-600');
+}
+
+/** Close product detail page and clean up state */
 function closeDetailPage() {
   document.getElementById('detailPage').classList.remove('open');
   document.getElementById('imgLightbox').classList.remove('open');
@@ -1752,12 +2423,13 @@ function closeDetailPage() {
   currentDetailProduct = null;
 }
 
+/** Update the heart icon in the detail bottom bar based on wishlist state */
 function updateDetailWishlistBtn() {
   if(!currentDetailProduct) return;
-  const inWL = wishlist.some(w=>w.id===currentDetailProduct.id);
+  const inWL = wishlist.some(w => w.id === currentDetailProduct.id);
   const icon = document.getElementById('detailHeartIcon');
   if(!icon) return;
-  icon.style.fill = inWL ? '#ef4444' : 'none';
+  icon.style.fill   = inWL ? '#ef4444' : 'none';
   icon.style.stroke = inWL ? '#ef4444' : 'currentColor';
 }
 
@@ -1767,10 +2439,7 @@ function toggleWishlistDetail() {
   updateDetailWishlistBtn();
 }
 
-function addToCartFromDetail() {
-  if(!currentDetailProduct) return;
-  addToCart(currentDetailProduct.id);
-}
+function addToCartFromDetail() { if(currentDetailProduct) addToCart(currentDetailProduct.id); }
 
 function buyNowFromDetail() {
   if(!currentDetailProduct) return;
@@ -1779,69 +2448,112 @@ function buyNowFromDetail() {
   toggleCart();
 }
 
+/** Share product via Web Share API (falls back to notification) */
 function shareProduct() {
   if(navigator.share && currentDetailProduct) {
-    navigator.share({ title: currentDetailProduct.name, text: fmt(currentDetailProduct.price), url: window.location.href });
+    navigator.share({ title:currentDetailProduct.name, text:fmt(currentDetailProduct.price), url:window.location.href });
   } else {
     showNotif('Link produk disalin! ✅');
   }
 }
 
-// ===================== CART =====================
+
+/* ================================================================
+   CART MANAGEMENT
+================================================================ */
+
+/**
+ * Add a product to the cart (increments qty if already in cart).
+ * @param {number} id - product id
+ */
 function addToCart(id) {
-  const p = products.find(x=>x.id===id);
+  const p = products.find(x => x.id === id);
   if(!p) return;
-  const ex = cart.find(i=>i.id===id);
-  if(ex) ex.qty++; else cart.push({...p, qty:1});
-  saveCart(); updateCartUI();
+  const existing = cart.find(i => i.id === id);
+  if(existing) existing.qty++;
+  else cart.push({...p, qty:1});
+  saveCart();
+  updateCartUI();
   showNotif(`${p.name.slice(0,28)}... ditambahkan ✅`);
 }
-function removeFromCart(id) { cart = cart.filter(i=>i.id!==id); saveCart(); updateCartUI(); }
-function changeQty(id,d) {
-  const item = cart.find(i=>i.id===id);
+
+/** Remove a product from the cart completely */
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  saveCart();
+  updateCartUI();
+}
+
+/**
+ * Change quantity of a cart item by delta (+1 or -1).
+ * Removes item if qty drops to 0.
+ */
+function changeQty(id, d) {
+  const item = cart.find(i => i.id === id);
   if(!item) return;
   item.qty += d;
-  if(item.qty<=0) removeFromCart(id); else { saveCart(); updateCartUI(); }
+  if(item.qty <= 0) removeFromCart(id);
+  else { saveCart(); updateCartUI(); }
 }
+
+/** Clear entire cart (with confirmation dialog) */
 function clearCart() {
   if(!cart.length) return;
-  if(confirm('Hapus semua produk?')) { cart=[]; voucherDiscount=0; saveCart(); updateCartUI(); }
+  if(confirm('Hapus semua produk?')) {
+    cart = [];
+    voucherDiscount = 0;
+    saveCart();
+    updateCartUI();
+  }
 }
+
+/** Toggle cart panel open/closed */
 function toggleCart() {
   isCartOpen = !isCartOpen;
-  const overlay = document.getElementById('cartOverlay');
-  overlay.classList.toggle('hidden', !isCartOpen);
+  document.getElementById('cartOverlay').classList.toggle('hidden', !isCartOpen);
   document.body.style.overflow = isCartOpen ? 'hidden' : '';
 }
-function closeCartOutside(e) { if(e.target.id==='cartOverlay') toggleCart(); }
 
+/** Close cart when clicking the overlay background */
+function closeCartOutside(e) { if(e.target.id === 'cartOverlay') toggleCart(); }
+
+/**
+ * Re-render the cart panel UI.
+ * Updates: badges, item list, subtotal, discount, total.
+ * Called after every cart mutation.
+ */
 function updateCartUI() {
-  const total = cart.reduce((s,i)=>s+i.qty,0);
-  const subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
-  const grand = Math.max(0, subtotal-voucherDiscount);
+  const total    = cart.reduce((s,i) => s + i.qty, 0);
+  const subtotal = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const grand    = Math.max(0, subtotal - voucherDiscount);
 
-  // Badges
+  // Update badge counters
   [document.getElementById('cartBadge'), document.getElementById('cartBadge2')].forEach(b => {
     if(!b) return;
     b.textContent = total;
-    b.classList.toggle('hidden', total===0);
-    b.classList.toggle('flex', total>0);
+    b.classList.toggle('hidden', total === 0);
+    b.classList.toggle('flex',   total > 0);
   });
 
   document.getElementById('cartItemCount').textContent = `${total} produk`;
 
-  const itemsEl = document.getElementById('cartItems');
-  const emptyEl = document.getElementById('emptyCart');
+  const itemsEl  = document.getElementById('cartItems');
+  const emptyEl  = document.getElementById('emptyCart');
   const footerEl = document.getElementById('cartFooter');
 
   if(!cart.length) {
-    itemsEl.classList.add('hidden'); emptyEl.classList.remove('hidden'); footerEl.classList.add('hidden');
+    itemsEl.classList.add('hidden');
+    emptyEl.classList.remove('hidden');
+    footerEl.classList.add('hidden');
   } else {
-    itemsEl.classList.remove('hidden'); emptyEl.classList.add('hidden'); footerEl.classList.remove('hidden');
-    itemsEl.innerHTML = cart.map(item=>`
+    itemsEl.classList.remove('hidden');
+    emptyEl.classList.add('hidden');
+    footerEl.classList.remove('hidden');
+
+    itemsEl.innerHTML = cart.map(item => `
       <div class="flex gap-3 bg-gray-50 rounded-xl p-3">
         <img src="${item.images[0]}" class="w-16 h-16 object-cover rounded-lg flex-shrink-0"
-          onerror="this.src='https://placehold.co/80x80/EE4D2D/white?text=S'"/>
+          onerror="this.src='https://placehold.co/80x80/D94B38/white?text=SK'"/>
         <div class="flex-1 min-w-0">
           <p class="text-gray-800 text-xs font-semibold line-clamp-2">${item.name}</p>
           <p class="text-primary font-black text-sm mt-1">${fmt(item.price)}</p>
@@ -1849,38 +2561,57 @@ function updateCartUI() {
             <div class="flex items-center border border-gray-200 rounded-lg bg-white">
               <button onclick="changeQty(${item.id},-1)" class="qty-btn w-7 h-7 flex items-center justify-center text-gray-600 font-bold rounded-l-lg transition-colors">−</button>
               <span class="text-gray-800 text-sm font-semibold w-6 text-center">${item.qty}</span>
-              <button onclick="changeQty(${item.id},1)" class="qty-btn w-7 h-7 flex items-center justify-center text-gray-600 font-bold rounded-r-lg transition-colors">+</button>
+              <button onclick="changeQty(${item.id},+1)" class="qty-btn w-7 h-7 flex items-center justify-center text-gray-600 font-bold rounded-r-lg transition-colors">+</button>
             </div>
             <button onclick="removeFromCart(${item.id})" class="text-gray-400 p-1">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
             </button>
           </div>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
   document.getElementById('cartSubtotal').textContent = fmt(subtotal);
-  document.getElementById('cartTotal').textContent = fmt(grand);
+  document.getElementById('cartTotal').textContent    = fmt(grand);
+
   const discRow = document.getElementById('discountRow');
-  if(voucherDiscount>0) {
+  if(voucherDiscount > 0) {
     discRow.classList.remove('hidden');
     document.getElementById('discountAmt').textContent = '-' + fmt(voucherDiscount);
-  } else discRow.classList.add('hidden');
+  } else {
+    discRow.classList.add('hidden');
+  }
 }
 
-// ===================== VOUCHER =====================
+
+/* ================================================================
+   VOUCHER SYSTEM
+   ================================================================
+   [HOW TO ADD NEW VOUCHER CODES]
+   1. Add a new else-if block in applyVoucher() below
+   2. Add a matching voucher card in the #voucherModal HTML
+================================================================ */
+
+/**
+ * Validate and apply a voucher code from the cart input field.
+ * Sets voucherDiscount and calls updateCartUI().
+ */
 function applyVoucher() {
   const code = document.getElementById('voucherInput').value.trim().toUpperCase();
-  if(code==='HEMAT50K') { voucherDiscount=50000; showNotif('Voucher HEMAT50K: -Rp 50.000 ✅'); }
-  else if(code==='GRATIS10K') { voucherDiscount=10000; showNotif('Voucher GRATIS10K: -Rp 10.000 ✅'); }
-  else if(code==='NEWUSER') {
-    const sub=cart.reduce((s,i)=>s+i.price*i.qty,0);
-    voucherDiscount=Math.min(100000,Math.floor(sub*0.1));
+  if     (code === 'HEMAT50K')  { voucherDiscount = 50000; showNotif('Voucher HEMAT50K: -Rp 50.000 ✅'); }
+  else if(code === 'GRATIS10K') { voucherDiscount = 10000; showNotif('Voucher GRATIS10K: -Rp 10.000 ✅'); }
+  else if(code === 'NEWUSER')   {
+    const sub = cart.reduce((s,i) => s + i.price*i.qty, 0);
+    voucherDiscount = Math.min(100000, Math.floor(sub * 0.1));
     showNotif(`Voucher NEWUSER: -${fmt(voucherDiscount)} ✅`);
-  } else { showNotif('Kode voucher tidak valid ❌'); return; }
+  }
+  else { showNotif('Kode voucher tidak valid ❌'); return; }
   updateCartUI();
 }
+
+/** Copy voucher code to clipboard and auto-fill cart input */
 function copyVoucher(code) {
   navigator.clipboard.writeText(code).catch(()=>{});
   showNotif(`Kode ${code} disalin! ✅`);
@@ -1888,25 +2619,40 @@ function copyVoucher(code) {
   if(document.getElementById('voucherInput')) document.getElementById('voucherInput').value = code;
 }
 
-// ===================== WISHLIST =====================
+
+/* ================================================================
+   WISHLIST
+================================================================ */
+
+/**
+ * Toggle a product in/out of the wishlist.
+ * @param {number} id - product id
+ */
 function toggleWishlist(id) {
-  const p = products.find(x=>x.id===id);
+  const p   = products.find(x => x.id === id);
   if(!p) return;
-  const idx = wishlist.findIndex(w=>w.id===id);
-  if(idx>=0) { wishlist.splice(idx,1); showNotif('Dihapus dari wishlist'); }
-  else { wishlist.push(p); showNotif('Ditambahkan ke wishlist ❤️'); }
+  const idx = wishlist.findIndex(w => w.id === id);
+  if(idx >= 0) { wishlist.splice(idx,1); showNotif('Dihapus dari wishlist'); }
+  else         { wishlist.push(p);       showNotif('Ditambahkan ke wishlist ❤️'); }
   saveWishlist();
+
   const b = document.getElementById('wishlistBadge');
-  if(b) { b.textContent=wishlist.length; b.classList.toggle('hidden',!wishlist.length); b.classList.toggle('flex',!!wishlist.length); }
-  renderProducts(filteredProducts.slice(0,visibleCount));
+  if(b) {
+    b.textContent = wishlist.length;
+    b.classList.toggle('hidden', !wishlist.length);
+    b.classList.toggle('flex',   !!wishlist.length);
+  }
+  renderProducts(filteredProducts.slice(0, visibleCount));
   updateDetailWishlistBtn();
 }
+
+/** Open the wishlist modal and render current wishlist items */
 function openWishlistModal() {
   const body = document.getElementById('wishlistBody');
   if(!wishlist.length) {
-    body.innerHTML='<div class="text-center py-10"><div class="text-5xl mb-3">💔</div><p class="text-gray-500 font-semibold">Wishlistmu kosong</p></div>';
+    body.innerHTML = '<div class="text-center py-10"><div class="text-5xl mb-3">💔</div><p class="text-gray-500 font-semibold">Wishlistmu kosong</p></div>';
   } else {
-    body.innerHTML = wishlist.map(p=>`
+    body.innerHTML = wishlist.map(p => `
       <div class="flex gap-3 items-center bg-gray-50 rounded-xl p-3">
         <img src="${p.images[0]}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0"
           onerror="this.src='https://placehold.co/80x80'"/>
@@ -1918,86 +2664,158 @@ function openWishlistModal() {
           <button onclick="addToCart(${p.id});closeWishlistModal();" class="bg-primary text-white text-xs font-bold px-3 py-1.5 rounded-lg">+ Keranjang</button>
           <button onclick="toggleWishlist(${p.id});openWishlistModal();" class="border border-gray-200 text-gray-500 text-xs px-3 py-1.5 rounded-lg">Hapus</button>
         </div>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
   showModal('wishlistModal');
 }
+
 function closeWishlistModal() { hideModal('wishlistModal'); }
 
-// ===================== MODAL HELPERS =====================
+
+/* ================================================================
+   MODAL HELPERS
+================================================================ */
+
+/**
+ * Show a modal by ID (removes hidden, adds flex, locks body scroll).
+ * Clicking overlay background closes the modal.
+ * @param {string} id - element ID of the modal
+ */
 function showModal(id) {
   document.getElementById(id).classList.remove('hidden');
   document.getElementById(id).classList.add('flex');
   document.body.style.overflow = 'hidden';
-  document.getElementById(id).onclick = function(e){ if(e.target===this) hideModal(id); };
+  document.getElementById(id).onclick = function(e) { if(e.target === this) hideModal(id); };
 }
+
+/**
+ * Hide a modal by ID.
+ * @param {string} id - element ID of the modal
+ */
 function hideModal(id) {
   document.getElementById(id).classList.add('hidden');
   document.getElementById(id).classList.remove('flex');
   if(!isCartOpen) document.body.style.overflow = '';
 }
-function openVoucherModal() { showModal('voucherModal'); }
-function closeVoucherModal() { hideModal('voucherModal'); }
-function openLoginModal() { showModal('loginModal'); }
-function closeLoginModal() { hideModal('loginModal'); }
 
-// ===================== AUTH =====================
+/* Convenience wrappers */
+function openVoucherModal()  { showModal('voucherModal'); }
+function closeVoucherModal() { hideModal('voucherModal'); }
+function openLoginModal()    { showModal('loginModal');   }
+function closeLoginModal()   { hideModal('loginModal');   }
+
+
+/* ================================================================
+   AUTH (Demo only — replace with Supabase/Firebase/OAuth)
+================================================================ */
+
+/** Switch between Masuk / Daftar tabs in login modal */
 function switchAuthTab(tab) {
-  const isLogin = tab==='login';
-  document.getElementById('loginForm').classList.toggle('hidden',!isLogin);
-  document.getElementById('registerForm').classList.toggle('hidden',isLogin);
-  document.getElementById('tabLogin').style.borderBottom = isLogin?'2px solid white':'none';
-  document.getElementById('tabLogin').style.opacity = isLogin?'1':'0.7';
-  document.getElementById('tabRegister').style.borderBottom = !isLogin?'2px solid white':'none';
-  document.getElementById('tabRegister').style.opacity = !isLogin?'1':'0.7';
+  const isLogin = tab === 'login';
+  document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+  document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+  document.getElementById('tabLogin').style.borderBottom  = isLogin  ? '2px solid white' : 'none';
+  document.getElementById('tabLogin').style.opacity       = isLogin  ? '1' : '0.7';
+  document.getElementById('tabRegister').style.borderBottom = !isLogin ? '2px solid white' : 'none';
+  document.getElementById('tabRegister').style.opacity     = !isLogin ? '1' : '0.7';
 }
-function doLogin() { closeLoginModal(); document.getElementById('profileLabel').textContent='Akun'; showNotif('Berhasil masuk! Selamat belanja 🎉'); }
+
+/** Mock login — replace with real auth call */
+function doLogin()    { closeLoginModal(); showNotif('Berhasil masuk! Selamat belanja 🎉'); }
+
+/** Mock register — replace with real auth call */
 function doRegister() { closeLoginModal(); showNotif('Akun berhasil dibuat! Selamat datang 🎉'); }
 
-// ===================== NOTIFICATION =====================
+
+/* ================================================================
+   NOTIFICATIONS (Toast)
+   ================================================================
+   [HOW IT WORKS] Creates a toast div, animates in, auto-removes after 2.8s.
+   Call showNotif('Your message here') from anywhere.
+================================================================ */
+
+/**
+ * Show a toast notification.
+ * @param {string} msg - the message text (can include emoji)
+ */
 function showNotif(msg) {
-  const c = document.getElementById('notifContainer');
+  const container = document.getElementById('notifContainer');
   const el = document.createElement('div');
-  el.className='notif-enter bg-gray-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 max-w-[280px] pointer-events-auto';
-  el.innerHTML=`<div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"><svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg></div><span class="line-clamp-2">${msg}</span>`;
-  c.appendChild(el);
-  setTimeout(()=>{ el.classList.replace('notif-enter','notif-exit'); setTimeout(()=>el.remove(),300); },2800);
+  el.className = 'notif-enter bg-gray-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 max-w-[280px] pointer-events-auto';
+  el.innerHTML = `
+    <div class="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+      <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+      </svg>
+    </div>
+    <span class="line-clamp-2">${msg}</span>`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.classList.replace('notif-enter', 'notif-exit');
+    setTimeout(() => el.remove(), 300);
+  }, 2800);
 }
 
-// ===================== HOME =====================
+
+/* ================================================================
+   NAVIGATION
+================================================================ */
+
+/** Go to home: reset all filters and scroll to top */
 function goHome() {
-  currentCategory=''; currentSort='default';
+  currentCategory = '';
+  currentSort     = 'default';
   filterCategory('');
-  window.scrollTo({top:0,behavior:'smooth'});
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
-// ===================== CHECKOUT =====================
+
+/* ================================================================
+   CHECKOUT — 3-Step Flow
+   Step 1: Alamat Pengiriman
+   Step 2: Pilih Pengiriman
+   Step 3: Metode Pembayaran
+================================================================ */
+
+/** Open checkout modal: resets to step 1 and renders it */
 function openCheckout() {
   if(!cart.length) { showNotif('Keranjang masih kosong!'); return; }
-  checkoutStep=1; renderCheckoutStep(); toggleCart();
+  checkoutStep = 1;
+  renderCheckoutStep();
+  toggleCart();
   showModal('checkoutModal');
 }
+
 function closeCheckout() { hideModal('checkoutModal'); }
 
+/**
+ * Content generators for each checkout step.
+ * Each returns an HTML string injected into #checkoutBody.
+ */
 const checkoutSteps = {
   1: () => `
     <h3 class="font-black text-gray-800 text-sm mb-4">Alamat Pengiriman</h3>
     <div class="space-y-3">
-      <input id="co_name" type="text" placeholder="Nama penerima" value="${checkoutData.address.name||''}" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-      <input id="co_phone" type="tel" placeholder="No. telepon (+62...)" value="${checkoutData.address.phone||''}" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-      <textarea id="co_addr" rows="3" placeholder="Alamat lengkap (jalan, no. rumah, RT/RW)" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary resize-none">${checkoutData.address.addr||''}</textarea>
+      <input id="co_name"  type="text" placeholder="Nama penerima"             value="${checkoutData.address.name||''}"  class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+      <input id="co_phone" type="tel"  placeholder="No. telepon (+62...)"       value="${checkoutData.address.phone||''}" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+      <textarea id="co_addr" rows="3"  placeholder="Alamat lengkap (jalan, no. rumah, RT/RW)" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary resize-none">${checkoutData.address.addr||''}</textarea>
       <div class="grid grid-cols-2 gap-3">
-        <input id="co_city" type="text" placeholder="Kota" value="${checkoutData.address.city||''}" class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
-        <input id="co_zip" type="text" placeholder="Kode pos" value="${checkoutData.address.zip||''}" class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+        <input id="co_city" type="text" placeholder="Kota"      value="${checkoutData.address.city||''}" class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
+        <input id="co_zip"  type="text" placeholder="Kode pos"  value="${checkoutData.address.zip||''}"  class="border border-gray-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-primary"/>
       </div>
     </div>`,
+
   2: () => `
     <h3 class="font-black text-gray-800 text-sm mb-3">Pilih Pengiriman</h3>
     <div class="space-y-2 mb-4">
-      ${[{id:'jne',name:'JNE Regular',est:'2-3 Hari',price:'Gratis',icon:'📦'},{id:'sicepat',name:'SiCepat BEST',est:'1-2 Hari',price:'Gratis',icon:'⚡'},{id:'jnt',name:'J&T Express',est:'2-4 Hari',price:'Gratis',icon:'🚚'},{id:'anteraja',name:'Anteraja',est:'1-2 Hari',price:'Rp 8.000',icon:'🏎️'}].map(s=>`
+      ${[{id:'jne',name:'JNE Regular',est:'2-3 Hari',price:'Gratis',icon:'📦'},
+         {id:'sicepat',name:'SiCepat BEST',est:'1-2 Hari',price:'Gratis',icon:'⚡'},
+         {id:'jnt',name:'J&T Express',est:'2-4 Hari',price:'Gratis',icon:'🚚'},
+         {id:'anteraja',name:'Anteraja',est:'1-2 Hari',price:'Rp 8.000',icon:'🏎️'}].map(s=>`
         <label class="cursor-pointer block">
-          <input type="radio" name="shipping" value="${s.id}" class="hidden peer" ${checkoutData.shipping.id===s.id?'checked':''} onchange="checkoutData.shipping={id:'${s.id}',name:'${s.name}'}">
+          <input type="radio" name="shipping" value="${s.id}" class="hidden peer"
+            ${checkoutData.shipping.id===s.id?'checked':''}
+            onchange="checkoutData.shipping={id:'${s.id}',name:'${s.name}'}">
           <div class="border-2 border-gray-200 peer-checked:border-primary peer-checked:bg-primaryLight rounded-xl p-3 flex items-center gap-3 transition-all">
             <span class="text-xl">${s.icon}</span>
             <div class="flex-1"><p class="text-gray-800 font-bold text-sm">${s.name}</p><p class="text-gray-500 text-xs">${s.est}</p></div>
@@ -2009,14 +2827,21 @@ const checkoutSteps = {
       <p class="text-gray-700 font-bold text-xs mb-2">Ringkasan</p>
       ${cart.slice(0,3).map(i=>`<div class="flex justify-between text-xs text-gray-600 mb-1"><span class="line-clamp-1 flex-1 mr-2">${i.name} x${i.qty}</span><span>${fmt(i.price*i.qty)}</span></div>`).join('')}
       ${cart.length>3?`<p class="text-xs text-gray-400">+${cart.length-3} produk lagi</p>`:''}
-      <div class="border-t border-gray-200 mt-2 pt-2 flex justify-between text-sm font-black"><span>Total</span><span class="text-primary">${fmt(Math.max(0,cart.reduce((s,i)=>s+i.price*i.qty,0)-voucherDiscount))}</span></div>
+      <div class="border-t border-gray-200 mt-2 pt-2 flex justify-between text-sm font-black">
+        <span>Total</span>
+        <span class="text-primary">${fmt(Math.max(0,cart.reduce((s,i)=>s+i.price*i.qty,0)-voucherDiscount))}</span>
+      </div>
     </div>`,
+
   3: () => `
     <h3 class="font-black text-gray-800 text-sm mb-3">Metode Pembayaran</h3>
     <div class="space-y-2 mb-4">
-      ${[{id:'gopay',label:'GoPay',icon:'💚'},{id:'ovo',label:'OVO',icon:'💜'},{id:'dana',label:'DANA',icon:'💙'},{id:'bca',label:'BCA Virtual Account',icon:'🏦'},{id:'mandiri',label:'Mandiri Virtual Account',icon:'🏦'},{id:'cod',label:'COD (Bayar di Tempat)',icon:'💵'}].map(m=>`
+      ${[{id:'gopay',label:'GoPay',icon:'💚'},{id:'ovo',label:'OVO',icon:'💜'},
+         {id:'dana',label:'DANA',icon:'💙'},{id:'bca',label:'BCA Virtual Account',icon:'🏦'},
+         {id:'mandiri',label:'Mandiri Virtual Account',icon:'🏦'},{id:'cod',label:'COD (Bayar di Tempat)',icon:'💵'}].map(m=>`
         <label class="cursor-pointer block">
-          <input type="radio" name="payment" value="${m.id}" class="hidden peer" ${checkoutData.payment===m.id?'checked':''} onchange="checkoutData.payment='${m.id}'">
+          <input type="radio" name="payment" value="${m.id}" class="hidden peer"
+            ${checkoutData.payment===m.id?'checked':''} onchange="checkoutData.payment='${m.id}'">
           <div class="border-2 border-gray-200 peer-checked:border-primary peer-checked:bg-primaryLight rounded-xl p-3 flex items-center gap-3 transition-all">
             <span class="text-xl">${m.icon}</span>
             <div class="flex-1"><p class="text-gray-800 font-bold text-sm">${m.label}</p></div>
@@ -2027,124 +2852,183 @@ const checkoutSteps = {
       <div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Subtotal</span><span class="font-semibold">${fmt(cart.reduce((s,i)=>s+i.price*i.qty,0))}</span></div>
       ${voucherDiscount>0?`<div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Diskon Voucher</span><span class="text-green-600 font-semibold">-${fmt(voucherDiscount)}</span></div>`:''}
       <div class="flex justify-between text-sm mb-1"><span class="text-gray-600">Ongkos Kirim</span><span class="text-green-600 font-semibold">Gratis</span></div>
-      <div class="flex justify-between text-sm font-black border-t border-primary/20 pt-2 mt-1"><span>Total Bayar</span><span class="text-primary">${fmt(Math.max(0,cart.reduce((s,i)=>s+i.price*i.qty,0)-voucherDiscount))}</span></div>
+      <div class="flex justify-between text-sm font-black border-t border-primary/20 pt-2 mt-1">
+        <span>Total Bayar</span>
+        <span class="text-primary">${fmt(Math.max(0,cart.reduce((s,i)=>s+i.price*i.qty,0)-voucherDiscount))}</span>
+      </div>
     </div>`
 };
 
+/** Render the current checkout step content and update the step indicator */
 function renderCheckoutStep() {
   document.getElementById('checkoutBody').innerHTML = checkoutSteps[checkoutStep]();
-  [1,2,3].forEach(s=>{
-    const dot=document.getElementById(`step${s}dot`);
-    if(s<checkoutStep){dot.className='step-done w-7 h-7 rounded-full flex items-center justify-center text-xs font-black';dot.textContent='✓';}
-    else if(s===checkoutStep){dot.className='step-active w-7 h-7 rounded-full flex items-center justify-center text-xs font-black';dot.textContent=s;}
-    else{dot.className='w-7 h-7 bg-white/30 rounded-full flex items-center justify-center text-xs font-black text-white';dot.textContent=s;}
+
+  // Update step dots
+  [1,2,3].forEach(s => {
+    const dot = document.getElementById(`step${s}dot`);
+    if(s < checkoutStep) {
+      dot.className = 'step-done w-7 h-7 rounded-full flex items-center justify-center text-xs font-black';
+      dot.textContent = '✓';
+    } else if(s === checkoutStep) {
+      dot.className = 'step-active w-7 h-7 rounded-full flex items-center justify-center text-xs font-black';
+      dot.textContent = s;
+    } else {
+      dot.className = 'w-7 h-7 bg-white/30 rounded-full flex items-center justify-center text-xs font-black text-white';
+      dot.textContent = s;
+    }
   });
-  document.getElementById('checkoutBack').classList.toggle('hidden',checkoutStep===1);
-  document.getElementById('checkoutNext').textContent = checkoutStep===3?'✅ Bayar Sekarang':'Lanjut →';
+
+  document.getElementById('checkoutBack').classList.toggle('hidden', checkoutStep === 1);
+  document.getElementById('checkoutNext').textContent = checkoutStep === 3 ? '✅ Bayar Sekarang' : 'Lanjut →';
 }
 
+/** Validate current step and advance to next (or trigger payment on step 3) */
 function checkoutNext() {
-  if(checkoutStep===1){
-    const name=document.getElementById('co_name')?.value.trim();
-    const phone=document.getElementById('co_phone')?.value.trim();
-    const addr=document.getElementById('co_addr')?.value.trim();
-    if(!name||!phone||!addr){showNotif('Lengkapi semua data alamat!');return;}
-    checkoutData.address={name,phone,addr,city:document.getElementById('co_city')?.value,zip:document.getElementById('co_zip')?.value};
+  // Step 1: validate address
+  if(checkoutStep === 1) {
+    const name  = document.getElementById('co_name')?.value.trim();
+    const phone = document.getElementById('co_phone')?.value.trim();
+    const addr  = document.getElementById('co_addr')?.value.trim();
+    if(!name || !phone || !addr) { showNotif('Lengkapi semua data alamat!'); return; }
+    checkoutData.address = {
+      name, phone, addr,
+      city: document.getElementById('co_city')?.value,
+      zip:  document.getElementById('co_zip')?.value
+    };
   }
-  if(checkoutStep===2){
-    const sel=document.querySelector('input[name="shipping"]:checked');
-    if(!sel){showNotif('Pilih metode pengiriman!');return;}
-    checkoutData.shipping={id:sel.value};
+  // Step 2: validate shipping selection
+  if(checkoutStep === 2) {
+    const sel = document.querySelector('input[name="shipping"]:checked');
+    if(!sel) { showNotif('Pilih metode pengiriman!'); return; }
+    checkoutData.shipping = { id: sel.value };
   }
-  if(checkoutStep===3){
-    const sel=document.querySelector('input[name="payment"]:checked');
-    if(!sel){showNotif('Pilih metode pembayaran!');return;}
-    checkoutData.payment=sel.value;
+  // Step 3: validate payment and process order
+  if(checkoutStep === 3) {
+    const sel = document.querySelector('input[name="payment"]:checked');
+    if(!sel) { showNotif('Pilih metode pembayaran!'); return; }
+    checkoutData.payment = sel.value;
     processOrder();
     return;
   }
   checkoutStep++;
   renderCheckoutStep();
 }
-function checkoutPrev(){if(checkoutStep>1){checkoutStep--;renderCheckoutStep();}}
 
+/** Go back one checkout step */
+function checkoutPrev() {
+  if(checkoutStep > 1) { checkoutStep--; renderCheckoutStep(); }
+}
+
+/**
+ * Process the order after checkout step 3 completion.
+ * [INTEGRATION POINT] Calls PaymentGateway.initiatePayment() and
+ * ShippingService.createShipment() — replace mocks with real APIs.
+ */
 async function processOrder() {
-  const total=Math.max(0,cart.reduce((s,i)=>s+i.price*i.qty,0)-voucherDiscount);
-  const orderId='SK'+Date.now().toString().slice(-8);
+  const total   = Math.max(0, cart.reduce((s,i) => s+i.price*i.qty, 0) - voucherDiscount);
+  const orderId = 'SK' + Date.now().toString().slice(-8);
+
   closeCheckout();
   showNotif('Memproses pembayaran...');
 
   try {
-    // === PAYMENT GATEWAY INTEGRATION ===
-    const order = {
-      orderId,
-      amount: total,
+    // ── INTEGRATION POINT: real payment gateway ──
+    const payResult = await PaymentGateway.initiatePayment({
+      orderId, amount:total,
       customer: checkoutData.address,
-      items: cart.map(i=>({id:i.id,name:i.name,price:i.price,qty:i.qty})),
+      items: cart.map(i => ({id:i.id, name:i.name, price:i.price, qty:i.qty})),
       paymentMethod: checkoutData.payment,
-    };
-    const payResult = await PaymentGateway.initiatePayment(order);
-
-    // === RESI AUTO-CREATE (after payment confirmed) ===
-    const shipResult = await ShippingService.createShipment({
-      orderId,
-      courier: checkoutData.shipping.id || 'jne',
-      sender: {name:'ShopKita Warehouse',city:'Jakarta'},
-      recipient: checkoutData.address,
-      items: cart,
     });
 
-    // Show success
-    document.getElementById('orderNumber').textContent = orderId;
+    // ── INTEGRATION POINT: auto-create shipment after payment ──
+    const shipResult = await ShippingService.createShipment({
+      orderId, courier: checkoutData.shipping.id || 'jne',
+      sender:    { name:'ShopKita Warehouse', city:'Jakarta' },
+      recipient: checkoutData.address,
+      items:     cart,
+    });
+
+    // Show success modal
+    document.getElementById('orderNumber').textContent  = orderId;
     document.getElementById('successTotal').textContent = fmt(total);
 
-    // Payment reference
     if(payResult.reference) {
       document.getElementById('paymentGatewayStatus').classList.remove('hidden');
-      document.getElementById('paymentGatewayRef').textContent = 'Ref: '+payResult.reference;
+      document.getElementById('paymentGatewayRef').textContent = 'Ref: ' + payResult.reference;
     }
-    // Resi
     if(shipResult.resiNumber) {
       document.getElementById('resiStatus').classList.remove('hidden');
       document.getElementById('resiNumber').textContent = shipResult.resiNumber;
     }
 
     showModal('successModal');
-    cart=[]; voucherDiscount=0; saveCart(); updateCartUI();
+
+    // Clear cart after successful order
+    cart = [];
+    voucherDiscount = 0;
+    saveCart();
+    updateCartUI();
+
   } catch(err) {
     showNotif('Gagal memproses pembayaran. Coba lagi!');
   }
 }
 
-function closeSuccessModal(){
+/** Close success modal and reset payment/resi status displays */
+function closeSuccessModal() {
   document.getElementById('paymentGatewayStatus').classList.add('hidden');
   document.getElementById('resiStatus').classList.add('hidden');
   hideModal('successModal');
 }
 
-// ===================== INIT =====================
-(function init(){
-  // Skeleton → products
-  setTimeout(()=>{
+
+/* ================================================================
+   INITIALIZATION
+   ================================================================
+   Runs once on page load: hides skeleton, shows products, updates UI.
+================================================================ */
+(function init() {
+  // Simulate async product load (900ms skeleton then real data)
+  setTimeout(() => {
     document.getElementById('skeletonGrid').classList.add('hidden');
     applyFilters();
   }, 900);
+
+  // Update cart UI from localStorage data
   updateCartUI();
-  // Wishlist badge
-  const b=document.getElementById('wishlistBadge');
-  if(wishlist.length){b.textContent=wishlist.length;b.classList.remove('hidden');b.classList.add('flex');}
+
+  // Update wishlist badge from localStorage data
+  const b = document.getElementById('wishlistBadge');
+  if(wishlist.length) {
+    b.textContent = wishlist.length;
+    b.classList.remove('hidden');
+    b.classList.add('flex');
+  }
 })();
+
 </script>
 
+
+<!-- ================================================================
+     SUPABASE — Database integration
+     [HOW TO USE]
+     - Replace supabaseUrl and supabaseKey with your project values
+     - Use `supabase` client for auth, db queries, realtime, storage
+     - Docs: https://supabase.com/docs
+================================================================ -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+  /* ── REPLACE THESE with your actual Supabase project credentials ── */
   const supabaseUrl = 'https://fctmswfmuvqwueeumtgw.supabase.co'
   const supabaseKey = 'sb_publishable_45vumZUaNKPC6TKEkM8lQQ_exUm9CB7'
 
   const supabase = createClient(supabaseUrl, supabaseKey)
 
-  console.log("Supabase Connected:", supabase)
+  /* Expose globally so other scripts can use it if needed */
+  window.supabase = supabase
+
+  console.log('✅ Supabase Connected:', supabase)
 </script>
 
 </body>
