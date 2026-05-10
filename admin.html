@@ -294,7 +294,7 @@
 
     loadProducts()
 
-    async function openEditModal(id) {
+    window.openEditModal = async function(id) {
 
   selectedProductId = id;
 
@@ -321,7 +321,7 @@
     .classList.add('flex');
 }
 
-function closeEditModal() {
+window.closeEditModal = function() {
 
   document.getElementById('editModal')
     .classList.add('hidden');
@@ -329,7 +329,7 @@ function closeEditModal() {
   document.getElementById('editModal')
     .classList.remove('flex');
 }
-async function updateProduct() {
+window.updateProduct = async function() {
 
   const title = document.getElementById('editTitle').value;
   const price = document.getElementById('editPrice').value;
