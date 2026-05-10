@@ -85,6 +85,13 @@
       gap: 1px !important;
       background: #e5e7eb !important;
       padding: 0 !important;
+      /* Fix: ensure grid is never 0-height when visible */
+      min-height: 200px;
+    }
+    /* Fix: when hidden class is present, truly hide */
+    #productGrid.hidden {
+      display: none !important;
+      min-height: 0;
     }
     #skeletonGrid {
       display: grid;
@@ -659,8 +666,8 @@
       /* Hide bottom nav on desktop */
       nav.fixed.bottom-0 { display:none !important; }
 
-      /* Sort bar sticky offset: below header */
-      #productsSection .sticky { top:60px !important; }
+    /* Sort bar sticky offset: below header */
+      #productsSection .sticky { top: 56px !important; }
 
       /* ── Desktop Detail Page: shown as modal ── */
       #detailPage {
@@ -1097,7 +1104,7 @@
   <section class="mt-2" id="productsSection">
 
     <!-- Sort / filter bar: sticky below header -->
-    <div class="bg-white px-3 py-2.5 flex items-center justify-between border-b border-gray-100 sticky top-[96px] z-30">
+    <div class="bg-white px-3 py-2.5 flex items-center justify-between border-b border-gray-100 sticky z-30" id="sortBar" style="top:96px">
       <h3 id="sectionTitle" class="text-gray-800 font-black text-[13px] flex items-center gap-1.5">
         <span class="w-1 h-4 bg-primary rounded-full inline-block"></span>
         Produk Populer
@@ -2113,13 +2120,19 @@ function renderProducts(list) {
   const grid  = document.getElementById('productGrid');
   const empty = document.getElementById('emptyState');
 
+  // Guard: if elements missing, bail out gracefully
+  if (!grid || !empty) return;
+
   if (!list.length) {
+    grid.innerHTML = '';
     grid.classList.add('hidden');
     empty.classList.remove('hidden');
     return;
   }
   empty.classList.add('hidden');
+  // Always force-remove hidden AND display:none so grid is visible
   grid.classList.remove('hidden');
+  grid.style.display = '';
 
   const inWL = id => wishlist.some(w => w.id === id);
 
@@ -3190,11 +3203,42 @@ function closeSuccessModal() {
    Runs once on page load: hides skeleton, shows products, updates UI.
 ================================================================ */
 (function init() {
+  // Fix: calculate sticky sort bar top offset dynamically after DOM ready
+  function fixSortBarTop() {
+    const header = document.getElementById('mainHeader');
+    const sortBar = document.getElementById('sortBar');
+    if (header && sortBar) {
+      const h = Math.ceil(header.getBoundingClientRect().height);
+      sortBar.style.top = h + 'px';
+    }
+  }
+
+  // Fix sticky top immediately on load (before skeleton hides)
+  fixSortBarTop();
+
   // Simulate async product load (900ms skeleton then real data)
-  setTimeout(() => {
-    document.getElementById('skeletonGrid').classList.add('hidden');
-    applyFilters();
+  const skelTimer = setTimeout(() => {
+    const skel = document.getElementById('skeletonGrid');
+    if (skel) skel.classList.add('hidden');
+
+    try {
+      applyFilters();
+    } catch(e) {
+      // Fallback: force render all products if applyFilters throws
+      console.warn('applyFilters error, falling back to full render', e);
+      const grid = document.getElementById('productGrid');
+      if (grid) {
+        grid.classList.remove('hidden');
+        grid.style.display = '';
+        renderProducts(products.slice(0, 10));
+      }
+    }
+
+    fixSortBarTop();
   }, 900);
+
+  // Fix sticky top on resize (e.g. device rotation or desktop resize)
+  window.addEventListener('resize', fixSortBarTop);
 
   // Update cart UI from localStorage data
   updateCartUI();
