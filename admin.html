@@ -43,11 +43,11 @@
         />
 
         <input
-          id="image"
-          type="text"
-          placeholder="URL Gambar"
-          class="border p-4 rounded-xl"
-        />
+  id="image"
+  type="file"
+  accept="image/*"
+  class="border p-4 rounded-xl"
+/>
 
         <input
           id="category"
@@ -207,8 +207,8 @@
       const price =
       document.getElementById('price').value
 
-      const image =
-      document.getElementById('image').value
+      const imageFile =
+document.getElementById('image').files[0]
 
       const category =
       document.getElementById('category').value
@@ -224,6 +224,28 @@
         alert('Semua field wajib diisi!')
         return
       }
+
+      const fileName =
+`${Date.now()}-${imageFile.name}`
+
+const { error: uploadError } = await supabase
+  .storage
+  .from('product-images')
+  .upload(fileName, imageFile)
+
+if (uploadError) {
+  console.log(uploadError)
+  alert('Gagal upload gambar')
+  return
+}
+
+const { data: publicUrlData } = supabase
+  .storage
+  .from('product-images')
+  .getPublicUrl(fileName)
+
+const image =
+publicUrlData.publicUrl
 
       // INSERT TO DATABASE
 
