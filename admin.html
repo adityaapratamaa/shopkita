@@ -113,6 +113,7 @@
     const supabase =
     createClient(supabaseUrl, supabaseKey)
     let selectedProductId = null;
+    let currentImageUrl = '';
 
     // =========================
     // LOAD PRODUCTS
@@ -333,7 +334,10 @@ publicUrlData.publicUrl
 
   document.getElementById('editTitle').value = data.title;
   document.getElementById('editPrice').value = data.price;
-  document.getElementById('editImage').value = data.image;
+  currentImageUrl = data.image;
+
+document.getElementById('editPreview').src =
+data.image;
   document.getElementById('editCategory').value = data.category;
 
   document.getElementById('editModal')
@@ -355,7 +359,33 @@ window.updateProduct = async function() {
 
   const title = document.getElementById('editTitle').value;
   const price = document.getElementById('editPrice').value;
-  const image = document.getElementById('editImage').value;
+  const imageFile =
+document.getElementById('editImage').files[0];
+
+let image = currentImageUrl;
+if (imageFile) {
+
+  const fileName =
+  `${Date.now()}-${imageFile.name}`
+
+  const { error: uploadError } = await supabase
+    .storage
+    .from('product-images')
+    .upload(fileName, imageFile)
+
+  if (uploadError) {
+    console.log(uploadError)
+    alert('Gagal upload gambar baru')
+    return
+  }
+
+  const { data: publicUrlData } = supabase
+    .storage
+    .from('product-images')
+    .getPublicUrl(fileName)
+
+  image = publicUrlData.publicUrl
+}
   const category = document.getElementById('editCategory').value;
 
   const { error } = await supabase
@@ -410,12 +440,17 @@ window.updateProduct = async function() {
       class="w-full border p-3 rounded mb-3"
     >
 
+    <img
+  id="editPreview"
+  class="w-full h-48 object-cover rounded mb-3"
+/>
+
     <input
-      type="text"
-      id="editImage"
-      placeholder="URL Gambar"
-      class="w-full border p-3 rounded mb-3"
-    >
+  type="file"
+  id="editImage"
+  accept="image/*"
+  class="w-full border p-3 rounded mb-3"
+/>
 
     <input
       type="text"
