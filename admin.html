@@ -43,6 +43,63 @@
   <div class="flex-1 p-10">
 
   <div class="max-w-6xl mx-auto">
+    <!-- STATS -->
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
+
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500">
+      Total Produk
+    </p>
+
+    <h2
+      id="totalProducts"
+      class="text-3xl font-bold mt-2"
+    >
+      0
+    </h2>
+  </div>
+
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500">
+      Total Orders
+    </p>
+
+    <h2
+      id="totalOrders"
+      class="text-3xl font-bold mt-2"
+    >
+      0
+    </h2>
+  </div>
+
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500">
+      Revenue
+    </p>
+
+    <h2
+      id="totalRevenue"
+      class="text-3xl font-bold mt-2"
+    >
+      Rp 0
+    </h2>
+  </div>
+
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500">
+      Pending Orders
+    </p>
+
+    <h2
+      id="pendingOrders"
+      class="text-3xl font-bold mt-2"
+    >
+      0
+    </h2>
+  </div>
+
+</div>
 
     <!-- TITLE -->
 
@@ -204,6 +261,47 @@ window.logout = async function() {
   alert('Logout berhasil')
 
   location.reload()
+}
+// =========================
+// LOAD STATS
+// =========================
+
+async function loadStats() {
+
+  // TOTAL PRODUCTS
+  const { data: products } = await supabase
+    .from('products')
+    .select('*')
+
+  document.getElementById('totalProducts')
+    .innerText = products.length
+
+  // TOTAL ORDERS
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('*')
+
+  document.getElementById('totalOrders')
+    .innerText = orders.length
+
+  // TOTAL REVENUE
+  const revenue = orders.reduce(
+    (sum, order) =>
+      sum + Number(order.total_price),
+    0
+  )
+
+  document.getElementById('totalRevenue')
+    .innerText =
+    'Rp ' + revenue.toLocaleString('id-ID')
+
+  // PENDING ORDERS
+  const pending = orders.filter(
+    order => order.status === 'pending'
+  )
+
+  document.getElementById('pendingOrders')
+    .innerText = pending.length
 }
 
     // =========================
@@ -406,7 +504,8 @@ publicUrlData.publicUrl
     // INITIAL LOAD
     // =========================
     checkAuth()
-    loadProducts()
+loadProducts()
+loadStats()
 
     window.openEditModal = async function(id) {
 
