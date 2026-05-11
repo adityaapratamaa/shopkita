@@ -671,89 +671,69 @@
     /* Sort bar sticky offset: below header */
       #productsSection .sticky { top: 56px !important; }
 
-      /* ═══════════════════════════════════════════════════
-         DESKTOP DETAIL PAGE — Shopee-style full page
-         Approach: #detailPage scrolls normally (no overflow tricks)
-         Two-column grid inside; left col uses align-self:start +
-         position:sticky ONLY on the inner img div — not the grid col.
-         This is the stable, proven pattern (no jank).
-         ═══════════════════════════════════════════════════ */
-
-      /* 1. Full-page scroll container */
+      /* ── Desktop Detail Page: Full-page Shopee-style layout ── */
       #detailPage {
         background: #f5f5f5 !important;
         overflow-y: auto !important;
-        overflow-x: hidden !important;
       }
       #detailPage.open {
         display: block !important;
         padding: 0 !important;
       }
       #detailMobileHeader { display:none !important; }
+      #detailDesktopHeader { display:flex !important; }
+      #detailInnerWrap {
+        background: transparent !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+      }
+
+      /* Desktop sticky header */
       #detailDesktopHeader {
-        display: flex !important;
         position: sticky !important;
         top: 0 !important;
         z-index: 20 !important;
         border-bottom: 1px solid rgba(255,255,255,0.15) !important;
       }
 
-      /* 2. InnerWrap: simple full-width wrapper */
-      #detailInnerWrap {
-        background: transparent !important;
-        border-radius: 0 !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow: visible !important;
-        padding-bottom: 80px !important;
-      }
-
-      /* 3. Two-column grid — align-items:start is KEY for sticky to work */
+      /* Two-column layout wrapper */
       #detailContent {
         max-width: 1200px !important;
         margin: 0 auto !important;
-        padding: 20px 20px 0 !important;
+        padding: 24px 24px 40px !important;
         display: grid !important;
-        grid-template-columns: 460px 1fr !important;
+        grid-template-columns: 500px 1fr !important;
         gap: 20px !important;
-        align-items: start !important;  /* MUST be start, not stretch */
+        align-items: start !important;
       }
 
-      /* 4. LEFT COLUMN — sticky at top offset by header height */
+      /* Left column: image area */
       #detailImgCol {
-        grid-column: 1 !important;
         position: sticky !important;
-        top: 56px !important;           /* header height */
-        background: #fff !important;
-        border-radius: 10px !important;
-        padding: 16px !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.07) !important;
-        /* will-change:transform creates own stacking context → GPU composited → no jank */
-        will-change: transform !important;
-        transform: translateZ(0) !important;
+        top: 70px !important;
+        grid-column: 1 !important;
       }
 
-      /* 5. RIGHT COLUMN — natural flow, no scroll tricks needed */
+      /* Right column: all info */
       #detailInfoCol {
         grid-column: 2 !important;
-        min-width: 0 !important;
       }
 
-      /* 6. Image slider — fixed height inside the sticky card */
+      /* Desktop image slider height */
       #detailInnerWrap #imgSliderWrap {
-        height: 420px !important;
+        height: 500px !important;
         border-radius: 8px !important;
         overflow: hidden !important;
       }
       #detailInnerWrap #detailImgTrack { height:100% !important; }
       #detailInnerWrap #detailImgTrack > div { height:100% !important; }
-      #detailInnerWrap #detailImgTrack img {
-        height: 100% !important;
-        object-fit: contain !important;
-        background: #f8f8f8;
-      }
+      #detailInnerWrap #detailImgTrack img { height:100% !important; object-fit:contain !important; background:#fff; }
 
-      /* 7. Nav arrows */
+      /* Desktop prev/next nav arrows on detail image */
       .detail-nav-btn {
         align-items: center; justify-content: center;
         width: 40px; height: 40px; border-radius: 50%;
@@ -761,15 +741,16 @@
         border: none; cursor: pointer;
         font-size: 26px; line-height: 1;
         backdrop-filter: blur(4px);
-        transition: background 0.18s, opacity 0.18s;
-        opacity: 0; z-index: 10; padding: 0;
+        transition: background 0.18s, transform 0.15s, opacity 0.18s;
+        opacity: 0; z-index: 10;
+        padding: 0;
       }
       #imgSliderWrap:hover .detail-nav-btn { opacity: 1; }
-      .detail-nav-btn:hover { background: rgba(0,0,0,0.68); }
-      .detail-nav-btn:active { opacity: 0.7; }
+      .detail-nav-btn:hover { background: rgba(0,0,0,0.68); transform: translateY(-50%) scale(1.08); }
+      .detail-nav-btn:active { transform: translateY(-50%) scale(0.96); }
 
-      /* 8. Thumbnail strip */
-      #detailImgCol .detail-thumbs-wrap {
+      /* Thumbnail strip — horizontal below main image */
+      #detailInnerWrap .detail-thumbs-wrap {
         display: flex !important;
         gap: 8px !important;
         padding: 10px 0 0 !important;
@@ -777,36 +758,28 @@
         background: transparent !important;
         border: none !important;
       }
-      #detailImgCol .detail-thumb {
-        width: 60px !important; height: 60px !important;
+      #detailInnerWrap .detail-thumb {
+        width: 64px !important; height: 64px !important;
         border-radius: 6px !important; flex-shrink: 0 !important;
       }
 
-      /* 9. Right column cards */
+      /* Right column cards */
       #detailInfoCol .bg-white {
         border-radius: 8px !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
         margin-top: 0 !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
       }
 
-      /* 10. Reviews: capped with internal scroll — unlimited reviews, fixed height */
-      #detailInfoCol .space-y-4 {
-        max-height: 380px !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain !important;
-        padding-right: 6px !important;
-        scrollbar-width: thin !important;
-      }
-
-      /* 11. Bottom bar: sticky at the end of scroll */
+      /* Bottom bar: sticky at bottom of viewport */
       #detailBottomBar {
         position: sticky !important;
         bottom: 0 !important;
-        left: unset !important;
-        right: unset !important;
-        z-index: 15 !important;
-        box-shadow: 0 -2px 12px rgba(0,0,0,0.10) !important;
+        left: unset !important; right: unset !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        border-radius: 8px 8px 0 0 !important;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.08) !important;
       }
 
       /* Footer: 4 columns on desktop */
@@ -2451,8 +2424,14 @@ function openDetailPage(id) {
   const page = document.getElementById('detailPage');
   page.classList.add('open');
 
-  document.body.style.overflow = 'hidden';
-  page.scrollTop = 0;
+  // Scroll to top
+  if(window.innerWidth >= 768) {
+    document.body.style.overflow = 'hidden';
+    page.scrollTop = 0;
+  } else {
+    page.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
 
   history.pushState({ sk: 'detail', id }, '');
   attachImageSwipe();
