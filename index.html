@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
   <title>ShopKita - Belanja Online Terpercaya</title>
 
   <!-- Tailwind CDN — used for utility classes throughout the app -->
@@ -35,8 +35,17 @@
     /* ================================================================
        GLOBAL RESETS & UTILITIES
     ================================================================ */
-    * { font-family: 'Sora', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background: #f4f4f5; }
+    *, *::before, *::after { font-family: 'Sora', sans-serif; -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    html {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    body {
+      background: #f4f4f5;
+      overflow-x: hidden;
+      max-width: 100%;
+      position: relative;
+    }
 
     /* ── Brand Gradient (header + accents) ── */
     .gradient-header { background: linear-gradient(135deg, #D94B38 0%, #F47838 100%); }
@@ -44,6 +53,17 @@
     /* ── Hide scrollbars on overflow containers ── */
     .hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
     .hide-scrollbar::-webkit-scrollbar { display:none; }
+
+    /* ── Prevent horizontal scroll globally ── */
+    #mainHeader,
+    #mainPage,
+    main,
+    section,
+    footer,
+    nav.fixed {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
 
     /* ── Skeleton loading shimmer animation ──
        Usage: <div class="skeleton rounded-lg h-40"></div>
@@ -85,16 +105,7 @@
       gap: 1px !important;
       background: #e5e7eb !important;
       padding: 0 !important;
-      /* Fix: ensure grid is never 0-height when visible */
-      min-height: 200px;
     }
-    /* Fix: when hidden class is present, truly hide — override display:grid !important */
-    #productGrid.hidden,
-    #skeletonGrid.hidden {
-      display: none !important;
-      min-height: 0;
-    }
-    /* Fix: skeletonGrid uses same grid layout */
     #skeletonGrid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -242,7 +253,7 @@
     .progress-bar { transition:width 0.3s ease; }
 
     /* ── Search Overlay (full-screen search page) ── */
-    #searchOverlay { display:none; position:fixed; inset:0; z-index:55; background:white; overflow-y:auto; }
+    #searchOverlay { display:none; position:fixed; inset:0; z-index:55; background:white; overflow-y:auto; overflow-x:hidden; max-width:100vw; }
     #searchOverlay.open { display:block; }
 
 
@@ -272,6 +283,8 @@
       background: linear-gradient(135deg, #B83328 0%, #D94B38 35%, #E86030 70%, #F47838 100%);
       position: relative;
       overflow: hidden;
+      width: 100%;
+      max-width: 100%;
     }
 
     /* ── Decorative animated background blobs (CSS circles) ──
@@ -318,6 +331,8 @@
       flex-direction: column;
       padding: 14px 12px 6px;
       gap: 10px;
+      width: 100%;
+      max-width: 100%;
     }
     @media (min-width: 768px) {
       .hero-content-wrap {
@@ -422,6 +437,7 @@
     .hero-cards-panel {
       flex: 1;
       min-width: 0;
+      max-width: 100%;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -579,10 +595,13 @@
       gap: 6px;
       padding: 4px 12px 12px;
       overflow-x: auto;
+      overflow-y: hidden;
       position: relative;
       z-index: 1;
       -ms-overflow-style: none;
       scrollbar-width: none;
+      width: 100%;
+      max-width: 100%;
     }
     .hero-quicklinks::-webkit-scrollbar { display: none; }
     .hero-quicklink {
@@ -644,7 +663,7 @@
       #categoryIconGrid { grid-template-columns:repeat(10,1fr) !important; }
 
       /* Product grid: 5 columns on desktop */
-      #productGrid:not(.hidden), #skeletonGrid:not(.hidden) {
+      #productGrid, #skeletonGrid {
         grid-template-columns: repeat(5,1fr) !important;
         gap: 8px !important;
         background: #f4f4f5 !important;
@@ -668,8 +687,8 @@
       /* Hide bottom nav on desktop */
       nav.fixed.bottom-0 { display:none !important; }
 
-    /* Sort bar sticky offset: below header */
-      #productsSection .sticky { top: 56px !important; }
+      /* Sort bar sticky offset: below header */
+      #productsSection .sticky { top:60px !important; }
 
       /* ── Desktop Detail Page: shown as modal ── */
       #detailPage {
@@ -843,7 +862,7 @@
       </div>
 
       <!-- Nav strip: quick category links -->
-      <div class="flex items-center gap-4 mt-2 overflow-x-auto hide-scrollbar pb-0.5">
+      <div class="flex items-center gap-4 mt-2 overflow-x-auto overflow-y-hidden hide-scrollbar pb-0.5" style="max-width:100%;">
         <a href="#" onclick="openVoucherModal();return false;"              class="text-white/90 text-xs font-medium whitespace-nowrap">🎟️ Voucher</a>
         <a href="#"                                                         class="text-white/90 text-xs font-medium whitespace-nowrap">🚚 Gratis Ongkir</a>
         <a href="#" onclick="setSortMode('sold');return false;"             class="text-white/90 text-xs font-medium whitespace-nowrap">🔥 Terlaris</a>
@@ -1106,7 +1125,7 @@
   <section class="mt-2" id="productsSection">
 
     <!-- Sort / filter bar: sticky below header -->
-    <div class="bg-white px-3 py-2.5 flex items-center justify-between border-b border-gray-100 sticky z-30" id="sortBar" style="top:96px">
+    <div class="bg-white px-3 py-2.5 flex items-center justify-between border-b border-gray-100 sticky top-[96px] z-30">
       <h3 id="sectionTitle" class="text-gray-800 font-black text-[13px] flex items-center gap-1.5">
         <span class="w-1 h-4 bg-primary rounded-full inline-block"></span>
         Produk Populer
@@ -1178,7 +1197,7 @@
     </div>
 
     <!-- Actual product grid: populated by renderProducts() -->
-    <div id="productGrid" class="hidden" style="display:none"></div>
+    <div id="productGrid" class="hidden"></div>
 
     <!-- Empty state: shown when no products match filter/search -->
     <div id="emptyState" class="hidden bg-white py-16 text-center">
@@ -1728,7 +1747,157 @@ const ShippingService = {
   }
 };
 
-let products = [];
+
+/* ================================================================
+   PRODUCT DATA
+   ================================================================
+   [HOW TO EDIT] Add/edit products in this array.
+   Each product needs: id, name, price, originalPrice, images[],
+   rating, sold, discount(%), category, shop, description,
+   reviews[], variants[], colors[]
+================================================================ */
+const products = [
+  { id:1,  name:"iPhone 15 Pro Max 256GB Natural Titanium",
+    price:21999000, originalPrice:24999000,
+    images:["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&q=80","https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80"],
+    rating:4.9, sold:1523, discount:12, category:"Elektronik", shop:"Apple Reseller ID",
+    description:"iPhone 15 Pro Max dengan chip A17 Pro, kamera 48MP dengan optical zoom 5x, layar Super Retina XDR 6.7 inci, dan titanium grade 5.",
+    reviews:[{user:"reza_m",rating:5,text:"Kamera zoom 5x-nya luar biasa! Worth it banget buat konten creator.",date:"2024-04-10"},{user:"dina_s",rating:5,text:"Baterai awet seharian penuh, charging MagSafe cepat. Puas banget.",date:"2024-04-02"}],
+    variants:["128GB","256GB","512GB","1TB"], colors:["Natural Titanium","Blue Titanium","White Titanium","Black Titanium"] },
+  { id:2,  name:"Nike Air Jordan 1 Retro High OG Chicago",
+    price:2850000, originalPrice:3500000,
+    images:["https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=600&q=80","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
+    rating:4.8, sold:3241, discount:19, category:"Fashion", shop:"Nike Indonesia Official",
+    description:"Air Jordan 1 Retro High OG Chicago original. Upper kulit premium, unit Air-Sole cushioning legendaris. Hadir dengan box original Nike.",
+    reviews:[{user:"alif_n",rating:5,text:"Authentic 100%, kondisi sempurna. Packing rapih banget. Recommended!",date:"2024-04-08"}],
+    variants:["40","41","42","43","44","45"], colors:["Chicago Red/White","Bred","Royal Blue"] },
+  { id:3,  name:"Samsung Galaxy Tab S9 Ultra 12GB/256GB WiFi",
+    price:17500000, originalPrice:20000000,
+    images:["https://images.unsplash.com/photo-1589739900266-43b2843f4c12?w=600&q=80"],
+    rating:4.7, sold:872, discount:12, category:"Elektronik", shop:"Samsung Official ID",
+    description:"Tab S9 Ultra dengan layar AMOLED 14.6 inci, chip Snapdragon 8 Gen 2, S Pen included, dan baterai 11200mAh. Produktivitas tak terbatas.",
+    reviews:[{user:"ari_w",rating:5,text:"Layarnya incredible, S Pen makin responsif. Best tablet Android 2024!",date:"2024-03-25"}],
+    variants:["8GB/128GB","12GB/256GB","12GB/512GB"], colors:["Graphite","Beige","Lime"] },
+  { id:4,  name:"Kemeja Flanel Pria Premium Lengan Panjang",
+    price:189000, originalPrice:299000,
+    images:["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=80"],
+    rating:4.5, sold:12400, discount:37, category:"Fashion", shop:"FashionID Official",
+    description:"Kemeja flanel bahan cotton brushed tebal premium, tidak mudah kusut, nyaman untuk kerja maupun casual. Tersedia berbagai warna.",
+    reviews:[{user:"bayu_p",rating:5,text:"Bahan tebal dan lembut, jahitan rapih. Ukuran sesuai chart. Repeat order!",date:"2024-04-05"}],
+    variants:["S","M","L","XL","XXL"], colors:["Merah Kotak","Biru Kotak","Hijau Kotak","Abu-abu"] },
+  { id:5,  name:"Sony WH-1000XM5 Wireless Noise Cancelling",
+    price:4850000, originalPrice:5999000,
+    images:["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80","https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&q=80"],
+    rating:4.9, sold:5621, discount:19, category:"Elektronik", shop:"Sony Center Indonesia",
+    description:"WH-1000XM5 dengan ANC industry-leading, 30 jam baterai, quick charge 3 menit untuk 3 jam playback, dan suara Hi-Res Audio.",
+    reviews:[{user:"petra_k",rating:5,text:"ANC-nya gila banget, kantor berisik jadi hening total. Suara jernih dan detail.",date:"2024-04-12"},{user:"tommy_h",rating:5,text:"Battery life 30 jam bukan bohong. Sudah pakai 2 minggu, puas banget!",date:"2024-04-01"}],
+    variants:["Standard"], colors:["Hitam","Putih","Midnight Blue"] },
+  { id:6,  name:"Sepatu Lari Nike React Infinity Run 4",
+    price:1750000, originalPrice:2400000,
+    images:["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
+    rating:4.6, sold:4890, discount:27, category:"Olahraga", shop:"Nike Indonesia Official",
+    description:"Nike React Infinity Run 4 dirancang khusus untuk lari jarak jauh. React foam memberikan bantalan optimal dan return energy terbaik.",
+    reviews:[{user:"yoga_s",rating:5,text:"Cocok buat half marathon, kaki tidak sakit sama sekali. Sol React-nya empuk banget.",date:"2024-03-30"}],
+    variants:["Standard"], colors:["Hitam Merah","Hitam Biru","Hitam Putih"] },
+  { id:7,  name:"Blender Smoothie 1200W Anti-Gores Premium",
+    price:399000, originalPrice:650000,
+    images:["https://images.unsplash.com/photo-1570222094114-d054a817e56b?w=600&q=80"],
+    rating:4.4, sold:7320, discount:39, category:"Rumah", shop:"Dapur Jaya",
+    description:"Blender 1200W dengan pisau anti-karat 6 blade, tabung kaca borosilikat anti-gores. Cocok untuk smoothie, jus, dan bumbu masak.",
+    reviews:[{user:"lisa_w",rating:4,text:"Kuat banget, buah keras pun hancur. Tapi agak berisik.",date:"2024-02-20"}],
+    variants:["1L","1.5L"], colors:["Silver"] },
+  { id:8,  name:"Tas Ransel Laptop Waterproof 15.6 inch",
+    price:275000, originalPrice:420000,
+    images:["https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80","https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80"],
+    rating:4.6, sold:19203, discount:35, category:"Fashion", shop:"BagShop Indonesia",
+    description:"Tas ransel laptop waterproof dengan kompartemen khusus laptop 15.6\", USB charging port, bahan anti-air berkualitas tinggi.",
+    reviews:[{user:"eko_b",rating:5,text:"Hujan deras barang di dalam aman. USB port sangat berguna!",date:"2024-04-05"},{user:"mira_s",rating:5,text:"Kapasitas besar, banyak pocket, desain keren. Beli 2 sekalian!",date:"2024-03-30"}],
+    variants:["Standard"], colors:["Hitam","Abu-abu","Navy"] },
+  { id:9,  name:"Serum Wajah Vitamin C 30ml Brightening",
+    price:145000, originalPrice:280000,
+    images:["https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80","https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&q=80"],
+    rating:4.8, sold:25000, discount:48, category:"Kecantikan", shop:"Skin Care Official",
+    description:"Serum Vitamin C 20% dengan niacinamide 5% untuk mencerahkan, meratakan tone kulit, dan memudarkan flek hitam.",
+    reviews:[{user:"anisa_k",rating:5,text:"Kulit cerah dalam 2 minggu! Flek belum hilang total tapi sudah memudar.",date:"2024-04-15"},{user:"retno_p",rating:5,text:"Best skincare di harga segini. Sudah repeat order 3x.",date:"2024-03-25"}],
+    variants:["30ml"], colors:[""] },
+  { id:10, name:"Sepatu Lari Adidas Ultraboost 22",
+    price:1899000, originalPrice:2600000,
+    images:["https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=80","https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80"],
+    rating:4.7, sold:6710, discount:27, category:"Olahraga", shop:"Adidas Official",
+    description:"Adidas Ultraboost 22 dengan teknologi BOOST midsole untuk energi pengembalian maksimal. Upper Primeknit yang breathable.",
+    reviews:[{user:"tono_h",rating:5,text:"Lari 10K tanpa sakit kaki. Boost memang bedanya nyata!",date:"2024-04-03"}],
+    variants:["39","40","41","42","43","44"], colors:["Putih","Hitam","Biru"] },
+  { id:11, name:"MacBook Air M2 13 inch 8GB 256GB Midnight",
+    price:16999000, originalPrice:18999000,
+    images:["https://images.unsplash.com/photo-1611186871525-9d8df2a7d1ec?w=600&q=80"],
+    rating:4.9, sold:981, discount:11, category:"Elektronik", shop:"Apple Reseller ID",
+    description:"MacBook Air M2 dengan chip Apple M2, layar Liquid Retina 13.6 inci, baterai 18 jam, dan desain ultra-tipis.",
+    reviews:[{user:"dian_l",rating:5,text:"Best laptop untuk mahasiswa dan profesional. Kencang, tipis, baterai awet!",date:"2024-04-07"}],
+    variants:["8GB/256GB","8GB/512GB","16GB/512GB"], colors:["Midnight","Starlight","Silver","Space Gray"] },
+  { id:12, name:"Matcha Latte Powder Premium 250g Japan Grade",
+    price:85000, originalPrice:120000,
+    images:["https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=600&q=80"],
+    rating:4.7, sold:33210, discount:29, category:"Makanan", shop:"TeaShop Nusantara",
+    description:"Matcha grade premium dari Uji, Kyoto Jepang. Warna hijau cerah, rasa smooth tidak pahit. Cocok untuk minuman dan baking.",
+    reviews:[{user:"yuni_a",rating:5,text:"Warnanya hijau segar, rasanya enak tidak pahit. Bikin matcha latte rumahan jadi enak!",date:"2024-04-11"}],
+    variants:["100g","250g","500g"], colors:[""] },
+  { id:13, name:"Celana Jogger Pria Slim Fit Premium",
+    price:159000, originalPrice:250000,
+    images:["https://images.unsplash.com/photo-1542219550-37153d387c27?w=600&q=80"],
+    rating:4.5, sold:9800, discount:36, category:"Fashion", shop:"MenStyle ID",
+    description:"Celana jogger slim fit bahan cotton premium stretch. Nyaman untuk olahraga, santai di rumah, atau hang out casual.",
+    reviews:[{user:"fajar_s",rating:5,text:"Bahan adem dan stretch, ukuran pas sesuai chart. Udah beli 3 warna!",date:"2024-03-28"}],
+    variants:["S","M","L","XL","XXL"], colors:["Hitam","Abu","Navy","Olive"] },
+  { id:14, name:"Skincare Set Paket Lengkap Acne Clear",
+    price:320000, originalPrice:480000,
+    images:["https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=600&q=80","https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&q=80"],
+    rating:4.8, sold:15600, discount:33, category:"Kecantikan", shop:"Beauty Lab",
+    description:"Paket skincare 5-step untuk kulit berjerawat: facial wash, toner, serum, moisturizer, dan SPF. Diformulasikan oleh dermatologis.",
+    reviews:[{user:"maya_r",rating:5,text:"Jerawat berkurang drastis dalam 2 minggu! Kulit jadi lebih bersih dan cerah.",date:"2024-04-09"}],
+    variants:["Normal Kit","Oily Kit"], colors:[""] },
+  { id:15, name:"Meja Belajar Minimalis Kayu Jati 120cm",
+    price:1250000, originalPrice:1800000,
+    images:["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80"],
+    rating:4.6, sold:2300, discount:31, category:"Rumah", shop:"FurnitureMas",
+    description:"Meja belajar kayu jati solid 120x60cm, finishing natural oil. Dilengkapi laci penyimpanan dan rak buku. Sangat sturdy dan tahan lama.",
+    reviews:[{user:"pandu_g",rating:5,text:"Kayu solid, berat tapi kokoh. Finishing bagus, hampir tidak ada bau cat.",date:"2024-03-14"}],
+    variants:["100cm","120cm","150cm"], colors:["Natural","Walnut","White"] },
+  { id:16, name:"Dumbbell Set 5-25kg Hex Chrome",
+    price:2890000, originalPrice:3800000,
+    images:["https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&q=80"],
+    rating:4.7, sold:3450, discount:24, category:"Olahraga", shop:"Sport Center ID",
+    description:"Set dumbbell hex chrome 5 pasang (5/10/15/20/25kg) + rack besi. Material rubber coating anti-roll, nyaman digenggam.",
+    reviews:[{user:"arif_p",rating:5,text:"Kualitas premium, chrome tidak mudah pudar. Cocok untuk home gym.",date:"2024-04-02"}],
+    variants:["5-25kg Set","5-30kg Set"], colors:["Chrome"] },
+  { id:17, name:"Buku Atomic Habits James Clear",
+    price:98000, originalPrice:139000,
+    images:["https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&q=80"],
+    rating:4.9, sold:42000, discount:29, category:"Buku", shop:"Gramedia Online",
+    description:"Buku self-improvement terlaris tentang cara membangun kebiasaan baik dan menghilangkan kebiasaan buruk. Terjemahan resmi.",
+    reviews:[{user:"clara_d",rating:5,text:"Buku yang mengubah cara pandang saya soal produktivitas. Wajib dibaca!",date:"2024-04-13"}],
+    variants:["Softcover","Hardcover"], colors:[""] },
+  { id:18, name:"Controller PS5 DualSense Midnight Black",
+    price:1050000, originalPrice:1300000,
+    images:["https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=600&q=80"],
+    rating:4.8, sold:7800, discount:19, category:"Gaming", shop:"PlayStation ID",
+    description:"DualSense controller PS5 original dengan adaptive triggers dan haptic feedback generasi terbaru. Baterai rechargeable.",
+    reviews:[{user:"bagas_w",rating:5,text:"Haptic feedback-nya bikin gaming makin immersive. Original 100%!",date:"2024-04-06"}],
+    variants:["Standard"], colors:["Midnight Black","White","Cosmic Red","Galactic Purple"] },
+  { id:19, name:"Helm Full Face Shoei GT-Air 2 Original",
+    price:4500000, originalPrice:5800000,
+    images:["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80"],
+    rating:4.9, sold:1200, discount:22, category:"Otomotif", shop:"MotoGear ID",
+    description:"Helm full face premium Shoei GT-Air 2, sertifikasi SNELL dan ECE 22.06. Ventilasi udara optimal, visor Pinlock anti-fog.",
+    reviews:[{user:"candra_s",rating:5,text:"Ringan dan nyaman dipakai jarak jauh. Investasi terbaik untuk keselamatan.",date:"2024-03-27"}],
+    variants:["S","M","L","XL"], colors:["Hitam","Putih","Abu-abu"] },
+  { id:20, name:"Parfum Pria La Vie Est Belle 75ml EDP",
+    price:890000, originalPrice:1200000,
+    images:["https://images.unsplash.com/photo-1541643600914-78b084683702?w=600&q=80"],
+    rating:4.7, sold:5600, discount:26, category:"Kecantikan", shop:"Parfum World",
+    description:"Eau de Parfum 75ml, aroma flowery gourmand dengan iris, patchouli, dan vanilla. Tahan lama hingga 8 jam.",
+    reviews:[{user:"tia_f",rating:5,text:"Aromanya sophisticated, banyak yang tanya pakai parfum apa. Tahan lama!",date:"2024-04-14"}],
+    variants:["30ml","50ml","75ml"], colors:[""] },
+];
 
 
 /* ================================================================
@@ -1749,41 +1918,6 @@ let currentDetailProduct = null;
 let detailCurrentImg     = 0;
 let checkoutStep         = 1;
 const checkoutData = { address:{}, shipping:{}, payment:'' };
-
-async function loadProductsFromSupabase() {
-
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('id', { ascending: false })
-
-  if (error) {
-    console.log(error)
-    return
-  }
-
-  products = data.map(product => ({
-    id: product.id,
-    name: product.title,
-    price: product.price,
-    originalPrice: product.price,
-    images: [product.image],
-    rating: 4.8,
-    sold: 100,
-    discount: 0,
-    category: product.category,
-    shop: "ShopKita Official",
-    description: "Produk berkualitas terbaik",
-    reviews: [],
-    variants: [],
-    colors: []
-  }))
-
-  applyFilters()
-
-  console.log('Produk berhasil dimuat:', products)
-
-}
 
 
 /* ================================================================
@@ -2007,24 +2141,13 @@ function renderProducts(list) {
   const grid  = document.getElementById('productGrid');
   const empty = document.getElementById('emptyState');
 
-  // Guard: if elements missing, bail out gracefully
-  if (!grid || !empty) return;
-
   if (!list.length) {
-    grid.innerHTML = '';
-    grid.style.display = 'none';
     grid.classList.add('hidden');
-    empty.style.display = '';
     empty.classList.remove('hidden');
     return;
   }
-
-  empty.style.display = 'none';
   empty.classList.add('hidden');
-
-  // Force show grid — use both style and class to beat any CSS specificity issues
   grid.classList.remove('hidden');
-  grid.style.display = '';
 
   const inWL = id => wishlist.some(w => w.id === id);
 
@@ -3095,47 +3218,11 @@ function closeSuccessModal() {
    Runs once on page load: hides skeleton, shows products, updates UI.
 ================================================================ */
 (function init() {
-  // Fix: calculate sticky sort bar top offset dynamically after DOM ready
-  function fixSortBarTop() {
-    const header = document.getElementById('mainHeader');
-    const sortBar = document.getElementById('sortBar');
-    if (header && sortBar) {
-      const h = Math.ceil(header.getBoundingClientRect().height);
-      sortBar.style.top = h + 'px';
-    }
-  }
-
-  // Fix sticky top immediately on load (before skeleton hides)
-  fixSortBarTop();
-
   // Simulate async product load (900ms skeleton then real data)
   setTimeout(() => {
-    // Hide skeleton using both style AND class — belt+suspenders approach
-    const skel = document.getElementById('skeletonGrid');
-    if (skel) {
-      skel.style.display = 'none';
-      skel.classList.add('hidden');
-    }
-
-    // Show product grid explicitly before rendering
-    const grid = document.getElementById('productGrid');
-    if (grid) {
-      grid.classList.remove('hidden');
-      grid.style.display = '';  // let CSS grid rule take over
-    }
-
-    try {
-      loadProductsFromSupabase();
-    } catch(e) {
-      console.warn('applyFilters error, falling back to full render', e);
-      if (grid) renderProducts(products.slice(0, 10));
-    }
-
-    fixSortBarTop();
+    document.getElementById('skeletonGrid').classList.add('hidden');
+    applyFilters();
   }, 900);
-
-  // Fix sticky top on resize (e.g. device rotation or desktop resize)
-  window.addEventListener('resize', fixSortBarTop);
 
   // Update cart UI from localStorage data
   updateCartUI();
