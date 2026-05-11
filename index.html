@@ -3235,6 +3235,25 @@ async function processOrder() {
       paymentMethod: checkoutData.payment,
     });
 
+    // SAVE ORDER TO SUPABASE
+
+const { error: orderError } = await supabase
+  .from('orders')
+  .insert([
+    {
+      customer_name: checkoutData.address.name,
+      customer_phone: checkoutData.address.phone,
+      customer_address: checkoutData.address.addr,
+      products: cart,
+      total: total
+    }
+  ])
+
+if (orderError) {
+  console.log(orderError)
+  showNotif('Gagal simpan order ke database')
+}
+
     // ── INTEGRATION POINT: auto-create shipment after payment ──
     const shipResult = await ShippingService.createShipment({
       orderId, courier: checkoutData.shipping.id || 'jne',
