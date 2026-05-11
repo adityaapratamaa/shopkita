@@ -50,9 +50,32 @@
             </div>
 
             <div>
-              <span class="bg-orange-500 text-white px-4 py-2 rounded-xl">
-                ${order.status}
-              </span>
+              <select
+  onchange="updateStatus(${order.id}, this.value)"
+  class="bg-orange-500 text-white px-4 py-2 rounded-xl"
+>
+
+  <option value="pending"
+    ${order.status === 'pending' ? 'selected' : ''}>
+    pending
+  </option>
+
+  <option value="paid"
+    ${order.status === 'paid' ? 'selected' : ''}>
+    paid
+  </option>
+
+  <option value="shipped"
+    ${order.status === 'shipped' ? 'selected' : ''}>
+    shipped
+  </option>
+
+  <option value="completed"
+    ${order.status === 'completed' ? 'selected' : ''}>
+    completed
+  </option>
+
+</select>
             </div>
 
           </div>
@@ -88,6 +111,24 @@
         `
       })
     }
+
+    window.updateStatus = async function(id, status) {
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ status })
+    .eq('id', id)
+
+  if (error) {
+
+    alert('Gagal update status')
+
+  } else {
+
+    alert('Status berhasil diupdate')
+    loadOrders()
+  }
+}
 
     loadOrders()
 
