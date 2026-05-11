@@ -671,69 +671,105 @@
     /* Sort bar sticky offset: below header */
       #productsSection .sticky { top: 56px !important; }
 
-      /* ── Desktop Detail Page: Full-page Shopee-style layout ── */
+      /* ═══════════════════════════════════════════════════
+         DESKTOP DETAIL PAGE — Shopee-style full page
+         Layout: fixed left (image) + scrollable right (info)
+         No sticky tricks = no jank/vibration on scroll
+         ═══════════════════════════════════════════════════ */
+
+      /* 1. The page itself is the scroll container — but we override below */
       #detailPage {
         background: #f5f5f5 !important;
-        overflow-y: auto !important;
+        overflow: hidden !important;  /* children manage their own scroll */
+        display: flex !important;
+        flex-direction: column !important;
       }
       #detailPage.open {
-        display: block !important;
+        display: flex !important;
         padding: 0 !important;
       }
       #detailMobileHeader { display:none !important; }
-      #detailDesktopHeader { display:flex !important; }
+      #detailDesktopHeader {
+        display: flex !important;
+        flex-shrink: 0 !important;     /* header never shrinks */
+        position: relative !important; /* no sticky needed — already at top */
+        z-index: 20 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+      }
+
+      /* 2. InnerWrap fills the remaining height between header and bottom bar */
       #detailInnerWrap {
         background: transparent !important;
         border-radius: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        position: relative !important;
-        overflow: visible !important;
+        flex: 1 1 0 !important;        /* grow to fill, shrink to fit */
+        min-height: 0 !important;      /* critical: allows flex child to shrink */
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
         padding-bottom: 0 !important;
       }
 
-      /* Desktop sticky header */
-      #detailDesktopHeader {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 20 !important;
-        border-bottom: 1px solid rgba(255,255,255,0.15) !important;
-      }
-
-      /* Two-column layout wrapper */
+      /* 3. Two-column body — fills all height of InnerWrap above bottom bar */
       #detailContent {
+        flex: 1 1 0 !important;
+        min-height: 0 !important;
         max-width: 1200px !important;
+        width: 100% !important;
         margin: 0 auto !important;
-        padding: 24px 24px 40px !important;
+        padding: 0 !important;
         display: grid !important;
-        grid-template-columns: 500px 1fr !important;
-        gap: 20px !important;
-        align-items: start !important;
+        grid-template-columns: 480px 1fr !important;
+        gap: 0 !important;
+        align-items: stretch !important;
+        overflow: hidden !important;
       }
 
-      /* Left column: image area */
+      /* 4. LEFT COLUMN — does NOT scroll. Image stays put. Zero jank. */
       #detailImgCol {
-        position: sticky !important;
-        top: 70px !important;
         grid-column: 1 !important;
+        background: #fff !important;
+        border-right: 1px solid #eee !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        padding: 20px !important;
+        /* No position:sticky needed — column IS fixed height */
       }
 
-      /* Right column: all info */
+      /* 5. RIGHT COLUMN — independent scroll, no layout shifts */
       #detailInfoCol {
         grid-column: 2 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain !important;
+        background: #f5f5f5 !important;
+        padding: 16px !important;
+        padding-bottom: 80px !important; /* space for bottom bar */
+        /* GPU layer — eliminates scroll jank */
+        will-change: scroll-position !important;
+        -webkit-overflow-scrolling: touch !important;
       }
 
-      /* Desktop image slider height */
+      /* 6. Image slider fills left column height naturally */
       #detailInnerWrap #imgSliderWrap {
-        height: 500px !important;
+        flex: 1 1 0 !important;
+        min-height: 0 !important;
+        height: auto !important;
         border-radius: 8px !important;
         overflow: hidden !important;
+        background: #f8f8f8 !important;
       }
       #detailInnerWrap #detailImgTrack { height:100% !important; }
       #detailInnerWrap #detailImgTrack > div { height:100% !important; }
-      #detailInnerWrap #detailImgTrack img { height:100% !important; object-fit:contain !important; background:#fff; }
+      #detailInnerWrap #detailImgTrack img {
+        height:100% !important;
+        object-fit:contain !important;
+        background:#fff;
+      }
 
-      /* Desktop prev/next nav arrows on detail image */
+      /* 7. Nav arrows */
       .detail-nav-btn {
         align-items: center; justify-content: center;
         width: 40px; height: 40px; border-radius: 50%;
@@ -741,45 +777,53 @@
         border: none; cursor: pointer;
         font-size: 26px; line-height: 1;
         backdrop-filter: blur(4px);
-        transition: background 0.18s, transform 0.15s, opacity 0.18s;
-        opacity: 0; z-index: 10;
-        padding: 0;
+        transition: background 0.18s, opacity 0.18s;
+        opacity: 0; z-index: 10; padding: 0;
       }
       #imgSliderWrap:hover .detail-nav-btn { opacity: 1; }
-      .detail-nav-btn:hover { background: rgba(0,0,0,0.68); transform: translateY(-50%) scale(1.08); }
-      .detail-nav-btn:active { transform: translateY(-50%) scale(0.96); }
+      .detail-nav-btn:hover { background: rgba(0,0,0,0.68); }
+      .detail-nav-btn:active { opacity: 0.7; }
 
-      /* Thumbnail strip — horizontal below main image */
+      /* 8. Thumbnail strip */
       #detailInnerWrap .detail-thumbs-wrap {
         display: flex !important;
         gap: 8px !important;
         padding: 10px 0 0 !important;
         overflow-x: auto !important;
+        flex-shrink: 0 !important;
         background: transparent !important;
         border: none !important;
       }
       #detailInnerWrap .detail-thumb {
-        width: 64px !important; height: 64px !important;
+        width: 60px !important; height: 60px !important;
         border-radius: 6px !important; flex-shrink: 0 !important;
       }
 
-      /* Right column cards */
+      /* 9. Right column section cards */
       #detailInfoCol .bg-white {
         border-radius: 8px !important;
-        margin-bottom: 12px !important;
+        margin-bottom: 10px !important;
         margin-top: 0 !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
       }
 
-      /* Bottom bar: sticky at bottom of viewport */
+      /* 10. Reviews: cap height + internal scroll — never explodes layout */
+      #detailInfoCol .space-y-4 {
+        max-height: 400px !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+        padding-right: 4px !important;
+      }
+
+      /* 11. Bottom bar: fixed to bottom of detailPage, NOT the viewport */
       #detailBottomBar {
-        position: sticky !important;
+        position: absolute !important;
         bottom: 0 !important;
-        left: unset !important; right: unset !important;
-        max-width: 1200px !important;
-        margin: 0 auto !important;
-        border-radius: 8px 8px 0 0 !important;
-        box-shadow: 0 -2px 12px rgba(0,0,0,0.08) !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 15 !important;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.10) !important;
+        border-radius: 0 !important;
       }
 
       /* Footer: 4 columns on desktop */
@@ -2424,14 +2468,14 @@ function openDetailPage(id) {
   const page = document.getElementById('detailPage');
   page.classList.add('open');
 
-  // Scroll to top
-  if(window.innerWidth >= 768) {
-    document.body.style.overflow = 'hidden';
-    page.scrollTop = 0;
-  } else {
-    page.scrollTop = 0;
-    document.body.style.overflow = 'hidden';
-  }
+  // Lock body scroll, reset both possible scroll containers to top
+  document.body.style.overflow = 'hidden';
+  page.scrollTop = 0;
+  // On desktop the right info column scrolls independently — reset it too
+  requestAnimationFrame(() => {
+    const infoCol = document.getElementById('detailInfoCol');
+    if (infoCol) infoCol.scrollTop = 0;
+  });
 
   history.pushState({ sk: 'detail', id }, '');
   attachImageSwipe();
