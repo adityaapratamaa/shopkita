@@ -14,9 +14,20 @@
 
     <!-- TITLE -->
 
-    <h1 class="text-4xl font-bold mb-10">
-      Dashboard Admin
-    </h1>
+    <div class="flex justify-between items-center mb-10">
+
+  <h1 class="text-4xl font-bold">
+    Dashboard Admin
+  </h1>
+
+  <button
+    onclick="logout()"
+    class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl"
+  >
+    Logout
+  </button>
+
+</div>
 
     <!-- FORM -->
 
@@ -150,6 +161,18 @@ async function checkAuth() {
   }
 }
 
+// =========================
+// LOGOUT
+// =========================
+
+window.logout = async function() {
+
+  await supabase.auth.signOut()
+
+  alert('Logout berhasil')
+
+  location.reload()
+}
 
     // =========================
     // LOAD PRODUCTS
