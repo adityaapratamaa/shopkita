@@ -671,39 +671,73 @@
     /* Sort bar sticky offset: below header */
       #productsSection .sticky { top: 56px !important; }
 
-      /* ── Desktop Detail Page: shown as modal ── */
+      /* ── Desktop Detail Page: Full-page Shopee-style layout ── */
       #detailPage {
-        background: rgba(0,0,0,0.65) !important;
-        overflow-y: auto;
+        background: #f5f5f5 !important;
+        overflow-y: auto !important;
       }
       #detailPage.open {
-        display: flex !important;
-        align-items: flex-start;
-        justify-content: center;
-        padding: 24px 16px 40px;
+        display: block !important;
+        padding: 0 !important;
       }
       #detailMobileHeader { display:none !important; }
       #detailDesktopHeader { display:flex !important; }
       #detailInnerWrap {
-        background: white;
-        border-radius: 4px;
-        width: 100%;
-        max-width: 960px;
-        position: relative;
-        overflow: hidden;
+        background: transparent !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
       }
-      /* Desktop product image: cap height, keep flex track */
+
+      /* Desktop sticky header */
+      #detailDesktopHeader {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 20 !important;
+        border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+      }
+
+      /* Two-column layout wrapper */
+      #detailContent {
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        padding: 24px 24px 40px !important;
+        display: grid !important;
+        grid-template-columns: 500px 1fr !important;
+        gap: 20px !important;
+        align-items: start !important;
+      }
+
+      /* Left column: image area */
+      #detailImgCol {
+        position: sticky !important;
+        top: 70px !important;
+        grid-column: 1 !important;
+      }
+
+      /* Right column: all info */
+      #detailInfoCol {
+        grid-column: 2 !important;
+      }
+
+      /* Desktop image slider height */
       #detailInnerWrap #imgSliderWrap {
-        height: 420px !important;
+        height: 500px !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
       }
       #detailInnerWrap #detailImgTrack { height:100% !important; }
       #detailInnerWrap #detailImgTrack > div { height:100% !important; }
-      #detailInnerWrap #detailImgTrack img { height:100% !important; object-fit:contain !important; background:#f4f4f5; }
+      #detailInnerWrap #detailImgTrack img { height:100% !important; object-fit:contain !important; background:#fff; }
+
       /* Desktop prev/next nav arrows on detail image */
       .detail-nav-btn {
         align-items: center; justify-content: center;
         width: 40px; height: 40px; border-radius: 50%;
-        background: rgba(0,0,0,0.40); color: #fff;
+        background: rgba(0,0,0,0.38); color: #fff;
         border: none; cursor: pointer;
         font-size: 26px; line-height: 1;
         backdrop-filter: blur(4px);
@@ -713,9 +747,40 @@
       }
       #imgSliderWrap:hover .detail-nav-btn { opacity: 1; }
       .detail-nav-btn:hover { background: rgba(0,0,0,0.68); transform: translateY(-50%) scale(1.08); }
-      .detail-nav-btn:active { transform: translateY(-50%) scale(0.95); }
-      /* Bottom bar sticky (not fixed) on desktop */
-      #detailBottomBar { position:sticky !important; bottom:0; left:unset !important; right:unset !important; }
+      .detail-nav-btn:active { transform: translateY(-50%) scale(0.96); }
+
+      /* Thumbnail strip — horizontal below main image */
+      #detailInnerWrap .detail-thumbs-wrap {
+        display: flex !important;
+        gap: 8px !important;
+        padding: 10px 0 0 !important;
+        overflow-x: auto !important;
+        background: transparent !important;
+        border: none !important;
+      }
+      #detailInnerWrap .detail-thumb {
+        width: 64px !important; height: 64px !important;
+        border-radius: 6px !important; flex-shrink: 0 !important;
+      }
+
+      /* Right column cards */
+      #detailInfoCol .bg-white {
+        border-radius: 8px !important;
+        margin-bottom: 12px !important;
+        margin-top: 0 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+      }
+
+      /* Bottom bar: sticky at bottom of viewport */
+      #detailBottomBar {
+        position: sticky !important;
+        bottom: 0 !important;
+        left: unset !important; right: unset !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+        border-radius: 8px 8px 0 0 !important;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.08) !important;
+      }
 
       /* Footer: 4 columns on desktop */
       footer .grid.grid-cols-2 { grid-template-columns:repeat(4,1fr) !important; }
@@ -2362,7 +2427,7 @@ function openDetailPage(id) {
   // Scroll to top
   if(window.innerWidth >= 768) {
     document.body.style.overflow = 'hidden';
-    document.getElementById('detailInnerWrap')?.scrollTo(0,0);
+    page.scrollTop = 0;
   } else {
     page.scrollTop = 0;
     document.body.style.overflow = 'hidden';
@@ -2380,154 +2445,151 @@ function openDetailPage(id) {
 function buildDetailContent(p) {
   const imgPct = p.images.length > 0 ? (1/p.images.length*100) : 100;
   return `
-    <!-- Image slider — fixed height on mobile, flex track per-image -->
-    <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px);">
-      <!-- Track: exactly N * 100% wide so each slide = 100vw -->
-      <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform;">
-        ${p.images.map((img,i)=>`
-          <div class="flex-shrink-0 flex items-center justify-center cursor-zoom-in bg-gray-100"
-               style="width:${imgPct}%; height:100%;" onclick="openLightbox(${i})">
-            <img src="${img}" alt="${p.name}"
-                 class="max-w-full max-h-full w-full h-full object-contain select-none"
-                 draggable="false"
-                 onerror="this.src='https://placehold.co/600x600/D94B38/white?text=ShopKita'"/>
-          </div>`).join('')}
-      </div>
-      <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full" id="imgCounter">1 / ${p.images.length}</div>
-      <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 md:hidden">🔍 Tap untuk perbesar</div>
-      <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-        ${p.images.map((_,i)=>`<div class="img-dot w-1.5 h-1.5 rounded-full ${i===0?'bg-primary':'bg-white/70'}"></div>`).join('')}
+    <!-- LEFT COLUMN: images (sticky on desktop) -->
+    <div id="detailImgCol">
+      <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px);">
+        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform;">
+          ${p.images.map((img,i)=>`
+            <div class="flex-shrink-0 flex items-center justify-center cursor-zoom-in bg-gray-100"
+                 style="width:${imgPct}%; height:100%;" onclick="openLightbox(${i})">
+              <img src="${img}" alt="${p.name}"
+                   class="max-w-full max-h-full w-full h-full object-contain select-none"
+                   draggable="false"
+                   onerror="this.src='https://placehold.co/600x600/D94B38/white?text=ShopKita'"/>
+            </div>`).join('')}
+        </div>
+        <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-2 py-1 rounded-full" id="imgCounter">1 / ${p.images.length}</div>
+        <div class="absolute bottom-3 left-3 bg-black/40 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 md:hidden">🔍 Tap untuk perbesar</div>
+        <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+          ${p.images.map((_,i)=>`<div class="img-dot w-1.5 h-1.5 rounded-full ${i===0?'bg-primary':'bg-white/70'}"></div>`).join('')}
+        </div>
+        ${p.images.length > 1 ? `
+        <button id="detailNavPrev" onclick="goDetailImg(Math.max(0,detailCurrentImg-1))" aria-label="Prev"
+          class="detail-nav-btn absolute left-3 top-1/2 -translate-y-1/2 hidden md:flex">&#8249;</button>
+        <button id="detailNavNext" onclick="goDetailImg(Math.min(currentDetailProduct.images.length-1,detailCurrentImg+1))" aria-label="Next"
+          class="detail-nav-btn absolute right-3 top-1/2 -translate-y-1/2 hidden md:flex">&#8250;</button>
+        ` : ''}
       </div>
       ${p.images.length > 1 ? `
-      <button id="detailNavPrev" onclick="goDetailImg(Math.max(0,detailCurrentImg-1))" aria-label="Prev"
-        class="detail-nav-btn absolute left-3 top-1/2 -translate-y-1/2 hidden md:flex">&#8249;</button>
-      <button id="detailNavNext" onclick="goDetailImg(Math.min(currentDetailProduct.images.length-1,detailCurrentImg+1))" aria-label="Next"
-        class="detail-nav-btn absolute right-3 top-1/2 -translate-y-1/2 hidden md:flex">&#8250;</button>
-      ` : ''}
+      <div class="detail-thumbs-wrap flex gap-2 px-3 py-2 bg-white border-b border-gray-100 overflow-x-auto hide-scrollbar">
+        ${p.images.map((img,i)=>`
+          <button onclick="goDetailImg(${i})" class="detail-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 ${i===0?'border-primary':'border-gray-200'}">
+            <img src="${img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/60x60'"/>
+          </button>`).join('')}
+      </div>` : ''}
     </div>
 
-    <!-- Thumbnail strip -->
-    ${p.images.length > 1 ? `
-    <div class="flex gap-2 px-3 py-2 bg-white border-b border-gray-100 overflow-x-auto hide-scrollbar">
-      ${p.images.map((img,i)=>`
-        <button onclick="goDetailImg(${i})" class="detail-thumb flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 ${i===0?'border-primary':'border-gray-200'}">
-          <img src="${img}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/60x60'"/>
-        </button>`).join('')}
-    </div>` : ''}
+    <!-- RIGHT COLUMN: all product info -->
+    <div id="detailInfoCol">
 
-    <!-- Price & rating -->
-    <div class="bg-white px-4 py-4">
-      <div class="flex items-center gap-2 mb-1">
-        <span class="text-primary font-black text-2xl">${fmt(p.price)}</span>
-        ${p.discount ? `<span class="bg-primaryLight text-primary text-xs font-bold px-2 py-0.5 rounded">${p.discount}% OFF</span>` : ''}
-      </div>
-      ${p.originalPrice ? `<p class="text-gray-400 text-sm line-through mb-1">${fmt(p.originalPrice)}</p>` : ''}
-      <div class="flex items-center gap-2 mb-2">
-        <div class="flex">${stars(Math.round(p.rating))}</div>
-        <span class="text-gray-600 text-sm font-semibold">${p.rating}</span>
-        <span class="text-gray-300">|</span>
-        <span class="text-gray-500 text-sm">Terjual ${fmtSold(p.sold)}</span>
-      </div>
-      <p class="text-gray-800 font-bold text-base leading-snug">${p.name}</p>
-    </div>
-
-    <!-- Shipping & guarantee -->
-    <div class="bg-white mt-2 px-4 py-3">
-      <div class="flex items-center gap-3 py-1.5 border-b border-gray-100">
-        <span class="text-base">🚚</span>
-        <div class="flex-1">
-          <p class="text-gray-800 text-sm font-semibold">Pengiriman</p>
-          <p class="text-gray-500 text-xs">Gratis Ongkir · Estimasi tiba 2-4 Hari</p>
+      <div class="bg-white px-4 py-4">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-primary font-black text-2xl">${fmt(p.price)}</span>
+          ${p.discount ? `<span class="bg-primaryLight text-primary text-xs font-bold px-2 py-0.5 rounded">${p.discount}% OFF</span>` : ''}
         </div>
-        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        ${p.originalPrice ? `<p class="text-gray-400 text-sm line-through mb-1">${fmt(p.originalPrice)}</p>` : ''}
+        <div class="flex items-center gap-2 mb-2">
+          <div class="flex">${stars(Math.round(p.rating))}</div>
+          <span class="text-gray-600 text-sm font-semibold">${p.rating}</span>
+          <span class="text-gray-300">|</span>
+          <span class="text-gray-500 text-sm">Terjual ${fmtSold(p.sold)}</span>
+        </div>
+        <p class="text-gray-800 font-bold text-base leading-snug">${p.name}</p>
       </div>
-      <div class="flex items-center gap-3 py-1.5">
-        <span class="text-base">🔄</span>
-        <div class="flex-1">
-          <p class="text-gray-800 text-sm font-semibold">Jaminan ShopKita</p>
-          <p class="text-gray-500 text-xs">Bebas Pengembalian 7 Hari · Produk Bergaransi</p>
+
+      <div class="bg-white mt-2 px-4 py-3">
+        <div class="flex items-center gap-3 py-1.5 border-b border-gray-100">
+          <span class="text-base">🚚</span>
+          <div class="flex-1">
+            <p class="text-gray-800 text-sm font-semibold">Pengiriman</p>
+            <p class="text-gray-500 text-xs">Gratis Ongkir · Estimasi tiba 2-4 Hari</p>
+          </div>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </div>
+        <div class="flex items-center gap-3 py-1.5">
+          <span class="text-base">🔄</span>
+          <div class="flex-1">
+            <p class="text-gray-800 text-sm font-semibold">Jaminan ShopKita</p>
+            <p class="text-gray-500 text-xs">Bebas Pengembalian 7 Hari · Produk Bergaransi</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Variants -->
-    ${(p.variants && p.variants.length > 0 && p.variants[0]) ? `
-    <div class="bg-white mt-2 px-4 py-3">
-      <p class="text-gray-700 font-bold text-sm mb-2">Pilihan Produk</p>
-      <div class="flex flex-wrap gap-2">
-        ${p.variants.map((v,i)=>`
-          <button onclick="selectVariant(this)"
-            class="variant-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${v}</button>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- Colors -->
-    ${(p.colors && p.colors.length > 0 && p.colors[0]) ? `
-    <div class="bg-white mt-px px-4 py-3">
-      <p class="text-gray-700 font-bold text-sm mb-2">Warna</p>
-      <div class="flex flex-wrap gap-2">
-        ${p.colors.map((c,i)=>`
-          <button onclick="selectColor(this)"
-            class="color-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${c}</button>`).join('')}
-      </div>
-    </div>` : ''}
-
-    <!-- Shop info -->
-    <div class="bg-white mt-2 px-4 py-3 flex items-center gap-3">
-      <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">${p.shop.charAt(0)}</div>
-      <div class="flex-1">
-        <p class="text-gray-800 font-bold text-sm">${p.shop}</p>
-        <p class="text-gray-400 text-xs">⭐ Official Store · Tangerang, Banten</p>
-      </div>
-      <button class="border border-gray-200 text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-lg">Kunjungi</button>
-    </div>
-
-    <!-- Description -->
-    <div class="bg-white mt-2 px-4 py-4">
-      <h3 class="text-gray-800 font-black text-sm mb-3">Deskripsi Produk</h3>
-      <p class="text-gray-600 text-sm leading-relaxed">${p.description}</p>
-    </div>
-
-    <!-- Reviews -->
-    <div class="bg-white mt-2 px-4 py-4 pb-8">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-gray-800 font-black text-sm">Penilaian Produk</h3>
-        <span class="text-primary text-xs font-semibold">Lihat Semua →</span>
-      </div>
-      <div class="flex items-center gap-4 mb-4">
-        <div class="text-center">
-          <p class="text-primary font-black text-4xl">${p.rating}</p>
-          <div class="flex justify-center">${stars(Math.round(p.rating))}</div>
-          <p class="text-gray-400 text-xs mt-0.5">dari 5</p>
+      ${(p.variants && p.variants.length > 0 && p.variants[0]) ? `
+      <div class="bg-white mt-2 px-4 py-3">
+        <p class="text-gray-700 font-bold text-sm mb-2">Pilihan Produk</p>
+        <div class="flex flex-wrap gap-2">
+          ${p.variants.map((v,i)=>`
+            <button onclick="selectVariant(this)"
+              class="variant-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${v}</button>`).join('')}
         </div>
+      </div>` : ''}
+
+      ${(p.colors && p.colors.length > 0 && p.colors[0]) ? `
+      <div class="bg-white mt-px px-4 py-3">
+        <p class="text-gray-700 font-bold text-sm mb-2">Warna</p>
+        <div class="flex flex-wrap gap-2">
+          ${p.colors.map((c,i)=>`
+            <button onclick="selectColor(this)"
+              class="color-btn border-2 ${i===0?'border-primary bg-primaryLight text-primary':'border-gray-200 text-gray-600'} text-xs px-3 py-1.5 rounded-lg font-semibold">${c}</button>`).join('')}
+        </div>
+      </div>` : ''}
+
+      <div class="bg-white mt-2 px-4 py-3 flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-black text-sm flex-shrink-0">${p.shop.charAt(0)}</div>
         <div class="flex-1">
-          ${[5,4,3,2,1].map(n => {
-            const cnt = p.reviews.filter(r=>r.rating===n).length;
-            const pct = p.reviews.length ? (cnt/p.reviews.length*100) : 0;
-            return `<div class="flex items-center gap-1.5 mb-1">
-              <span class="text-xs text-gray-500 w-2">${n}</span>
-              <span class="star-filled text-xs">★</span>
-              <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                <div class="h-full bg-primary rounded-full progress-bar" style="width:${pct}%"></div>
+          <p class="text-gray-800 font-bold text-sm">${p.shop}</p>
+          <p class="text-gray-400 text-xs">⭐ Official Store · Tangerang, Banten</p>
+        </div>
+        <button class="border border-gray-200 text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-lg">Kunjungi</button>
+      </div>
+
+      <div class="bg-white mt-2 px-4 py-4">
+        <h3 class="text-gray-800 font-black text-sm mb-3">Deskripsi Produk</h3>
+        <p class="text-gray-600 text-sm leading-relaxed">${p.description}</p>
+      </div>
+
+      <div class="bg-white mt-2 px-4 py-4 pb-8">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-gray-800 font-black text-sm">Penilaian Produk</h3>
+          <span class="text-primary text-xs font-semibold">Lihat Semua →</span>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <div class="text-center">
+            <p class="text-primary font-black text-4xl">${p.rating}</p>
+            <div class="flex justify-center">${stars(Math.round(p.rating))}</div>
+            <p class="text-gray-400 text-xs mt-0.5">dari 5</p>
+          </div>
+          <div class="flex-1">
+            ${[5,4,3,2,1].map(n => {
+              const cnt = p.reviews.filter(r=>r.rating===n).length;
+              const pct = p.reviews.length ? (cnt/p.reviews.length*100) : 0;
+              return `<div class="flex items-center gap-1.5 mb-1">
+                <span class="text-xs text-gray-500 w-2">${n}</span>
+                <span class="star-filled text-xs">★</span>
+                <div class="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full progress-bar" style="width:${pct}%"></div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="space-y-4">
+          ${p.reviews.map(r=>`
+            <div class="border-b border-gray-100 pb-4">
+              <div class="flex items-center gap-2 mb-1.5">
+                <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">${r.user.charAt(0).toUpperCase()}</div>
+                <div>
+                  <p class="text-gray-800 text-xs font-semibold">${r.user}</p>
+                  <div class="flex">${stars(r.rating)}</div>
+                </div>
+                <p class="text-gray-400 text-[10px] ml-auto">${r.date}</p>
               </div>
-            </div>`;
-          }).join('')}
+              <p class="text-gray-600 text-xs leading-relaxed">${r.text}</p>
+            </div>`).join('')}
         </div>
       </div>
-      <div class="space-y-4">
-        ${p.reviews.map(r=>`
-          <div class="border-b border-gray-100 pb-4">
-            <div class="flex items-center gap-2 mb-1.5">
-              <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">${r.user.charAt(0).toUpperCase()}</div>
-              <div>
-                <p class="text-gray-800 text-xs font-semibold">${r.user}</p>
-                <div class="flex">${stars(r.rating)}</div>
-              </div>
-              <p class="text-gray-400 text-[10px] ml-auto">${r.date}</p>
-            </div>
-            <p class="text-gray-600 text-xs leading-relaxed">${r.text}</p>
-          </div>`).join('')}
-      </div>
+
     </div>
   `;
 }
