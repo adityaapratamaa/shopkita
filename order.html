@@ -136,13 +136,46 @@
 
 </head>
 
-<body class="bg-gray-100 p-10">
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+  <!-- SIDEBAR -->
+  <div class="w-64 bg-black text-white p-6">
+
+    <h1 class="text-3xl font-bold mb-10">
+      ShopKita Admin
+    </h1>
+
+    <div class="space-y-3">
+
+      <a
+        href="admin.html"
+        class="block hover:bg-gray-800 px-4 py-3 rounded-xl"
+      >
+        Produk
+      </a>
+
+      <a
+        href="orders.html"
+        class="block bg-orange-500 px-4 py-3 rounded-xl"
+      >
+        Orders
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- CONTENT -->
+  <div class="flex-1 p-10">
 
   <h1 class="text-4xl font-bold mb-10">
     Orders Dashboard
   </h1>
 
   <div id="orders"></div>
-
+  </div>
+</div>
 </body>
 </html>
