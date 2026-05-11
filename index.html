@@ -141,6 +141,35 @@
       display:flex; align-items:center; justify-content:center;
       border:none; cursor:pointer; backdrop-filter:blur(2px);
     }
+    /* Card carousel: image track wrapper */
+    .sk-img-track-wrap { position:relative; width:100%; height:100%; overflow:hidden; }
+    .sk-img-track { display:flex; height:100%; transition:transform 0.3s ease; will-change:transform; }
+    .sk-img-track img { width:100%; height:100%; object-fit:cover; flex-shrink:0; display:block; }
+    /* Prev / Next nav arrows */
+    .sk-nav {
+      position:absolute; top:50%; transform:translateY(-50%);
+      background:rgba(0,0,0,0.45); color:#fff;
+      border:none; cursor:pointer;
+      width:28px; height:28px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:16px; line-height:1;
+      opacity:0; transition:opacity 0.2s, background 0.2s;
+      z-index:3; backdrop-filter:blur(2px);
+      -webkit-tap-highlight-color:transparent;
+      padding:0;
+    }
+    .sk-nav-prev { left:6px; }
+    .sk-nav-next { right:6px; }
+    .sk-nav:hover { background:rgba(0,0,0,0.72); }
+    @media (hover:hover) { .sk-card:hover .sk-nav { opacity:1; } }
+    @media (hover:none)  { .sk-card .sk-nav { opacity:0.78; } }
+    /* Dot indicators on card */
+    .sk-img-dots {
+      position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+      display:flex; gap:4px; z-index:3; pointer-events:none;
+    }
+    .sk-img-dot { width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.5); transition:background 0.2s; }
+    .sk-img-dot.active { background:#fff; }
     /* Info block: flex column, rigid row heights */
     .sk-card-info { padding:8px 8px 10px; display:flex; flex-direction:column; flex:1; }
     .sk-name {
@@ -2218,11 +2247,24 @@ function renderProducts(list) {
 
   const inWL = id => wishlist.some(w => w.id === id);
 
-  grid.innerHTML = list.map(p => `
+  grid.innerHTML = list.map(p => {
+    const imgs = p.images && p.images.length ? p.images : ['https://placehold.co/300x300/D94B38/white?text=SK'];
+    const multi = imgs.length > 1;
+    const trackImgs = imgs.map(src =>
+      `<img src="${src}" alt="${p.name}" loading="lazy" decoding="async" onerror="this.src='https://placehold.co/300x300/D94B38/white?text=SK'"/>`
+    ).join('');
+    const dots = multi ? `<div class="sk-img-dots">${imgs.map((_,i)=>`<div class="sk-img-dot${i===0?' active':''}"></div>`).join('')}</div>` : '';
+    const navBtns = multi ? `
+      <button class="sk-nav sk-nav-prev" onclick="event.stopPropagation();cardSlide(this,-1)" aria-label="Prev">&#8249;</button>
+      <button class="sk-nav sk-nav-next" onclick="event.stopPropagation();cardSlide(this,1)" aria-label="Next">&#8250;</button>` : '';
+    return `
     <div class="sk-card" onclick="openDetailPage(${p.id})">
       <div class="sk-card-img">
-        <img src="${p.images[0]}" alt="${p.name}" loading="lazy" decoding="async"
-          onerror="this.src='https://placehold.co/300x300/D94B38/white?text=SK'"/>
+        <div class="sk-img-track-wrap">
+          <div class="sk-img-track">${trackImgs}</div>
+          ${dots}
+          ${navBtns}
+        </div>
         ${p.discount ? `<span class="sk-badge">${p.discount}%</span>` : ''}
         <button class="sk-wish" onclick="event.stopPropagation();toggleWishlist(${p.id})" aria-label="Wishlist">
           <svg class="w-3.5 h-3.5" fill="${inWL(p.id)?'#ef4444':'none'}" stroke="${inWL(p.id)?'#ef4444':'#9ca3af'}" viewBox="0 0 24 24">
@@ -2241,8 +2283,8 @@ function renderProducts(list) {
           <span>Terjual ${fmtSold(p.sold)}</span>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 
@@ -2920,6 +2962,31 @@ function copyVoucher(code) {
 /* ================================================================
    WISHLIST
 ================================================================ */
+
+/**
+ * Navigate images on a product card carousel.
+ * @param {HTMLElement} btn  - the clicked nav button
+ * @param {number}      dir  - +1 for next, -1 for prev
+ */
+function cardSlide(btn, dir) {
+  const wrap  = btn.closest('.sk-img-track-wrap');
+  const track = wrap.querySelector('.sk-img-track');
+  const total = track.children.length;
+  if (total <= 1) return;
+
+  // Read or init current index stored on the track element
+  let idx = parseInt(track.dataset.idx || '0', 10);
+  idx = (idx + dir + total) % total;
+  track.dataset.idx = idx;
+
+  // Slide
+  track.style.transform = `translateX(-${idx * 100}%)`;
+
+  // Update dots
+  wrap.querySelectorAll('.sk-img-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx);
+  });
+}
 
 /**
  * Toggle a product in/out of the wishlist.
