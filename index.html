@@ -774,6 +774,194 @@
     #lbThumbStrip img { width:52px; height:52px; object-fit:cover; border-radius:4px; cursor:pointer; border:2px solid transparent; opacity:0.55; transition:all 0.2s; }
     #lbThumbStrip img.active { border-color:white; opacity:1; }
     @media(min-width:768px) { #lbThumbStrip { display:flex; } }
+
+    /* ================================================================
+       MOBILE LAYOUT FIXES
+    ================================================================ */
+
+    /* ── 1. HEADER: prevent logo+search overflow on narrow screens ── */
+    @media (max-width: 767px) {
+      /* Ensure header inner wraps properly */
+      .header-inner { width: 100%; }
+
+      /* Logo text: hide on very small screens (<360px) to save space */
+      @media (max-width: 359px) {
+        .header-inner .text-white.font-black.text-\[17px\] { display: none; }
+      }
+
+      /* Search bar: enforce minimum width */
+      .header-inner .flex-1 { min-width: 0; }
+
+      /* Nav strip: proper scrollable row, no wrap */
+      .header-inner .flex.items-center.gap-4.mt-2 {
+        display: flex;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+
+    /* ── 2. HERO SECTION: mobile padding & card min-height ── */
+    @media (max-width: 767px) {
+      .hero-content-wrap {
+        padding: 12px 12px 4px;
+        gap: 8px;
+      }
+      .hero-card {
+        min-height: 130px;
+        padding: 16px 16px;
+      }
+      .hero-card-value { font-size: 18px; }
+      .hero-card-icon  { font-size: 42px; }
+      /* Quick links: full bleed scroll */
+      .hero-quicklinks { padding: 4px 10px 10px; }
+    }
+
+    /* ── 3. STATS BAR: don't let text overflow on tiny screens ── */
+    @media (max-width: 767px) {
+      .bg-white.flex.border-b > .flex-1 { min-width: 0; }
+      .bg-white.flex.border-b p { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    }
+
+    /* ── 4. CATEGORY ICONS: fix icon circle overflow ── */
+    @media (max-width: 767px) {
+      #categoryIconGrid { gap: 0 !important; }
+      .cat-item { padding: 6px 4px; }
+      .cat-item .w-11 { width: 40px; height: 40px; }
+    }
+    @media (max-width: 359px) {
+      .cat-item .w-11 { width: 36px; height: 36px; }
+      .cat-item span  { font-size: 9px; }
+    }
+
+    /* ── 5. VOUCHER BANNER: prevent text overflow ── */
+    @media (max-width: 767px) {
+      .voucher-card .flex-1 { min-width: 0; }
+      .voucher-card p { overflow: hidden; text-overflow: ellipsis; }
+      /* "Klaim →" badge: shrink on tiny screens */
+      @media (max-width: 359px) {
+        .voucher-card .flex-shrink-0 { display: none; }
+      }
+    }
+
+    /* ── 6. SORT BAR: prevent buttons overflow ── */
+    @media (max-width: 767px) {
+      #sortBar { flex-wrap: wrap; gap: 6px; padding: 8px 12px; }
+      #sortBar h3 { flex: none; width: 100%; margin-bottom: 0; }
+      #sortBar .flex.gap-1 { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; width: 100%; }
+      #sortBar .sort-btn { flex-shrink: 0; }
+    }
+    @media (max-width: 400px) {
+      #sortBar h3 { font-size: 12px; }
+      .sort-btn   { font-size: 10px !important; padding: 4px 6px !important; }
+    }
+
+    /* ── 7. PRODUCT CARD: better mobile sizing ── */
+    @media (max-width: 767px) {
+      .sk-name  { font-size: 11px; }
+      .sk-price { font-size: 12.5px; }
+      .sk-badge { font-size: 9px; padding: 2px 4px; }
+    }
+    @media (max-width: 359px) {
+      .sk-card-info { padding: 6px 6px 8px; }
+      .sk-name  { font-size: 10.5px; }
+      .sk-price { font-size: 12px; }
+    }
+
+    /* ── 8. CART PANEL: full-width on mobile (<400px) ── */
+    @media (max-width: 399px) {
+      #cartPanel { max-width: 100%; }
+    }
+
+    /* ── 9. MODAL BOTTOM SHEETS: ensure they don't overflow viewport ── */
+    @media (max-width: 767px) {
+      #loginModal > div,
+      #voucherModal > div,
+      #wishlistModal > div,
+      #checkoutModal > div {
+        max-height: 92vh;
+        overflow-y: auto;
+      }
+      /* Ensure modals are visible at bottom of screen */
+      #loginModal, #voucherModal, #wishlistModal, #checkoutModal {
+        display: flex !important; /* override hidden handled by JS, just set flex for alignment */
+        align-items: flex-end !important;
+      }
+      #loginModal.hidden, #voucherModal.hidden, #wishlistModal.hidden, #checkoutModal.hidden {
+        display: none !important;
+      }
+    }
+
+    /* ── 10. BOTTOM NAV: safe area + proper height ── */
+    @media (max-width: 767px) {
+      nav.fixed.bottom-0 {
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      nav.fixed.bottom-0 .flex button {
+        padding: 10px 4px 8px;
+        min-width: 0;
+        flex: 1;
+      }
+      nav.fixed.bottom-0 .flex button svg { width: 20px; height: 20px; }
+      nav.fixed.bottom-0 .flex button span { font-size: 9px; }
+    }
+
+    /* ── 11. FOOTER: bottom padding above bottom nav ── */
+    footer { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)) !important; }
+
+    /* ── 12. DETAIL PAGE BOTTOM BAR: safe area ── */
+    @media (max-width: 767px) {
+      #detailBottomBar {
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      }
+    }
+
+    /* ── 13. NOTIFICATIONS: better position on mobile ── */
+    @media (max-width: 767px) {
+      #notifContainer {
+        top: auto;
+        bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+        right: 12px;
+        left: 12px;
+      }
+      #notifContainer > div {
+        width: 100%;
+        text-align: center;
+      }
+    }
+
+    /* ── 14. LOAD MORE BUTTON: full width padding ── */
+    @media (max-width: 767px) {
+      #loadMoreWrap { padding: 12px; }
+    }
+
+    /* ── 15. SEARCH OVERLAY INPUT: proper size ── */
+    @media (max-width: 767px) {
+      #searchInput { font-size: 16px; /* prevents iOS zoom on focus */ }
+    }
+
+    /* ── 16. CHECKOUT MODAL: step dots don't overflow ── */
+    @media (max-width: 359px) {
+      #step1dot, #step2dot, #step3dot { width: 24px; height: 24px; font-size: 10px; }
+    }
+
+    /* ── 17. SUCCESS MODAL: horizontal padding on small screens ── */
+    @media (max-width: 767px) {
+      #successModal > div { margin: 0 12px; }
+    }
+
+    /* ── 18. PREVENT HORIZONTAL SCROLL on whole page ── */
+    html, body { overflow-x: hidden; max-width: 100vw; }
+
+    /* ── 19. HERO QUICKLINKS: proper bottom on mobile ── */
+    @media (max-width: 767px) {
+      .hero-quicklinks { padding-bottom: 8px; }
+    }
+
+    /* ── 20. STICKY SORT BAR: recalculate top dynamically via JS,
+       but set a safe default mobile fallback ── */
+    @media (max-width: 767px) {
+      #sortBar { top: 88px; } /* header ~88px on mobile */
+    }
   </style>
 </head>
 
