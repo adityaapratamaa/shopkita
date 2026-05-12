@@ -4,824 +4,774 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard — ShopKita</title>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #111111;
-      --surface2: #171717;
-      --border: rgba(255,255,255,0.07);
-      --accent: #ff5c1a;
-      --accent2: #ff8c5a;
-      --green: #2ecc71;
-      --blue: #3b9eff;
-      --yellow: #f0c040;
-      --text: #f0ece4;
-      --muted: #5a5650;
-      --muted2: #8a8580;
+      --bg: #f7f6f3;
+      --white: #ffffff;
+      --ink: #0f0e0c;
+      --ink2: #2a2925;
+      --muted: #9e9b94;
+      --border: #e8e5de;
+      --sidebar-bg: #0f0e0c;
+      --accent: #e8440a;
+      --accent-hover: #c93a08;
+      --green: #16a34a;
+      --green-soft: rgba(22,163,74,0.1);
+      --blue: #2563eb;
+      --blue-soft: rgba(37,99,235,0.1);
+      --yellow: #ca8a04;
+      --yellow-soft: rgba(202,138,4,0.1);
     }
 
     html, body { height: 100%; }
 
     body {
-      font-family: 'DM Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
-      color: var(--text);
+      color: var(--ink);
       display: flex;
       overflow: hidden;
     }
 
-    /* ─── SIDEBAR ─── */
+    /* ── SIDEBAR ── */
     .sidebar {
-      width: 240px;
+      width: 232px;
       flex-shrink: 0;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
+      background: var(--sidebar-bg);
       display: flex;
       flex-direction: column;
-      padding: 28px 18px;
+      padding: 24px 16px;
       height: 100vh;
-      position: sticky;
-      top: 0;
     }
 
     .sidebar-brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 10px 28px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
+      gap: 9px;
+      padding: 4px 8px 24px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    .brand-icon {
-      width: 34px; height: 34px;
+    .brand-mark {
+      width: 32px; height: 32px;
       background: var(--accent);
       border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
     }
 
-    .brand-text {
-      font-family: 'Syne', sans-serif;
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
+    .brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.2px;
     }
 
-    .sidebar-section-label {
+    .nav-section-label {
       font-size: 10px;
-      letter-spacing: 1.5px;
+      font-weight: 600;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      color: var(--muted);
-      padding: 0 10px;
-      margin-bottom: 8px;
+      color: rgba(255,255,255,0.25);
+      padding: 16px 8px 6px;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      font-size: 14px;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      font-size: 13.5px;
       font-weight: 500;
-      color: var(--muted2);
+      color: rgba(255,255,255,0.45);
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.15s, color 0.15s;
-      margin-bottom: 2px;
+      transition: background 0.14s, color 0.14s;
+      margin-bottom: 1px;
     }
 
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(255,92,26,0.12); color: var(--accent); }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: rgba(232,68,10,0.15); color: #fff; }
+    .nav-item.active .nav-dot { background: var(--accent); }
 
-    .nav-item .nav-icon {
-      width: 20px; height: 20px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
+    .nav-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: transparent;
+      margin-left: auto;
+      flex-shrink: 0;
     }
 
-    .sidebar-spacer { flex: 1; }
+    .sidebar-flex { flex: 1; }
 
-    .sidebar-user {
-      border-top: 1px solid var(--border);
-      padding-top: 20px;
+    .sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 16px;
     }
 
-    .user-card {
+    .user-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      background: var(--surface2);
-      margin-bottom: 10px;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      margin-bottom: 8px;
     }
 
-    .user-avatar {
-      width: 34px; height: 34px;
+    .user-av {
+      width: 30px; height: 30px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      background: linear-gradient(135deg, var(--accent), #ff8c5a);
       display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-      font-family: 'Syne', sans-serif;
+      font-size: 12px; font-weight: 700; color: #fff;
     }
 
-    .user-name { font-size: 13px; font-weight: 500; }
-    .user-role { font-size: 11px; color: var(--muted); }
+    .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.3); }
 
     .btn-logout {
       width: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 9px;
-      border-radius: 9px;
-      border: 1px solid rgba(255,80,80,0.2);
+      gap: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,80,80,0.15);
       background: transparent;
-      color: #ff6060;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
+      color: rgba(255,100,100,0.7);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background 0.15s;
+      transition: background 0.14s, color 0.14s;
     }
 
-    .btn-logout:hover { background: rgba(255,80,80,0.08); }
+    .btn-logout:hover { background: rgba(255,80,80,0.08); color: #ff7070; }
 
-    /* ─── MAIN CONTENT ─── */
+    /* ── MAIN ── */
     .main {
       flex: 1;
       overflow-y: auto;
-      padding: 36px 40px;
+      padding: 32px 36px;
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 24px;
     }
 
-    /* Scrollbar */
-    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar { width: 5px; }
     .main::-webkit-scrollbar-track { background: transparent; }
     .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-    /* ─── TOPBAR ─── */
+    /* ── TOPBAR ── */
     .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
 
-    .topbar-title h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
+    .topbar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.4px;
     }
 
-    .topbar-title p {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
+    .topbar-date { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .status-badge {
+    .status-pill {
       display: flex;
       align-items: center;
       gap: 6px;
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: 20px;
       padding: 6px 14px;
       font-size: 12px;
-      color: var(--muted2);
+      color: var(--ink2);
+      font-weight: 500;
     }
 
     .status-dot {
-      width: 7px; height: 7px;
+      width: 6px; height: 6px;
       border-radius: 50%;
-      background: var(--green);
+      background: #22c55e;
       animation: pulse 2s infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.35; } }
 
-    /* ─── STATS GRID ─── */
-    .stats-grid {
+    /* ── STAT CARDS ── */
+    .stats-row {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: 14px;
     }
 
     .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: 14px;
-      padding: 22px;
-      position: relative;
-      overflow: hidden;
-      transition: border-color 0.2s, transform 0.2s;
+      padding: 20px 22px;
+      transition: box-shadow 0.18s, transform 0.18s;
     }
 
-    .stat-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, var(--card-accent, #ff5c1a), transparent);
-      opacity: 0.6;
+    .stat-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      transform: translateY(-1px);
     }
 
-    .stat-card[data-color="green"]  { --card-accent: #2ecc71; }
-    .stat-card[data-color="blue"]   { --card-accent: #3b9eff; }
-    .stat-card[data-color="yellow"] { --card-accent: #f0c040; }
-
-    .stat-label {
-      font-size: 11px;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 10px;
+    .stat-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
     }
 
     .stat-icon {
-      width: 28px; height: 28px;
-      border-radius: 7px;
+      width: 30px; height: 30px;
+      border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
       font-size: 13px;
-      background: var(--surface2);
+      background: var(--bg);
     }
 
     .stat-value {
-      font-family: 'Syne', sans-serif;
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      color: var(--text);
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.8px;
       line-height: 1;
       margin-bottom: 6px;
     }
 
-    .stat-change {
-      font-size: 12px;
-      color: var(--green);
+    .stat-sub {
+      font-size: 11.5px;
+      color: var(--muted);
     }
 
-    /* ─── CHART + QUICK STATS ─── */
+    .stat-sub.up { color: var(--green); font-weight: 500; }
+
+    /* ── CHART + STATUS ROW ── */
     .row-2 {
       display: grid;
-      grid-template-columns: 1fr 340px;
-      gap: 16px;
+      grid-template-columns: 1fr 300px;
+      gap: 14px;
     }
 
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: 14px;
-      padding: 26px;
+      padding: 24px;
     }
 
-    .card-header {
+    .card-head {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .card-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 700;
+      color: var(--ink);
+      letter-spacing: -0.2px;
     }
 
-    .card-subtitle {
+    .card-sub {
       font-size: 12px;
       color: var(--muted);
       margin-top: 2px;
     }
 
-    .btn-sm {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--muted2);
+    .btn-ghost {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
       border-radius: 7px;
-      padding: 6px 12px;
-      font-family: 'DM Sans', sans-serif;
+      padding: 5px 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 12px;
+      font-weight: 500;
+      color: var(--ink2);
       cursor: pointer;
-      transition: color 0.15s;
+      transition: background 0.14s;
     }
 
-    .btn-sm:hover { color: var(--text); }
+    .btn-ghost:hover { background: var(--border); }
 
-    /* Order status mini-list */
-    .order-status-list { display: flex; flex-direction: column; gap: 12px; }
+    /* Order status list */
+    .order-status-list { display: flex; flex-direction: column; gap: 10px; }
 
-    .order-status-item {
+    .osi {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg);
     }
 
     .osi-icon {
-      width: 36px; height: 36px;
-      border-radius: 9px;
+      width: 32px; height: 32px;
+      border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
+      font-size: 14px;
       flex-shrink: 0;
     }
 
-    .osi-info { flex: 1; }
-    .osi-label { font-size: 13px; font-weight: 500; }
-    .osi-sub { font-size: 11px; color: var(--muted); }
-    .osi-value { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+    .osi-label { font-size: 13px; font-weight: 600; color: var(--ink); }
+    .osi-sub   { font-size: 11px; color: var(--muted); }
+    .osi-val   { font-size: 17px; font-weight: 700; color: var(--ink); margin-left: auto; }
 
-    /* ─── BOTTOM ROW ─── */
+    /* ── BOTTOM ROW ── */
     .row-3 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
 
-    /* Form */
-    .form-label {
+    /* Form fields */
+    .field-group { margin-bottom: 14px; }
+
+    .field-label {
       display: block;
       font-size: 11px;
-      letter-spacing: 0.5px;
+      font-weight: 600;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 7px;
+      letter-spacing: 0.5px;
+      color: var(--ink2);
+      margin-bottom: 6px;
     }
 
-    .form-input {
+    .field-input {
       width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
       border-radius: 9px;
-      padding: 11px 14px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+      padding: 10px 13px;
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-      margin-bottom: 12px;
+      transition: border-color 0.16s, box-shadow 0.16s, background 0.16s;
     }
 
-    .form-input::placeholder { color: var(--muted); }
-    .form-input:focus {
+    .field-input::placeholder { color: var(--muted); }
+
+    .field-input:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(255,92,26,0.1);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(232,68,10,0.08);
     }
 
     .btn-primary {
       width: 100%;
-      background: var(--accent);
+      background: var(--ink);
       color: #fff;
       border: none;
       border-radius: 9px;
-      padding: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
+      padding: 11px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s;
       margin-top: 4px;
+      transition: background 0.16s, transform 0.14s;
     }
 
-    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-primary:hover { background: var(--ink2); transform: translateY(-1px); }
 
-    .preview-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
+    .preview-wrap {
+      display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px;
     }
 
-    .preview-container img {
-      width: 64px; height: 64px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid var(--border);
+    .preview-wrap img {
+      width: 56px; height: 56px;
+      object-fit: cover; border-radius: 8px;
+      border: 1.5px solid var(--border);
     }
 
     /* Product list */
-    .product-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-height: 400px;
-      overflow-y: auto;
-      padding-right: 4px;
+    .product-list {
+      display: flex; flex-direction: column; gap: 8px;
+      max-height: 400px; overflow-y: auto; padding-right: 4px;
     }
 
-    .product-grid::-webkit-scrollbar { width: 4px; }
-    .product-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .product-list::-webkit-scrollbar { width: 4px; }
+    .product-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
     .product-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 11px;
       padding: 10px 12px;
-      background: var(--surface2);
       border-radius: 10px;
-      border: 1px solid var(--border);
-      transition: border-color 0.15s;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      transition: border-color 0.14s;
     }
 
-    .product-row:hover { border-color: rgba(255,255,255,0.12); }
+    .product-row:hover { border-color: #d0ccc5; }
 
     .product-thumb {
-      width: 44px; height: 44px;
-      object-fit: cover;
-      border-radius: 8px;
-      background: #222;
-      flex-shrink: 0;
+      width: 40px; height: 40px;
+      object-fit: cover; border-radius: 8px; flex-shrink: 0;
     }
 
-    .product-info { flex: 1; min-width: 0; }
-    .product-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .product-cat  { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .product-price { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+    .product-name { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-cat  { font-size: 11px; color: var(--muted); }
+    .product-price { font-size: 13px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+    .product-info  { flex: 1; min-width: 0; }
 
-    .product-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .product-actions { display: flex; gap: 5px; flex-shrink: 0; }
 
     .btn-icon {
-      width: 30px; height: 30px;
+      width: 28px; height: 28px;
       border-radius: 7px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted2);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      color: var(--muted);
       font-size: 12px;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s, color 0.15s;
+      transition: background 0.14s, color 0.14s, border-color 0.14s;
     }
 
-    .btn-icon.edit:hover  { background: rgba(59,158,255,0.12); color: var(--blue); border-color: rgba(59,158,255,0.3); }
-    .btn-icon.delete:hover { background: rgba(255,80,80,0.12); color: #ff6060; border-color: rgba(255,80,80,0.3); }
+    .btn-icon.edit:hover   { background: var(--blue-soft); color: var(--blue); border-color: rgba(37,99,235,0.25); }
+    .btn-icon.delete:hover { background: rgba(239,68,68,0.08); color: #ef4444; border-color: rgba(239,68,68,0.25); }
+
+    .empty-state {
+      text-align: center; padding: 36px 20px;
+      color: var(--muted); font-size: 13px;
+    }
+
+    .empty-state .empty-icon { font-size: 30px; margin-bottom: 8px; }
 
     .refresh-btn {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--muted2);
+      background: var(--bg);
+      border: 1.5px solid var(--border);
       border-radius: 7px;
-      padding: 6px 10px;
-      font-size: 13px;
-      cursor: pointer;
-      transition: color 0.15s;
+      padding: 5px 10px;
+      font-size: 12px; font-weight: 500;
+      color: var(--ink2); cursor: pointer;
+      transition: background 0.14s;
     }
 
-    .refresh-btn:hover { color: var(--text); }
+    .refresh-btn:hover { background: var(--border); }
 
-    /* ─── MODAL ─── */
+    /* ── MODAL ── */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
+      position: fixed; inset: 0;
+      background: rgba(15,14,12,0.55);
       backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+      display: none; align-items: center; justify-content: center; z-index: 100;
     }
 
     .modal-overlay.open { display: flex; }
 
     .modal {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1.5px solid var(--border);
       border-radius: 16px;
-      padding: 32px;
-      width: 440px;
+      padding: 30px;
+      width: 420px;
       max-height: 90vh;
       overflow-y: auto;
-      animation: modalIn 0.2s cubic-bezier(.22,1,.36,1) both;
+      animation: modalIn 0.22s cubic-bezier(.22,1,.36,1) both;
     }
 
     @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.95) translateY(10px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
+      from { opacity:0; transform: scale(0.96) translateY(8px); }
+      to   { opacity:1; transform: scale(1) translateY(0); }
     }
 
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
+    .modal-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px;
     }
 
     .modal-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 17px; font-weight: 700; color: var(--ink);
     }
 
     .modal-close {
-      width: 32px; height: 32px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted2);
-      font-size: 16px;
-      cursor: pointer;
+      width: 30px; height: 30px;
+      border-radius: 7px; border: 1.5px solid var(--border);
+      background: transparent; color: var(--muted);
+      font-size: 14px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.15s;
+      transition: background 0.14s;
     }
 
-    .modal-close:hover { background: var(--surface2); color: var(--text); }
+    .modal-close:hover { background: var(--bg); color: var(--ink); }
 
     .modal-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
+      display: flex; gap: 8px; margin-top: 6px;
     }
 
     .btn-save {
-      flex: 1;
-      background: var(--green);
-      color: #000;
-      border: none;
-      border-radius: 9px;
-      padding: 12px;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: opacity 0.15s;
+      flex: 1; background: var(--ink); color: #fff;
+      border: none; border-radius: 9px; padding: 11px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px; font-weight: 700; cursor: pointer;
+      transition: opacity 0.14s;
     }
 
-    .btn-save:hover { opacity: 0.85; }
+    .btn-save:hover { opacity: 0.82; }
 
     .btn-cancel {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--muted2);
-      border-radius: 9px;
-      padding: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      cursor: pointer;
+      flex: 1; background: var(--bg);
+      border: 1.5px solid var(--border); color: var(--ink2);
+      border-radius: 9px; padding: 11px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 13.5px; cursor: pointer;
+      transition: background 0.14s;
     }
 
-    .btn-cancel:hover { color: var(--text); }
-
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .empty-state .empty-icon { font-size: 36px; margin-bottom: 10px; }
-
-    /* Carousel in product grid */
-    .product-carousel-wrap {
-      position: relative;
-      width: 44px; height: 44px;
-      flex-shrink: 0;
-    }
+    .btn-cancel:hover { background: var(--border); }
   </style>
 </head>
-
 <body>
 
-<!-- ─── SIDEBAR ─── -->
+<!-- SIDEBAR -->
 <nav class="sidebar">
   <div class="sidebar-brand">
-    <div class="brand-icon">🛍️</div>
-    <span class="brand-text">ShopKita</span>
+    <div class="brand-mark">🛍️</div>
+    <span class="brand-name">ShopKita</span>
   </div>
 
-  <div class="sidebar-section-label">Menu</div>
+  <div class="nav-section-label">Menu</div>
 
   <a href="admin.html" class="nav-item active">
-    <span class="nav-icon">📦</span> Produk
+    <span>📦</span> Produk <span class="nav-dot"></span>
   </a>
   <a href="orders.html" class="nav-item">
-    <span class="nav-icon">🛒</span> Orders
+    <span>🛒</span> Orders
   </a>
   <a href="#" class="nav-item">
-    <span class="nav-icon">👥</span> Pelanggan
+    <span>👥</span> Pelanggan
   </a>
   <a href="#" class="nav-item">
-    <span class="nav-icon">📊</span> Analitik
+    <span>📊</span> Analitik
   </a>
   <a href="#" class="nav-item">
-    <span class="nav-icon">⚙️</span> Pengaturan
+    <span>⚙️</span> Pengaturan
   </a>
 
-  <div class="sidebar-spacer"></div>
+  <div class="sidebar-flex"></div>
 
-  <div class="sidebar-user">
-    <div class="user-card">
-      <div class="user-avatar">A</div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-av">A</div>
       <div>
         <div class="user-name">Admin</div>
         <div class="user-role">Super Admin</div>
       </div>
     </div>
-    <button class="btn-logout" onclick="logout()">
-      <span>↩</span> Keluar
-    </button>
+    <button class="btn-logout" onclick="logout()">↩ Keluar</button>
   </div>
 </nav>
 
-<!-- ─── MAIN CONTENT ─── -->
+<!-- MAIN -->
 <main class="main">
 
-  <!-- Topbar -->
   <div class="topbar">
-    <div class="topbar-title">
+    <div>
       <h1>Dashboard</h1>
-      <p id="dateDisplay">Memuat tanggal...</p>
+      <div class="topbar-date" id="dateDisplay"></div>
     </div>
-    <div class="topbar-actions">
-      <div class="status-badge">
-        <div class="status-dot"></div>
-        Semua sistem aktif
-      </div>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      Semua sistem aktif
     </div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats-grid">
+  <!-- STATS -->
+  <div class="stats-row">
     <div class="stat-card">
-      <div class="stat-label">
-        Total Produk
+      <div class="stat-top">
+        <div class="stat-label">Total Produk</div>
         <div class="stat-icon">📦</div>
       </div>
       <div class="stat-value" id="totalProducts">—</div>
-      <div class="stat-change">↑ Aktif</div>
+      <div class="stat-sub up">↑ Aktif</div>
     </div>
-    <div class="stat-card" data-color="green">
-      <div class="stat-label">
-        Total Orders
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Total Orders</div>
         <div class="stat-icon">🛒</div>
       </div>
       <div class="stat-value" id="totalOrders">—</div>
-      <div class="stat-change">↑ Semua waktu</div>
+      <div class="stat-sub">Semua waktu</div>
     </div>
-    <div class="stat-card" data-color="blue">
-      <div class="stat-label">
-        Revenue
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Revenue</div>
         <div class="stat-icon">💰</div>
       </div>
-      <div class="stat-value" id="totalRevenue">—</div>
-      <div class="stat-change">↑ Total</div>
+      <div class="stat-value" id="totalRevenue" style="font-size:18px">—</div>
+      <div class="stat-sub up">↑ Total</div>
     </div>
-    <div class="stat-card" data-color="yellow">
-      <div class="stat-label">
-        Pending
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Pending</div>
         <div class="stat-icon">⏳</div>
       </div>
       <div class="stat-value" id="pendingOrders">—</div>
-      <div class="stat-change">Perlu ditindak</div>
+      <div class="stat-sub">Perlu ditindak</div>
     </div>
   </div>
 
-  <!-- Row 2: chart + order summary -->
+  <!-- CHART + ORDER STATUS -->
   <div class="row-2">
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <div>
           <div class="card-title">Revenue Analytics</div>
-          <div class="card-subtitle">12 bulan terakhir</div>
+          <div class="card-sub">12 bulan terakhir</div>
         </div>
-        <button class="btn-sm">Export</button>
+        <button class="btn-ghost">Export</button>
       </div>
-      <canvas id="revenueChart" height="100"></canvas>
+      <canvas id="revenueChart" height="90"></canvas>
     </div>
 
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <div class="card-title">Status Orders</div>
       </div>
       <div class="order-status-list">
-        <div class="order-status-item">
-          <div class="osi-icon" style="background:rgba(255,192,64,0.12);">⏳</div>
-          <div class="osi-info">
+        <div class="osi">
+          <div class="osi-icon" style="background:rgba(202,138,4,0.1)">⏳</div>
+          <div>
             <div class="osi-label">Pending</div>
             <div class="osi-sub">Belum diproses</div>
           </div>
-          <div class="osi-value" id="osi-pending">—</div>
+          <div class="osi-val" id="osi-pending">—</div>
         </div>
-        <div class="order-status-item">
-          <div class="osi-icon" style="background:rgba(59,158,255,0.12);">🚚</div>
-          <div class="osi-info">
+        <div class="osi">
+          <div class="osi-icon" style="background:rgba(37,99,235,0.1)">🚚</div>
+          <div>
             <div class="osi-label">Dikirim</div>
             <div class="osi-sub">Dalam pengiriman</div>
           </div>
-          <div class="osi-value" id="osi-shipped">—</div>
+          <div class="osi-val" id="osi-shipped">—</div>
         </div>
-        <div class="order-status-item">
-          <div class="osi-icon" style="background:rgba(46,204,113,0.12);">✅</div>
-          <div class="osi-info">
+        <div class="osi">
+          <div class="osi-icon" style="background:rgba(22,163,74,0.1)">✅</div>
+          <div>
             <div class="osi-label">Selesai</div>
             <div class="osi-sub">Delivered</div>
           </div>
-          <div class="osi-value" id="osi-done">—</div>
+          <div class="osi-val" id="osi-done">—</div>
         </div>
-        <div class="order-status-item">
-          <div class="osi-icon" style="background:rgba(255,80,80,0.12);">❌</div>
-          <div class="osi-info">
+        <div class="osi">
+          <div class="osi-icon" style="background:rgba(239,68,68,0.1)">✕</div>
+          <div>
             <div class="osi-label">Dibatalkan</div>
             <div class="osi-sub">Cancelled</div>
           </div>
-          <div class="osi-value" id="osi-cancelled">—</div>
+          <div class="osi-val" id="osi-cancelled">—</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Row 3: Add product + Product list -->
+  <!-- PRODUCT SECTION -->
   <div class="row-3">
-
-    <!-- Add Product Form -->
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <div class="card-title">Tambah Produk</div>
       </div>
 
-      <label class="form-label">Nama Produk</label>
-      <input type="text" id="title" class="form-input" placeholder="mis. iPhone 15 Pro Max">
+      <div class="field-group">
+        <label class="field-label">Nama Produk</label>
+        <input type="text" id="title" class="field-input" placeholder="mis. iPhone 15 Pro Max">
+      </div>
 
-      <label class="form-label">Harga (Rp)</label>
-      <input type="number" id="price" class="form-input" placeholder="mis. 18500000">
+      <div class="field-group">
+        <label class="field-label">Harga (Rp)</label>
+        <input type="number" id="price" class="field-input" placeholder="mis. 18500000">
+      </div>
 
-      <label class="form-label">Gambar Produk</label>
-      <input type="file" id="image" class="form-input" accept="image/*" multiple style="padding: 9px 14px; cursor:pointer;">
-      <div class="preview-container" id="imagePreviewContainer"></div>
+      <div class="field-group">
+        <label class="field-label">Gambar Produk</label>
+        <input type="file" id="image" class="field-input" accept="image/*" multiple style="padding:8px 12px;cursor:pointer;">
+        <div class="preview-wrap" id="imagePreviewContainer"></div>
+      </div>
 
-      <label class="form-label">Kategori</label>
-      <input type="text" id="category" class="form-input" placeholder="mis. hp, laptop, aksesoris">
+      <div class="field-group">
+        <label class="field-label">Kategori</label>
+        <input type="text" id="category" class="field-input" placeholder="mis. hp, laptop, aksesoris">
+      </div>
 
       <button class="btn-primary" onclick="addProduct()">+ Tambah Produk</button>
     </div>
 
-    <!-- Product List -->
     <div class="card">
-      <div class="card-header">
+      <div class="card-head">
         <div class="card-title">List Produk</div>
         <button class="refresh-btn" onclick="loadProducts()">↺ Refresh</button>
       </div>
-      <div id="product-list" class="product-grid">
+      <div id="product-list" class="product-list">
         <div class="empty-state">
           <div class="empty-icon">📦</div>
           Memuat produk...
         </div>
       </div>
     </div>
-
   </div>
 
 </main>
 
-<!-- ─── EDIT MODAL ─── -->
+<!-- EDIT MODAL -->
 <div class="modal-overlay" id="editModal">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-head">
       <div class="modal-title">Edit Produk</div>
       <button class="modal-close" onclick="closeEditModal()">✕</button>
     </div>
 
-    <label class="form-label">Nama Produk</label>
-    <input type="text" id="editTitle" class="form-input" placeholder="Nama Produk">
-
-    <label class="form-label">Harga</label>
-    <input type="number" id="editPrice" class="form-input" placeholder="Harga">
-
-    <label class="form-label">Gambar saat ini</label>
-    <div class="preview-container" id="editCurrentImages"></div>
-
-    <label class="form-label">Ganti Gambar</label>
-    <input type="file" id="editImage" class="form-input" accept="image/*" multiple style="padding: 9px 14px; cursor:pointer;">
-    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Kosongkan jika tidak ingin mengganti gambar</p>
-
-    <label class="form-label">Kategori</label>
-    <input type="text" id="editCategory" class="form-input" placeholder="Kategori">
+    <div class="field-group">
+      <label class="field-label">Nama Produk</label>
+      <input type="text" id="editTitle" class="field-input" placeholder="Nama Produk">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Harga</label>
+      <input type="number" id="editPrice" class="field-input" placeholder="Harga">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Gambar saat ini</label>
+      <div class="preview-wrap" id="editCurrentImages"></div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Ganti Gambar</label>
+      <input type="file" id="editImage" class="field-input" accept="image/*" multiple style="padding:8px 12px;cursor:pointer;">
+      <p style="font-size:11px;color:var(--muted);margin-top:6px;">Kosongkan jika tidak ingin mengganti gambar</p>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Kategori</label>
+      <input type="text" id="editCategory" class="field-input" placeholder="Kategori">
+    </div>
 
     <div class="modal-actions">
-      <button class="btn-save"   onclick="updateProduct()">💾 Simpan</button>
+      <button class="btn-save" onclick="updateProduct()">Simpan</button>
       <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
     </div>
   </div>
@@ -838,25 +788,20 @@
 
   let selectedProductId = null
   let currentImageUrls  = []
-  let carouselIndex     = {}
 
-  // Date display
   document.getElementById('dateDisplay').textContent =
     new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
-  // AUTH
   async function checkAuth() {
     const { data } = await supabase.auth.getSession()
     if (!data.session) window.location.href = 'login.html'
   }
 
-  // LOGOUT
   window.logout = async function () {
     await supabase.auth.signOut()
     window.location.href = 'login.html'
   }
 
-  // STATS
   async function loadStats() {
     const [{ count: pc }, { data: orders }] = await Promise.all([
       supabase.from('products').select('*', { count: 'exact', head: true }),
@@ -884,7 +829,6 @@
     }
   }
 
-  // CHART
   async function loadChart() {
     const { data: orders } = await supabase.from('orders').select('total_price, created_at')
     const monthly = Array(12).fill(0)
@@ -904,11 +848,12 @@
         datasets: [{
           label: 'Revenue',
           data: monthly,
-          backgroundColor: 'rgba(255,92,26,0.2)',
-          borderColor: '#ff5c1a',
-          borderWidth: 2,
-          borderRadius: 6,
-          hoverBackgroundColor: 'rgba(255,92,26,0.4)'
+          backgroundColor: 'rgba(15,14,12,0.08)',
+          borderColor: '#0f0e0c',
+          borderWidth: 1.5,
+          borderRadius: 5,
+          hoverBackgroundColor: 'rgba(232,68,10,0.15)',
+          hoverBorderColor: '#e8440a'
         }]
       },
       options: {
@@ -916,26 +861,24 @@
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#1a1a1a',
+            backgroundColor: '#0f0e0c',
             titleColor: '#f0ece4',
-            bodyColor: '#8a8580',
-            borderColor: 'rgba(255,255,255,0.07)',
+            bodyColor: '#9e9b94',
+            borderColor: 'rgba(255,255,255,0.08)',
             borderWidth: 1,
-            callbacks: {
-              label: ctx => 'Rp ' + ctx.raw.toLocaleString('id-ID')
-            }
+            callbacks: { label: ctx => 'Rp ' + ctx.raw.toLocaleString('id-ID') }
           }
         },
         scales: {
           x: {
-            grid: { color: 'rgba(255,255,255,0.04)' },
-            ticks: { color: '#5a5650', font: { family: 'DM Sans', size: 11 } }
+            grid: { display: false },
+            ticks: { color: '#9e9b94', font: { family: 'Plus Jakarta Sans', size: 11 } }
           },
           y: {
-            grid: { color: 'rgba(255,255,255,0.04)' },
+            grid: { color: 'rgba(0,0,0,0.05)' },
             ticks: {
-              color: '#5a5650',
-              font: { family: 'DM Sans', size: 11 },
+              color: '#9e9b94',
+              font: { family: 'Plus Jakarta Sans', size: 11 },
               callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'jt'
             }
           }
@@ -944,13 +887,8 @@
     })
   }
 
-  // LOAD PRODUCTS
   window.loadProducts = async function () {
-    const { data: products, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('id', { ascending: false })
-
+    const { data: products, error } = await supabase.from('products').select('*').order('id', { ascending: false })
     const list = document.getElementById('product-list')
 
     if (error || !products || products.length === 0) {
@@ -959,12 +897,11 @@
     }
 
     list.innerHTML = ''
-
     products.forEach(p => {
       const imgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : [])
       const thumb = imgs.length > 0
         ? `<img class="product-thumb" src="${imgs[0]}" alt="${p.title}">`
-        : `<div class="product-thumb" style="background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📷</div>`
+        : `<div class="product-thumb" style="background:#f0ece4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;">📷</div>`
 
       const row = document.createElement('div')
       row.className = 'product-row'
@@ -984,7 +921,6 @@
     })
   }
 
-  // ADD PRODUCT
   window.addProduct = async function () {
     const title    = document.getElementById('title').value.trim()
     const price    = document.getElementById('price').value.trim()
@@ -999,8 +935,7 @@
     if (!imageUrls) return
 
     const { error } = await supabase.from('products').insert([{
-      title, price: Number(price),
-      image: imageUrls[0], images: imageUrls, category
+      title, price: Number(price), image: imageUrls[0], images: imageUrls, category
     }])
 
     if (error) { alert('Gagal tambah produk!'); return }
@@ -1014,7 +949,6 @@
     loadProducts(); loadStats()
   }
 
-  // DELETE
   window.deleteProduct = async function (id) {
     if (!confirm('Yakin ingin hapus produk ini?')) return
     const { error } = await supabase.from('products').delete().eq('id', id)
@@ -1022,7 +956,6 @@
     loadProducts(); loadStats()
   }
 
-  // MODAL EDIT - OPEN
   window.openEditModal = async function (id) {
     selectedProductId = id
     const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
@@ -1032,11 +965,9 @@
     document.getElementById('editPrice').value    = data.price
     document.getElementById('editCategory').value = data.category
 
-    currentImageUrls = (data.images && data.images.length > 0)
-      ? data.images : (data.image ? [data.image] : [])
-
+    currentImageUrls = (data.images && data.images.length > 0) ? data.images : (data.image ? [data.image] : [])
     document.getElementById('editCurrentImages').innerHTML = currentImageUrls.map(url =>
-      `<img src="${url}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">`
+      `<img src="${url}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border)">`
     ).join('')
 
     document.getElementById('editModal').classList.add('open')
@@ -1048,7 +979,6 @@
     selectedProductId = null; currentImageUrls = []
   }
 
-  // MODAL EDIT - UPDATE
   window.updateProduct = async function () {
     const title    = document.getElementById('editTitle').value.trim()
     const price    = document.getElementById('editPrice').value.trim()
@@ -1064,17 +994,15 @@
       imageUrls = newUrls
     }
 
-    const { error } = await supabase
-      .from('products')
-      .update({ title, price: Number(price), image: imageUrls[0], images: imageUrls, category })
-      .eq('id', selectedProductId)
+    const { error } = await supabase.from('products').update({
+      title, price: Number(price), image: imageUrls[0], images: imageUrls, category
+    }).eq('id', selectedProductId)
 
     if (error) { alert('Gagal update produk!'); return }
     alert('✅ Produk berhasil diupdate!')
     closeEditModal(); loadProducts()
   }
 
-  // UPLOAD IMAGES
   async function uploadImages(files) {
     const urls = []
     for (const file of files) {
@@ -1087,7 +1015,6 @@
     return urls
   }
 
-  // IMAGE PREVIEW
   document.getElementById('image').addEventListener('change', function () {
     const container = document.getElementById('imagePreviewContainer')
     container.innerHTML = ''
@@ -1096,19 +1023,17 @@
       reader.onload = e => {
         const img = document.createElement('img')
         img.src = e.target.result
-        img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border)'
+        img.style.cssText = 'width:56px;height:56px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border)'
         container.appendChild(img)
       }
       reader.readAsDataURL(file)
     })
   })
 
-  // INIT
   await checkAuth()
   loadProducts()
   loadStats()
   loadChart()
 </script>
-
 </body>
 </html>
