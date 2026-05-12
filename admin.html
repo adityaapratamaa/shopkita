@@ -11,17 +11,12 @@
 <body class="bg-gray-100">
 <div class="flex min-h-screen">
 
-  <!-- ================================================
-       SIDEBAR
-       Navigasi utama admin panel
-       ================================================ -->
-  <div class="w-64 bg-black text-white p-6 flex-shrink-0">
+  <!-- SIDEBAR -->
+  <div class="w-64 bg-black text-white p-6 flex-shrink-0 flex flex-col">
 
-    <!-- Logo -->
     <h1 class="text-3xl font-bold mb-10">ShopKita Admin</h1>
 
-    <!-- Menu Navigasi -->
-    <div class="space-y-3">
+    <div class="space-y-3 flex-1">
       <a href="admin.html" class="block bg-orange-500 px-4 py-3 rounded-xl">
         📦 Produk
       </a>
@@ -30,38 +25,26 @@
       </a>
     </div>
 
+    <!-- Logout di bawah sidebar -->
+    <button
+      onclick="logout()"
+      class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-xl mt-10 transition"
+    >
+      Logout
+    </button>
+
   </div>
   <!-- END SIDEBAR -->
 
-
-  <!-- ================================================
-       MAIN CONTENT
-       ================================================ -->
+  <!-- MAIN CONTENT -->
   <div class="flex-1 p-10 overflow-auto">
   <div class="max-w-6xl mx-auto">
 
-
-    <!-- ================================================
-         HEADER
-         Judul halaman + tombol logout
-         ================================================ -->
     <div class="flex justify-between items-center mb-10">
       <h1 class="text-4xl font-bold">Dashboard Admin</h1>
-      <button
-        onclick="logout()"
-        class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-xl transition"
-      >
-        Logout
-      </button>
     </div>
-    <!-- END HEADER -->
 
-
-    <!-- ================================================
-         STATS CARDS
-         Total Produk, Orders, Revenue, Pending
-         Data diambil dari fungsi loadStats()
-         ================================================ -->
+    <!-- STATS CARDS -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
 
       <div class="bg-white p-5 rounded-2xl shadow">
@@ -85,35 +68,19 @@
       </div>
 
     </div>
-    <!-- END STATS CARDS -->
 
-
-    <!-- ================================================
-         REVENUE CHART
-         Line chart berdasarkan data orders
-         Dirender oleh fungsi loadChart()
-         ================================================ -->
+    <!-- REVENUE CHART -->
     <div class="bg-white p-6 rounded-2xl shadow mb-10">
       <h2 class="text-2xl font-bold mb-5">Revenue Analytics</h2>
       <canvas id="revenueChart"></canvas>
     </div>
-    <!-- END REVENUE CHART -->
 
-
-    <!-- ================================================
-         FORM TAMBAH PRODUK
-         - Nama produk
-         - Harga
-         - Upload gambar (bisa multiple)
-         - Kategori
-         Diproses oleh fungsi addProduct()
-         ================================================ -->
+    <!-- FORM TAMBAH PRODUK -->
     <div class="bg-white p-6 rounded-2xl shadow mb-10">
       <h2 class="text-2xl font-semibold mb-6">Tambah Produk</h2>
 
       <div class="grid gap-4">
 
-        <!-- Input Nama Produk -->
         <input
           id="title"
           type="text"
@@ -121,7 +88,6 @@
           class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
 
-        <!-- Input Harga -->
         <input
           id="price"
           type="number"
@@ -129,7 +95,6 @@
           class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
 
-        <!-- Input Gambar (multiple) -->
         <div>
           <input
             id="image"
@@ -143,12 +108,8 @@
           </p>
         </div>
 
-        <!-- Preview gambar yang dipilih sebelum upload -->
-        <div id="imagePreviewContainer" class="flex gap-2 flex-wrap hidden">
-          <!-- Preview gambar akan muncul di sini secara dinamis -->
-        </div>
+        <div id="imagePreviewContainer" class="flex gap-2 flex-wrap hidden"></div>
 
-        <!-- Input Kategori -->
         <input
           id="category"
           type="text"
@@ -156,7 +117,6 @@
           class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
         />
 
-        <!-- Tombol Submit -->
         <button
           onclick="addProduct()"
           class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-semibold transition"
@@ -166,15 +126,8 @@
 
       </div>
     </div>
-    <!-- END FORM TAMBAH PRODUK -->
 
-
-    <!-- ================================================
-         LIST PRODUK
-         Menampilkan semua produk dari database
-         Dirender oleh fungsi loadProducts()
-         Setiap produk punya tombol Edit dan Hapus
-         ================================================ -->
+    <!-- LIST PRODUK -->
     <div class="bg-white p-6 rounded-2xl shadow">
 
       <div class="flex justify-between items-center mb-6">
@@ -187,23 +140,15 @@
         </button>
       </div>
 
-      <!-- Grid produk diisi secara dinamis -->
       <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
 
     </div>
-    <!-- END LIST PRODUK -->
-
 
   </div>
   </div>
   <!-- END MAIN CONTENT -->
 
-
-  <!-- ================================================
-       MODAL EDIT PRODUK
-       Muncul saat tombol Edit diklik
-       Diproses oleh fungsi updateProduct()
-       ================================================ -->
+  <!-- MODAL EDIT PRODUK -->
   <div
     id="editModal"
     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
@@ -212,7 +157,6 @@
 
       <h2 class="text-2xl font-bold mb-4">Edit Produk</h2>
 
-      <!-- Input Edit Nama -->
       <input
         type="text"
         id="editTitle"
@@ -220,7 +164,6 @@
         class="w-full border p-3 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      <!-- Input Edit Harga -->
       <input
         type="number"
         id="editPrice"
@@ -228,13 +171,9 @@
         class="w-full border p-3 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      <!-- Preview gambar saat ini -->
       <p class="text-sm text-gray-500 mb-1">Gambar saat ini:</p>
-      <div id="editCurrentImages" class="flex gap-2 flex-wrap mb-3">
-        <!-- Preview gambar existing akan muncul di sini -->
-      </div>
+      <div id="editCurrentImages" class="flex gap-2 flex-wrap mb-3"></div>
 
-      <!-- Upload gambar baru (opsional) -->
       <div class="mb-3">
         <input
           type="file"
@@ -248,7 +187,6 @@
         </p>
       </div>
 
-      <!-- Input Edit Kategori -->
       <input
         type="text"
         id="editCategory"
@@ -256,7 +194,6 @@
         class="w-full border p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
       />
 
-      <!-- Tombol Aksi Modal -->
       <div class="flex gap-2">
         <button
           onclick="updateProduct()"
@@ -276,98 +213,61 @@
   </div>
   <!-- END MODAL EDIT -->
 
-
 </div>
 </body>
 
 
-<!-- ================================================
-     JAVASCRIPT
-     ================================================ -->
 <script type="module">
-
+  // FIX: import & createClient DULU, baru bisa pakai supabase
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  // ================================================
-  // KONFIGURASI SUPABASE
-  // Ganti URL dan KEY jika project berubah
-  // ================================================
-  const SUPABASE_URL = 'https://fctmswfmuvqwueeumtgw.supabase.co'
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
-  const STORAGE_BUCKET = 'product-images' // Nama bucket di Supabase Storage
+  const SUPABASE_URL    = 'https://fctmswfmuvqwueeumtgw.supabase.co'
+  const SUPABASE_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+  const STORAGE_BUCKET  = 'product-images'
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  // State untuk modal edit
   let selectedProductId = null
-  let currentImageUrls = []    // array URL gambar produk yang sedang diedit
-  let carouselIndex = {}       // menyimpan index slide carousel per produk
+  let currentImageUrls  = []
+  let carouselIndex     = {}
 
 
-  // ================================================
-  // AUTH - CEK LOGIN
-  // Jika belum login, minta email & password
-  // ================================================
+  // AUTH - CEK SESSION, redirect ke login jika belum login
   async function checkAuth() {
     const { data } = await supabase.auth.getSession()
-
     if (!data.session) {
-      const email = prompt('Masukkan Email Admin')
-      const password = prompt('Masukkan Password')
-
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-      if (error) {
-        alert('Login gagal! Cek email dan password.')
-        location.reload()
-      } else {
-        alert('Login berhasil!')
-      }
+      window.location.href = 'login.html'
     }
   }
 
-
-  // ================================================
   // AUTH - LOGOUT
-  // ================================================
   window.logout = async function () {
     await supabase.auth.signOut()
-    alert('Logout berhasil!')
-    location.reload()
+    window.location.href = 'login.html'
   }
 
 
-  // ================================================
-  // STATS - LOAD STATISTIK
-  // Mengisi angka di 4 kartu statistik atas
-  // ================================================
+  // STATS
   async function loadStats() {
-    // Ambil semua produk
     const { data: products } = await supabase.from('products').select('*')
     document.getElementById('totalProducts').innerText = products?.length || 0
 
-    // Ambil semua orders
     const { data: orders } = await supabase.from('orders').select('*')
     document.getElementById('totalOrders').innerText = orders?.length || 0
 
-    // Hitung total revenue
     const revenue = orders?.reduce((sum, order) => sum + Number(order.total_price || 0), 0) || 0
     document.getElementById('totalRevenue').innerText = 'Rp ' + revenue.toLocaleString('id-ID')
 
-    // Hitung pending orders
     const pending = orders?.filter(order => order.status === 'pending') || []
     document.getElementById('pendingOrders').innerText = pending.length
   }
 
 
-  // ================================================
-  // CHART - LOAD REVENUE CHART
-  // Line chart berdasarkan total_price tiap order
-  // ================================================
+  // CHART
   async function loadChart() {
     const { data: orders } = await supabase.from('orders').select('*')
 
-    const labels = orders?.map((_, i) => `Order ${i + 1}`) || []
+    const labels   = orders?.map((_, i) => `Order ${i + 1}`) || []
     const revenues = orders?.map(order => Number(order.total_price || 0)) || []
 
     new Chart(document.getElementById('revenueChart'), {
@@ -377,7 +277,7 @@
         datasets: [{
           label: 'Revenue (Rp)',
           data: revenues,
-          borderColor: '#f97316',   // warna garis = orange
+          borderColor: '#f97316',
           borderWidth: 3,
           tension: 0.4,
           fill: true,
@@ -389,11 +289,7 @@
   }
 
 
-  // ================================================
-  // PRODUCTS - LOAD & RENDER PRODUK
-  // Mengambil semua produk dari database dan
-  // merendernya sebagai card dengan carousel gambar
-  // ================================================
+  // LOAD PRODUK
   window.loadProducts = async function () {
     const productList = document.getElementById('product-list')
     productList.innerHTML = '<p class="text-gray-400 col-span-3">Memuat produk...</p>'
@@ -404,7 +300,6 @@
       .order('id', { ascending: false })
 
     if (error) {
-      console.error('Error loadProducts:', error)
       productList.innerHTML = '<p class="text-red-500">Gagal memuat produk.</p>'
       return
     }
@@ -417,110 +312,73 @@
     productList.innerHTML = ''
 
     data.forEach(product => {
-      // Gabungkan: pakai kolom `images` (array), fallback ke kolom `image` lama
       const allImages = (product.images && product.images.length > 0)
         ? product.images
         : (product.image ? [product.image] : [])
 
-      // Buat HTML carousel jika lebih dari 1 gambar
       const carouselHtml = buildCarousel(product.id, allImages)
 
       productList.innerHTML += `
         <div class="border rounded-2xl overflow-hidden shadow-sm bg-white">
-
-          <!-- Carousel Gambar -->
           ${carouselHtml}
-
-          <!-- Info Produk -->
           <div class="p-4">
             <h3 class="text-xl font-bold mb-1">${product.title}</h3>
             <p class="text-orange-500 font-bold text-lg mb-1">
               Rp ${Number(product.price).toLocaleString('id-ID')}
             </p>
             <p class="text-gray-400 text-sm mb-4">${product.category}</p>
-
-            <!-- Tombol Aksi -->
             <div class="flex gap-2">
               <button
                 onclick="openEditModal(${product.id})"
                 class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex-1 transition"
-              >
-                ✏️ Edit
-              </button>
+              >✏️ Edit</button>
               <button
                 onclick="deleteProduct(${product.id})"
                 class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex-1 transition"
-              >
-                🗑️ Hapus
-              </button>
+              >🗑️ Hapus</button>
             </div>
           </div>
-
         </div>
       `
     })
   }
 
 
-  // ================================================
-  // CAROUSEL - BUILD HTML
-  // Membuat carousel jika gambar lebih dari 1,
-  // atau gambar tunggal biasa jika hanya 1
-  // ================================================
+  // CAROUSEL
   function buildCarousel(productId, images) {
     if (!images || images.length === 0) {
       return `<div class="w-full h-52 bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>`
     }
-
     if (images.length === 1) {
       return `<img src="${images[0]}" class="w-full h-52 object-cover" />`
     }
 
-    // Lebih dari 1 gambar → buat carousel
     const slidesHtml = images.map(img => `
       <img src="${img}" class="w-full h-52 object-cover flex-shrink-0" style="min-width:100%" />
     `).join('')
 
     return `
       <div class="relative overflow-hidden">
-        <!-- Wrapper slides -->
-        <div
-          id="carousel-${productId}"
-          class="flex transition-transform duration-300"
-        >
+        <div id="carousel-${productId}" class="flex transition-transform duration-300">
           ${slidesHtml}
         </div>
-
-        <!-- Tombol Prev -->
         <button
           onclick="prevSlide(${productId}, ${images.length})"
           class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition"
         >‹</button>
-
-        <!-- Tombol Next -->
         <button
           onclick="nextSlide(${productId}, ${images.length})"
           class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition"
         >›</button>
-
-        <!-- Indikator dots -->
         <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
           ${images.map((_, i) => `
-            <div
-              id="dot-${productId}-${i}"
-              class="w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/50'}"
-            ></div>
+            <div id="dot-${productId}-${i}" class="w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/50'}"></div>
           `).join('')}
         </div>
       </div>
     `
   }
 
-
-  // ================================================
-  // CAROUSEL - NAVIGASI SLIDE
-  // Fungsi next/prev untuk carousel produk
-  // ================================================
   window.nextSlide = function (id, total) {
     carouselIndex[id] = ((carouselIndex[id] || 0) + 1) % total
     updateCarousel(id, total)
@@ -533,12 +391,8 @@
 
   function updateCarousel(id, total) {
     const index = carouselIndex[id] || 0
-
-    // Geser slide
     const carousel = document.getElementById(`carousel-${id}`)
     if (carousel) carousel.style.transform = `translateX(-${index * 100}%)`
-
-    // Update dots indikator
     for (let i = 0; i < total; i++) {
       const dot = document.getElementById(`dot-${id}-${i}`)
       if (dot) dot.className = `w-2 h-2 rounded-full ${i === index ? 'bg-white' : 'bg-white/50'}`
@@ -546,30 +400,21 @@
   }
 
 
-  // ================================================
-  // PRODUCTS - TAMBAH PRODUK BARU
-  // Upload semua gambar ke storage, lalu simpan
-  // URL-nya ke database dalam kolom `images` (array)
-  // ================================================
+  // TAMBAH PRODUK
   window.addProduct = async function () {
     const title    = document.getElementById('title').value.trim()
     const price    = document.getElementById('price').value.trim()
     const files    = document.getElementById('image').files
     const category = document.getElementById('category').value.trim()
 
-    // Validasi semua field wajib diisi
     if (!title || !price || files.length === 0 || !category) {
       alert('Semua field wajib diisi!')
       return
     }
 
-    // Upload semua gambar dan kumpulkan URL-nya
     const imageUrls = await uploadImages(files)
-    if (!imageUrls) return // uploadImages sudah menampilkan alert jika gagal
+    if (!imageUrls) return
 
-    // Simpan produk ke database
-    // `image`  = gambar pertama (untuk kompatibilitas dengan halaman lama)
-    // `images` = array semua gambar
     const { error } = await supabase.from('products').insert([{
       title,
       price: Number(price),
@@ -579,117 +424,76 @@
     }])
 
     if (error) {
-      console.error('Error addProduct:', error)
       alert('Gagal tambah produk!')
       return
     }
 
     alert(`✅ Produk berhasil ditambah! (${imageUrls.length} gambar)`)
-
-    // Reset form
     document.getElementById('title').value    = ''
     document.getElementById('price').value    = ''
     document.getElementById('image').value    = ''
     document.getElementById('category').value = ''
     document.getElementById('imagePreviewContainer').classList.add('hidden')
     document.getElementById('imagePreviewContainer').innerHTML = ''
-
     loadProducts()
     loadStats()
   }
 
 
-  // ================================================
-  // PRODUCTS - HAPUS PRODUK
-  // ================================================
+  // HAPUS PRODUK
   window.deleteProduct = async function (id) {
     if (!confirm('Yakin ingin hapus produk ini?')) return
-
     const { error } = await supabase.from('products').delete().eq('id', id)
-
-    if (error) {
-      console.error('Error deleteProduct:', error)
-      alert('Gagal hapus produk!')
-      return
-    }
-
+    if (error) { alert('Gagal hapus produk!'); return }
     alert('Produk berhasil dihapus!')
     loadProducts()
     loadStats()
   }
 
 
-  // ================================================
-  // MODAL EDIT - BUKA MODAL
-  // Mengisi form edit dengan data produk yang dipilih
-  // ================================================
+  // MODAL EDIT - BUKA
   window.openEditModal = async function (id) {
     selectedProductId = id
+    const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
+    if (error) { console.error(error); return }
 
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single()
-
-    if (error) {
-      console.error('Error openEditModal:', error)
-      return
-    }
-
-    // Isi field form
     document.getElementById('editTitle').value    = data.title
     document.getElementById('editPrice').value    = data.price
     document.getElementById('editCategory').value = data.category
 
-    // Simpan URL gambar saat ini
-    currentImageUrls = data.images && data.images.length > 0
+    currentImageUrls = (data.images && data.images.length > 0)
       ? data.images
       : (data.image ? [data.image] : [])
 
-    // Tampilkan preview gambar saat ini
-    const previewContainer = document.getElementById('editCurrentImages')
-    previewContainer.innerHTML = currentImageUrls.map(url => `
-      <img src="${url}" class="w-20 h-20 object-cover rounded-lg border" />
-    `).join('')
+    document.getElementById('editCurrentImages').innerHTML = currentImageUrls.map(url =>
+      `<img src="${url}" class="w-20 h-20 object-cover rounded-lg border" />`
+    ).join('')
 
-    // Buka modal
     document.getElementById('editModal').classList.remove('hidden')
     document.getElementById('editModal').classList.add('flex')
   }
 
 
-  // ================================================
-  // MODAL EDIT - TUTUP MODAL
-  // ================================================
+  // MODAL EDIT - TUTUP
   window.closeEditModal = function () {
     document.getElementById('editModal').classList.add('hidden')
     document.getElementById('editModal').classList.remove('flex')
     document.getElementById('editImage').value = ''
     selectedProductId = null
-    currentImageUrls = []
+    currentImageUrls  = []
   }
 
 
-  // ================================================
-  // MODAL EDIT - UPDATE PRODUK
-  // Jika ada gambar baru dipilih → upload dan ganti
-  // Jika tidak ada → pakai gambar lama
-  // ================================================
+  // MODAL EDIT - UPDATE
   window.updateProduct = async function () {
     const title    = document.getElementById('editTitle').value.trim()
     const price    = document.getElementById('editPrice').value.trim()
     const files    = document.getElementById('editImage').files
     const category = document.getElementById('editCategory').value.trim()
 
-    if (!title || !price || !category) {
-      alert('Semua field wajib diisi!')
-      return
-    }
+    if (!title || !price || !category) { alert('Semua field wajib diisi!'); return }
 
-    let imageUrls = currentImageUrls // default pakai gambar lama
-
-    // Jika ada file baru dipilih, upload dan ganti semua gambar
+    let imageUrls = currentImageUrls
     if (files.length > 0) {
       const newUrls = await uploadImages(files)
       if (!newUrls) return
@@ -698,99 +502,51 @@
 
     const { error } = await supabase
       .from('products')
-      .update({
-        title,
-        price: Number(price),
-        image: imageUrls[0],   // gambar utama
-        images: imageUrls,     // array semua gambar
-        category
-      })
+      .update({ title, price: Number(price), image: imageUrls[0], images: imageUrls, category })
       .eq('id', selectedProductId)
 
-    if (error) {
-      console.error('Error updateProduct:', error)
-      alert('Gagal update produk!')
-      return
-    }
-
+    if (error) { alert('Gagal update produk!'); return }
     alert('✅ Produk berhasil diupdate!')
     closeEditModal()
     loadProducts()
   }
 
 
-  // ================================================
-  // HELPER - UPLOAD MULTIPLE GAMBAR KE STORAGE
-  // Menerima FileList, mengupload satu per satu,
-  // mengembalikan array URL publik
-  // Return null jika ada yang gagal
-  // ================================================
+  // HELPER - UPLOAD GAMBAR
   async function uploadImages(files) {
     const imageUrls = []
-
     for (const file of files) {
-      // Nama file unik pakai timestamp
       const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`
-
-      const { error: uploadError } = await supabase
-        .storage
-        .from(STORAGE_BUCKET)
-        .upload(fileName, file)
-
+      const { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file)
       if (uploadError) {
-        console.error('Error upload:', uploadError)
         alert(`Gagal upload gambar: ${file.name}`)
         return null
       }
-
-      const { data: urlData } = supabase
-        .storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(fileName)
-
+      const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName)
       imageUrls.push(urlData.publicUrl)
     }
-
     return imageUrls
   }
 
 
-  // ================================================
-  // PREVIEW GAMBAR SEBELUM UPLOAD (FORM TAMBAH)
-  // Menampilkan thumbnail gambar yang dipilih
-  // sebelum di-submit ke server
-  // ================================================
+  // PREVIEW GAMBAR
   document.getElementById('image').addEventListener('change', function () {
     const container = document.getElementById('imagePreviewContainer')
     container.innerHTML = ''
-
-    if (this.files.length === 0) {
-      container.classList.add('hidden')
-      return
-    }
-
+    if (this.files.length === 0) { container.classList.add('hidden'); return }
     container.classList.remove('hidden')
-
     Array.from(this.files).forEach(file => {
       const reader = new FileReader()
       reader.onload = e => {
-        container.innerHTML += `
-          <img
-            src="${e.target.result}"
-            class="w-20 h-20 object-cover rounded-lg border border-orange-300"
-          />
-        `
+        container.innerHTML += `<img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg border border-orange-300" />`
       }
       reader.readAsDataURL(file)
     })
   })
 
 
-  // ================================================
-  // INITIAL LOAD
-  // Dijalankan saat halaman pertama kali dibuka
-  // ================================================
-  checkAuth()
+  // INITIAL LOAD — checkAuth dulu, baru load data
+  await checkAuth()
   loadProducts()
   loadStats()
   loadChart()

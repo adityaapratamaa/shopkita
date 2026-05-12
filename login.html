@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+<div class="bg-white p-10 rounded-2xl shadow w-full max-w-md">
+
+  <h1 class="text-3xl font-bold mb-8 text-center">Login Admin</h1>
+
+  <input
+    type="email"
+    id="email"
+    placeholder="Email"
+    class="w-full border p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
+  >
+
+  <input
+    type="password"
+    id="password"
+    placeholder="Password"
+    class="w-full border p-3 rounded-xl mb-6 focus:outline-none focus:ring-2 focus:ring-orange-400"
+  >
+
+  <button
+    onclick="login()"
+    class="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl transition"
+  >
+    Login
+  </button>
+
+</div>
+
+<script type="module">
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+// FIX: pakai URL & KEY yang sama dengan admin.html
+const supabase = createClient(
+  'https://fctmswfmuvqwueeumtgw.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+)
+
+window.login = async function () {
+  const email    = document.getElementById('email').value
+  const password = document.getElementById('password').value
+
+  const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+  if (error) {
+    alert(error.message)
+  } else {
+    window.location.href = 'admin.html'
+  }
+}
+
+</script>
+
+</body>
+</html>
