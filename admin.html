@@ -3,227 +3,836 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard - ShopKita</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Admin Dashboard — ShopKita</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #171717;
+      --border: rgba(255,255,255,0.07);
+      --accent: #ff5c1a;
+      --accent2: #ff8c5a;
+      --green: #2ecc71;
+      --blue: #3b9eff;
+      --yellow: #f0c040;
+      --text: #f0ece4;
+      --muted: #5a5650;
+      --muted2: #8a8580;
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 18px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px 28px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .brand-icon {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .brand-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0 10px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted2);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
+    }
+
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(255,92,26,0.12); color: var(--accent); }
+
+    .nav-item .nav-icon {
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+
+    .sidebar-spacer { flex: 1; }
+
+    .sidebar-user {
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 9px;
+      background: var(--surface2);
+      margin-bottom: 10px;
+    }
+
+    .user-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .user-name { font-size: 13px; font-weight: 500; }
+    .user-role { font-size: 11px; color: var(--muted); }
+
+    .btn-logout {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px;
+      border-radius: 9px;
+      border: 1px solid rgba(255,80,80,0.2);
+      background: transparent;
+      color: #ff6060;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn-logout:hover { background: rgba(255,80,80,0.08); }
+
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 36px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Scrollbar */
+    .main::-webkit-scrollbar { width: 6px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar-title h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .topbar-title p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      color: var(--muted2);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── STATS GRID ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .stat-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--card-accent, #ff5c1a), transparent);
+      opacity: 0.6;
+    }
+
+    .stat-card[data-color="green"]  { --card-accent: #2ecc71; }
+    .stat-card[data-color="blue"]   { --card-accent: #3b9eff; }
+    .stat-card[data-color="yellow"] { --card-accent: #f0c040; }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-icon {
+      width: 28px; height: 28px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      background: var(--surface2);
+    }
+
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-change {
+      font-size: 12px;
+      color: var(--green);
+    }
+
+    /* ─── CHART + QUICK STATS ─── */
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 26px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .card-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .btn-sm {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted2);
+      border-radius: 7px;
+      padding: 6px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .btn-sm:hover { color: var(--text); }
+
+    /* Order status mini-list */
+    .order-status-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .order-status-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .osi-icon {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .osi-info { flex: 1; }
+    .osi-label { font-size: 13px; font-weight: 500; }
+    .osi-sub { font-size: 11px; color: var(--muted); }
+    .osi-value { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; }
+
+    /* ─── BOTTOM ROW ─── */
+    .row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    /* Form */
+    .form-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .form-input::placeholder { color: var(--muted); }
+    .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,92,26,0.1);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      padding: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 4px;
+    }
+
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    .preview-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .preview-container img {
+      width: 64px; height: 64px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    /* Product list */
+    .product-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .product-grid::-webkit-scrollbar { width: 4px; }
+    .product-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: border-color 0.15s;
+    }
+
+    .product-row:hover { border-color: rgba(255,255,255,0.12); }
+
+    .product-thumb {
+      width: 44px; height: 44px;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #222;
+      flex-shrink: 0;
+    }
+
+    .product-info { flex: 1; min-width: 0; }
+    .product-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .product-cat  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .product-price { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--accent); flex-shrink: 0; }
+
+    .product-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .btn-icon {
+      width: 30px; height: 30px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted2);
+      font-size: 12px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .btn-icon.edit:hover  { background: rgba(59,158,255,0.12); color: var(--blue); border-color: rgba(59,158,255,0.3); }
+    .btn-icon.delete:hover { background: rgba(255,80,80,0.12); color: #ff6060; border-color: rgba(255,80,80,0.3); }
+
+    .refresh-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted2);
+      border-radius: 7px;
+      padding: 6px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .refresh-btn:hover { color: var(--text); }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalIn 0.2s cubic-bezier(.22,1,.36,1) both;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted2);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn-save {
+      flex: 1;
+      background: var(--green);
+      color: #000;
+      border: none;
+      border-radius: 9px;
+      padding: 12px;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-save:hover { opacity: 0.85; }
+
+    .btn-cancel {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted2);
+      border-radius: 9px;
+      padding: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-cancel:hover { color: var(--text); }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .empty-state .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    /* Carousel in product grid */
+    .product-carousel-wrap {
+      position: relative;
+      width: 44px; height: 44px;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-100">
-<div class="flex min-h-screen">
+<body>
 
-  <!-- SIDEBAR -->
-  <div class="w-64 bg-black text-white p-6 flex-shrink-0 flex flex-col">
+<!-- ─── SIDEBAR ─── -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">🛍️</div>
+    <span class="brand-text">ShopKita</span>
+  </div>
 
-    <h1 class="text-3xl font-bold mb-10">ShopKita Admin</h1>
+  <div class="sidebar-section-label">Menu</div>
 
-    <div class="space-y-3 flex-1">
-      <a href="admin.html" class="block bg-orange-500 px-4 py-3 rounded-xl">
-        📦 Produk
-      </a>
-      <a href="orders.html" class="block hover:bg-gray-800 px-4 py-3 rounded-xl transition">
-        🛒 Orders
-      </a>
+  <a href="admin.html" class="nav-item active">
+    <span class="nav-icon">📦</span> Produk
+  </a>
+  <a href="orders.html" class="nav-item">
+    <span class="nav-icon">🛒</span> Orders
+  </a>
+  <a href="#" class="nav-item">
+    <span class="nav-icon">👥</span> Pelanggan
+  </a>
+  <a href="#" class="nav-item">
+    <span class="nav-icon">📊</span> Analitik
+  </a>
+  <a href="#" class="nav-item">
+    <span class="nav-icon">⚙️</span> Pengaturan
+  </a>
+
+  <div class="sidebar-spacer"></div>
+
+  <div class="sidebar-user">
+    <div class="user-card">
+      <div class="user-avatar">A</div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">Super Admin</div>
+      </div>
     </div>
-
-    <!-- Logout di bawah sidebar -->
-    <button
-      onclick="logout()"
-      class="w-full bg-red-500 hover:bg-red-600 py-3 rounded-xl mt-10 transition"
-    >
-      Logout
+    <button class="btn-logout" onclick="logout()">
+      <span>↩</span> Keluar
     </button>
-
   </div>
-  <!-- END SIDEBAR -->
+</nav>
 
-  <!-- MAIN CONTENT -->
-  <div class="flex-1 p-10 overflow-auto">
-  <div class="max-w-6xl mx-auto">
+<!-- ─── MAIN CONTENT ─── -->
+<main class="main">
 
-    <div class="flex justify-between items-center mb-10">
-      <h1 class="text-4xl font-bold">Dashboard Admin</h1>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title">
+      <h1>Dashboard</h1>
+      <p id="dateDisplay">Memuat tanggal...</p>
     </div>
-
-    <!-- STATS CARDS -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-10">
-
-      <div class="bg-white p-5 rounded-2xl shadow">
-        <p class="text-gray-500 text-sm">Total Produk</p>
-        <h2 id="totalProducts" class="text-3xl font-bold mt-2">0</h2>
+    <div class="topbar-actions">
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        Semua sistem aktif
       </div>
-
-      <div class="bg-white p-5 rounded-2xl shadow">
-        <p class="text-gray-500 text-sm">Total Orders</p>
-        <h2 id="totalOrders" class="text-3xl font-bold mt-2">0</h2>
-      </div>
-
-      <div class="bg-white p-5 rounded-2xl shadow">
-        <p class="text-gray-500 text-sm">Revenue</p>
-        <h2 id="totalRevenue" class="text-3xl font-bold mt-2">Rp 0</h2>
-      </div>
-
-      <div class="bg-white p-5 rounded-2xl shadow">
-        <p class="text-gray-500 text-sm">Pending Orders</p>
-        <h2 id="pendingOrders" class="text-3xl font-bold mt-2">0</h2>
-      </div>
-
     </div>
+  </div>
 
-    <!-- REVENUE CHART -->
-    <div class="bg-white p-6 rounded-2xl shadow mb-10">
-      <h2 class="text-2xl font-bold mb-5">Revenue Analytics</h2>
-      <canvas id="revenueChart"></canvas>
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">
+        Total Produk
+        <div class="stat-icon">📦</div>
+      </div>
+      <div class="stat-value" id="totalProducts">—</div>
+      <div class="stat-change">↑ Aktif</div>
     </div>
+    <div class="stat-card" data-color="green">
+      <div class="stat-label">
+        Total Orders
+        <div class="stat-icon">🛒</div>
+      </div>
+      <div class="stat-value" id="totalOrders">—</div>
+      <div class="stat-change">↑ Semua waktu</div>
+    </div>
+    <div class="stat-card" data-color="blue">
+      <div class="stat-label">
+        Revenue
+        <div class="stat-icon">💰</div>
+      </div>
+      <div class="stat-value" id="totalRevenue">—</div>
+      <div class="stat-change">↑ Total</div>
+    </div>
+    <div class="stat-card" data-color="yellow">
+      <div class="stat-label">
+        Pending
+        <div class="stat-icon">⏳</div>
+      </div>
+      <div class="stat-value" id="pendingOrders">—</div>
+      <div class="stat-change">Perlu ditindak</div>
+    </div>
+  </div>
 
-    <!-- FORM TAMBAH PRODUK -->
-    <div class="bg-white p-6 rounded-2xl shadow mb-10">
-      <h2 class="text-2xl font-semibold mb-6">Tambah Produk</h2>
-
-      <div class="grid gap-4">
-
-        <input
-          id="title"
-          type="text"
-          placeholder="Nama Produk"
-          class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-        />
-
-        <input
-          id="price"
-          type="number"
-          placeholder="Harga (contoh: 150000)"
-          class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-        />
-
+  <!-- Row 2: chart + order summary -->
+  <div class="row-2">
+    <div class="card">
+      <div class="card-header">
         <div>
-          <input
-            id="image"
-            type="file"
-            accept="image/*"
-            multiple
-            class="border p-4 rounded-xl w-full"
-          />
-          <p class="text-sm text-gray-400 mt-1">
-            💡 Bisa pilih lebih dari 1 gambar sekaligus
-          </p>
+          <div class="card-title">Revenue Analytics</div>
+          <div class="card-subtitle">12 bulan terakhir</div>
         </div>
+        <button class="btn-sm">Export</button>
+      </div>
+      <canvas id="revenueChart" height="100"></canvas>
+    </div>
 
-        <div id="imagePreviewContainer" class="flex gap-2 flex-wrap hidden"></div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Status Orders</div>
+      </div>
+      <div class="order-status-list">
+        <div class="order-status-item">
+          <div class="osi-icon" style="background:rgba(255,192,64,0.12);">⏳</div>
+          <div class="osi-info">
+            <div class="osi-label">Pending</div>
+            <div class="osi-sub">Belum diproses</div>
+          </div>
+          <div class="osi-value" id="osi-pending">—</div>
+        </div>
+        <div class="order-status-item">
+          <div class="osi-icon" style="background:rgba(59,158,255,0.12);">🚚</div>
+          <div class="osi-info">
+            <div class="osi-label">Dikirim</div>
+            <div class="osi-sub">Dalam pengiriman</div>
+          </div>
+          <div class="osi-value" id="osi-shipped">—</div>
+        </div>
+        <div class="order-status-item">
+          <div class="osi-icon" style="background:rgba(46,204,113,0.12);">✅</div>
+          <div class="osi-info">
+            <div class="osi-label">Selesai</div>
+            <div class="osi-sub">Delivered</div>
+          </div>
+          <div class="osi-value" id="osi-done">—</div>
+        </div>
+        <div class="order-status-item">
+          <div class="osi-icon" style="background:rgba(255,80,80,0.12);">❌</div>
+          <div class="osi-info">
+            <div class="osi-label">Dibatalkan</div>
+            <div class="osi-sub">Cancelled</div>
+          </div>
+          <div class="osi-value" id="osi-cancelled">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        <input
-          id="category"
-          type="text"
-          placeholder="Kategori (contoh: hp, laptop, aksesoris)"
-          class="border p-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400"
-        />
+  <!-- Row 3: Add product + Product list -->
+  <div class="row-3">
 
-        <button
-          onclick="addProduct()"
-          class="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-semibold transition"
-        >
-          + Tambah Produk
-        </button>
+    <!-- Add Product Form -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Tambah Produk</div>
+      </div>
 
+      <label class="form-label">Nama Produk</label>
+      <input type="text" id="title" class="form-input" placeholder="mis. iPhone 15 Pro Max">
+
+      <label class="form-label">Harga (Rp)</label>
+      <input type="number" id="price" class="form-input" placeholder="mis. 18500000">
+
+      <label class="form-label">Gambar Produk</label>
+      <input type="file" id="image" class="form-input" accept="image/*" multiple style="padding: 9px 14px; cursor:pointer;">
+      <div class="preview-container" id="imagePreviewContainer"></div>
+
+      <label class="form-label">Kategori</label>
+      <input type="text" id="category" class="form-input" placeholder="mis. hp, laptop, aksesoris">
+
+      <button class="btn-primary" onclick="addProduct()">+ Tambah Produk</button>
+    </div>
+
+    <!-- Product List -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">List Produk</div>
+        <button class="refresh-btn" onclick="loadProducts()">↺ Refresh</button>
+      </div>
+      <div id="product-list" class="product-grid">
+        <div class="empty-state">
+          <div class="empty-icon">📦</div>
+          Memuat produk...
+        </div>
       </div>
     </div>
 
-    <!-- LIST PRODUK -->
-    <div class="bg-white p-6 rounded-2xl shadow">
+  </div>
 
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-semibold">List Produk</h2>
-        <button
-          onclick="loadProducts()"
-          class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition"
-        >
-          🔄 Refresh
-        </button>
-      </div>
+</main>
 
-      <div id="product-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-
+<!-- ─── EDIT MODAL ─── -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Edit Produk</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
     </div>
 
-  </div>
-  </div>
-  <!-- END MAIN CONTENT -->
+    <label class="form-label">Nama Produk</label>
+    <input type="text" id="editTitle" class="form-input" placeholder="Nama Produk">
 
-  <!-- MODAL EDIT PRODUK -->
-  <div
-    id="editModal"
-    class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50"
-  >
-    <div class="bg-white p-6 rounded-2xl w-full max-w-md max-h-screen overflow-y-auto">
+    <label class="form-label">Harga</label>
+    <input type="number" id="editPrice" class="form-input" placeholder="Harga">
 
-      <h2 class="text-2xl font-bold mb-4">Edit Produk</h2>
+    <label class="form-label">Gambar saat ini</label>
+    <div class="preview-container" id="editCurrentImages"></div>
 
-      <input
-        type="text"
-        id="editTitle"
-        placeholder="Nama Produk"
-        class="w-full border p-3 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
+    <label class="form-label">Ganti Gambar</label>
+    <input type="file" id="editImage" class="form-input" accept="image/*" multiple style="padding: 9px 14px; cursor:pointer;">
+    <p style="font-size:11px;color:var(--muted);margin-bottom:12px;">Kosongkan jika tidak ingin mengganti gambar</p>
 
-      <input
-        type="number"
-        id="editPrice"
-        placeholder="Harga"
-        class="w-full border p-3 rounded-xl mb-3 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
+    <label class="form-label">Kategori</label>
+    <input type="text" id="editCategory" class="form-input" placeholder="Kategori">
 
-      <p class="text-sm text-gray-500 mb-1">Gambar saat ini:</p>
-      <div id="editCurrentImages" class="flex gap-2 flex-wrap mb-3"></div>
-
-      <div class="mb-3">
-        <input
-          type="file"
-          id="editImage"
-          accept="image/*"
-          multiple
-          class="w-full border p-3 rounded-xl"
-        />
-        <p class="text-sm text-gray-400 mt-1">
-          Kosongkan jika tidak ingin ganti gambar. Bisa pilih multiple.
-        </p>
-      </div>
-
-      <input
-        type="text"
-        id="editCategory"
-        placeholder="Kategori"
-        class="w-full border p-3 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-
-      <div class="flex gap-2">
-        <button
-          onclick="updateProduct()"
-          class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl w-full transition"
-        >
-          💾 Simpan
-        </button>
-        <button
-          onclick="closeEditModal()"
-          class="bg-gray-400 hover:bg-gray-500 text-white px-4 py-2 rounded-xl w-full transition"
-        >
-          Batal
-        </button>
-      </div>
-
+    <div class="modal-actions">
+      <button class="btn-save"   onclick="updateProduct()">💾 Simpan</button>
+      <button class="btn-cancel" onclick="closeEditModal()">Batal</button>
     </div>
   </div>
-  <!-- END MODAL EDIT -->
-
 </div>
-</body>
-
 
 <script type="module">
-  // FIX: import & createClient DULU, baru bisa pakai supabase
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const SUPABASE_URL    = 'https://fctmswfmuvqwueeumtgw.supabase.co'
-  const SUPABASE_KEY    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
-  const STORAGE_BUCKET  = 'product-images'
+  const SUPABASE_URL   = 'https://fctmswfmuvqwueeumtgw.supabase.co'
+  const SUPABASE_KEY   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+  const STORAGE_BUCKET = 'product-images'
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
@@ -231,176 +840,151 @@
   let currentImageUrls  = []
   let carouselIndex     = {}
 
+  // Date display
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
-  // AUTH - CEK SESSION, redirect ke login jika belum login
+  // AUTH
   async function checkAuth() {
     const { data } = await supabase.auth.getSession()
-    if (!data.session) {
-      window.location.href = 'login.html'
-    }
+    if (!data.session) window.location.href = 'login.html'
   }
 
-  // AUTH - LOGOUT
+  // LOGOUT
   window.logout = async function () {
     await supabase.auth.signOut()
     window.location.href = 'login.html'
   }
 
-
   // STATS
   async function loadStats() {
-    const { data: products } = await supabase.from('products').select('*')
-    document.getElementById('totalProducts').innerText = products?.length || 0
+    const [{ count: pc }, { data: orders }] = await Promise.all([
+      supabase.from('products').select('*', { count: 'exact', head: true }),
+      supabase.from('orders').select('total_price, status')
+    ])
 
-    const { data: orders } = await supabase.from('orders').select('*')
-    document.getElementById('totalOrders').innerText = orders?.length || 0
+    document.getElementById('totalProducts').textContent = pc ?? 0
 
-    const revenue = orders?.reduce((sum, order) => sum + Number(order.total_price || 0), 0) || 0
-    document.getElementById('totalRevenue').innerText = 'Rp ' + revenue.toLocaleString('id-ID')
+    if (orders) {
+      const total   = orders.length
+      const revenue = orders.reduce((s, o) => s + (o.total_price || 0), 0)
+      const pending = orders.filter(o => o.status === 'pending').length
+      const shipped = orders.filter(o => o.status === 'shipped').length
+      const done    = orders.filter(o => o.status === 'delivered').length
+      const cancel  = orders.filter(o => o.status === 'cancelled').length
 
-    const pending = orders?.filter(order => order.status === 'pending') || []
-    document.getElementById('pendingOrders').innerText = pending.length
+      document.getElementById('totalOrders').textContent  = total
+      document.getElementById('totalRevenue').textContent = 'Rp ' + revenue.toLocaleString('id-ID')
+      document.getElementById('pendingOrders').textContent = pending
+
+      document.getElementById('osi-pending').textContent   = pending
+      document.getElementById('osi-shipped').textContent   = shipped
+      document.getElementById('osi-done').textContent      = done
+      document.getElementById('osi-cancelled').textContent = cancel
+    }
   }
-
 
   // CHART
   async function loadChart() {
-    const { data: orders } = await supabase.from('orders').select('*')
+    const { data: orders } = await supabase.from('orders').select('total_price, created_at')
+    const monthly = Array(12).fill(0)
+    if (orders) {
+      orders.forEach(o => {
+        const m = new Date(o.created_at).getMonth()
+        monthly[m] += o.total_price || 0
+      })
+    }
 
-    const labels   = orders?.map((_, i) => `Order ${i + 1}`) || []
-    const revenues = orders?.map(order => Number(order.total_price || 0)) || []
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des']
 
     new Chart(document.getElementById('revenueChart'), {
-      type: 'line',
+      type: 'bar',
       data: {
-        labels,
+        labels: months,
         datasets: [{
-          label: 'Revenue (Rp)',
-          data: revenues,
-          borderColor: '#f97316',
-          borderWidth: 3,
-          tension: 0.4,
-          fill: true,
-          backgroundColor: 'rgba(249,115,22,0.1)'
+          label: 'Revenue',
+          data: monthly,
+          backgroundColor: 'rgba(255,92,26,0.2)',
+          borderColor: '#ff5c1a',
+          borderWidth: 2,
+          borderRadius: 6,
+          hoverBackgroundColor: 'rgba(255,92,26,0.4)'
         }]
       },
-      options: { responsive: true }
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1a1a1a',
+            titleColor: '#f0ece4',
+            bodyColor: '#8a8580',
+            borderColor: 'rgba(255,255,255,0.07)',
+            borderWidth: 1,
+            callbacks: {
+              label: ctx => 'Rp ' + ctx.raw.toLocaleString('id-ID')
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: { color: '#5a5650', font: { family: 'DM Sans', size: 11 } }
+          },
+          y: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: '#5a5650',
+              font: { family: 'DM Sans', size: 11 },
+              callback: v => 'Rp ' + (v/1000000).toFixed(0) + 'jt'
+            }
+          }
+        }
+      }
     })
   }
 
-
-  // LOAD PRODUK
+  // LOAD PRODUCTS
   window.loadProducts = async function () {
-    const productList = document.getElementById('product-list')
-    productList.innerHTML = '<p class="text-gray-400 col-span-3">Memuat produk...</p>'
-
-    const { data, error } = await supabase
+    const { data: products, error } = await supabase
       .from('products')
       .select('*')
       .order('id', { ascending: false })
 
-    if (error) {
-      productList.innerHTML = '<p class="text-red-500">Gagal memuat produk.</p>'
+    const list = document.getElementById('product-list')
+
+    if (error || !products || products.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div class="empty-icon">📦</div>Belum ada produk</div>`
       return
     }
 
-    if (!data || data.length === 0) {
-      productList.innerHTML = '<p class="text-gray-500 col-span-3">Belum ada produk.</p>'
-      return
-    }
+    list.innerHTML = ''
 
-    productList.innerHTML = ''
+    products.forEach(p => {
+      const imgs = (p.images && p.images.length > 0) ? p.images : (p.image ? [p.image] : [])
+      const thumb = imgs.length > 0
+        ? `<img class="product-thumb" src="${imgs[0]}" alt="${p.title}">`
+        : `<div class="product-thumb" style="background:#222;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📷</div>`
 
-    data.forEach(product => {
-      const allImages = (product.images && product.images.length > 0)
-        ? product.images
-        : (product.image ? [product.image] : [])
-
-      const carouselHtml = buildCarousel(product.id, allImages)
-
-      productList.innerHTML += `
-        <div class="border rounded-2xl overflow-hidden shadow-sm bg-white">
-          ${carouselHtml}
-          <div class="p-4">
-            <h3 class="text-xl font-bold mb-1">${product.title}</h3>
-            <p class="text-orange-500 font-bold text-lg mb-1">
-              Rp ${Number(product.price).toLocaleString('id-ID')}
-            </p>
-            <p class="text-gray-400 text-sm mb-4">${product.category}</p>
-            <div class="flex gap-2">
-              <button
-                onclick="openEditModal(${product.id})"
-                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex-1 transition"
-              >✏️ Edit</button>
-              <button
-                onclick="deleteProduct(${product.id})"
-                class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg flex-1 transition"
-              >🗑️ Hapus</button>
-            </div>
-          </div>
+      const row = document.createElement('div')
+      row.className = 'product-row'
+      row.innerHTML = `
+        ${thumb}
+        <div class="product-info">
+          <div class="product-name">${p.title}</div>
+          <div class="product-cat">${p.category}</div>
+        </div>
+        <div class="product-price">Rp ${Number(p.price).toLocaleString('id-ID')}</div>
+        <div class="product-actions">
+          <button class="btn-icon edit" title="Edit" onclick="openEditModal(${p.id})">✏️</button>
+          <button class="btn-icon delete" title="Hapus" onclick="deleteProduct(${p.id})">🗑</button>
         </div>
       `
+      list.appendChild(row)
     })
   }
 
-
-  // CAROUSEL
-  function buildCarousel(productId, images) {
-    if (!images || images.length === 0) {
-      return `<div class="w-full h-52 bg-gray-200 flex items-center justify-center text-gray-400">No Image</div>`
-    }
-    if (images.length === 1) {
-      return `<img src="${images[0]}" class="w-full h-52 object-cover" />`
-    }
-
-    const slidesHtml = images.map(img => `
-      <img src="${img}" class="w-full h-52 object-cover flex-shrink-0" style="min-width:100%" />
-    `).join('')
-
-    return `
-      <div class="relative overflow-hidden">
-        <div id="carousel-${productId}" class="flex transition-transform duration-300">
-          ${slidesHtml}
-        </div>
-        <button
-          onclick="prevSlide(${productId}, ${images.length})"
-          class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition"
-        >‹</button>
-        <button
-          onclick="nextSlide(${productId}, ${images.length})"
-          class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-8 h-8 rounded-full flex items-center justify-center transition"
-        >›</button>
-        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
-          ${images.map((_, i) => `
-            <div id="dot-${productId}-${i}" class="w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-white/50'}"></div>
-          `).join('')}
-        </div>
-      </div>
-    `
-  }
-
-  window.nextSlide = function (id, total) {
-    carouselIndex[id] = ((carouselIndex[id] || 0) + 1) % total
-    updateCarousel(id, total)
-  }
-
-  window.prevSlide = function (id, total) {
-    carouselIndex[id] = ((carouselIndex[id] || 0) - 1 + total) % total
-    updateCarousel(id, total)
-  }
-
-  function updateCarousel(id, total) {
-    const index = carouselIndex[id] || 0
-    const carousel = document.getElementById(`carousel-${id}`)
-    if (carousel) carousel.style.transform = `translateX(-${index * 100}%)`
-    for (let i = 0; i < total; i++) {
-      const dot = document.getElementById(`dot-${id}-${i}`)
-      if (dot) dot.className = `w-2 h-2 rounded-full ${i === index ? 'bg-white' : 'bg-white/50'}`
-    }
-  }
-
-
-  // TAMBAH PRODUK
+  // ADD PRODUCT
   window.addProduct = async function () {
     const title    = document.getElementById('title').value.trim()
     const price    = document.getElementById('price').value.trim()
@@ -408,81 +992,61 @@
     const category = document.getElementById('category').value.trim()
 
     if (!title || !price || files.length === 0 || !category) {
-      alert('Semua field wajib diisi!')
-      return
+      alert('Semua field wajib diisi!'); return
     }
 
     const imageUrls = await uploadImages(files)
     if (!imageUrls) return
 
     const { error } = await supabase.from('products').insert([{
-      title,
-      price: Number(price),
-      image: imageUrls[0],
-      images: imageUrls,
-      category
+      title, price: Number(price),
+      image: imageUrls[0], images: imageUrls, category
     }])
 
-    if (error) {
-      alert('Gagal tambah produk!')
-      return
-    }
+    if (error) { alert('Gagal tambah produk!'); return }
 
     alert(`✅ Produk berhasil ditambah! (${imageUrls.length} gambar)`)
     document.getElementById('title').value    = ''
     document.getElementById('price').value    = ''
     document.getElementById('image').value    = ''
     document.getElementById('category').value = ''
-    document.getElementById('imagePreviewContainer').classList.add('hidden')
     document.getElementById('imagePreviewContainer').innerHTML = ''
-    loadProducts()
-    loadStats()
+    loadProducts(); loadStats()
   }
 
-
-  // HAPUS PRODUK
+  // DELETE
   window.deleteProduct = async function (id) {
     if (!confirm('Yakin ingin hapus produk ini?')) return
     const { error } = await supabase.from('products').delete().eq('id', id)
     if (error) { alert('Gagal hapus produk!'); return }
-    alert('Produk berhasil dihapus!')
-    loadProducts()
-    loadStats()
+    loadProducts(); loadStats()
   }
 
-
-  // MODAL EDIT - BUKA
+  // MODAL EDIT - OPEN
   window.openEditModal = async function (id) {
     selectedProductId = id
     const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
-    if (error) { console.error(error); return }
+    if (error) return
 
     document.getElementById('editTitle').value    = data.title
     document.getElementById('editPrice').value    = data.price
     document.getElementById('editCategory').value = data.category
 
     currentImageUrls = (data.images && data.images.length > 0)
-      ? data.images
-      : (data.image ? [data.image] : [])
+      ? data.images : (data.image ? [data.image] : [])
 
     document.getElementById('editCurrentImages').innerHTML = currentImageUrls.map(url =>
-      `<img src="${url}" class="w-20 h-20 object-cover rounded-lg border" />`
+      `<img src="${url}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">`
     ).join('')
 
-    document.getElementById('editModal').classList.remove('hidden')
-    document.getElementById('editModal').classList.add('flex')
+    document.getElementById('editModal').classList.add('open')
   }
 
-
-  // MODAL EDIT - TUTUP
   window.closeEditModal = function () {
-    document.getElementById('editModal').classList.add('hidden')
-    document.getElementById('editModal').classList.remove('flex')
+    document.getElementById('editModal').classList.remove('open')
     document.getElementById('editImage').value = ''
-    selectedProductId = null
-    currentImageUrls  = []
+    selectedProductId = null; currentImageUrls = []
   }
-
 
   // MODAL EDIT - UPDATE
   window.updateProduct = async function () {
@@ -507,50 +1071,44 @@
 
     if (error) { alert('Gagal update produk!'); return }
     alert('✅ Produk berhasil diupdate!')
-    closeEditModal()
-    loadProducts()
+    closeEditModal(); loadProducts()
   }
 
-
-  // HELPER - UPLOAD GAMBAR
+  // UPLOAD IMAGES
   async function uploadImages(files) {
-    const imageUrls = []
+    const urls = []
     for (const file of files) {
-      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`
-      const { error: uploadError } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file)
-      if (uploadError) {
-        alert(`Gagal upload gambar: ${file.name}`)
-        return null
-      }
-      const { data: urlData } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName)
-      imageUrls.push(urlData.publicUrl)
+      const name = `${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`
+      const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(name, file)
+      if (error) { alert(`Gagal upload: ${file.name}`); return null }
+      const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(name)
+      urls.push(data.publicUrl)
     }
-    return imageUrls
+    return urls
   }
 
-
-  // PREVIEW GAMBAR
+  // IMAGE PREVIEW
   document.getElementById('image').addEventListener('change', function () {
     const container = document.getElementById('imagePreviewContainer')
     container.innerHTML = ''
-    if (this.files.length === 0) { container.classList.add('hidden'); return }
-    container.classList.remove('hidden')
     Array.from(this.files).forEach(file => {
       const reader = new FileReader()
       reader.onload = e => {
-        container.innerHTML += `<img src="${e.target.result}" class="w-20 h-20 object-cover rounded-lg border border-orange-300" />`
+        const img = document.createElement('img')
+        img.src = e.target.result
+        img.style.cssText = 'width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--border)'
+        container.appendChild(img)
       }
       reader.readAsDataURL(file)
     })
   })
 
-
-  // INITIAL LOAD — checkAuth dulu, baru load data
+  // INIT
   await checkAuth()
   loadProducts()
   loadStats()
   loadChart()
-
 </script>
 
+</body>
 </html>
