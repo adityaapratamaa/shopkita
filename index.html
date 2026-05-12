@@ -3319,12 +3319,60 @@ async function processOrder() {
 
   try {
     // ── INTEGRATION POINT: real payment gateway ──
-    const payResult = await PaymentGateway.initiatePayment({
-      orderId, amount:total,
-      customer: checkoutData.address,
-      items: cart.map(i => ({id:i.id, name:i.name, price:i.price, qty:i.qty})),
-      paymentMethod: checkoutData.payment,
-    });
+    const response = await fetch(
+  "https://fctmswfmuvqwueeumtgw.supabase.co/functions/v1/create-payment",
+  {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+    body: JSON.stringify({
+
+      order_id: orderId,
+
+      gross_amount: total,
+
+      customer_name:
+        checkoutData.address.name,
+
+      customer_email:
+        "customer@gmail.com",
+
+    }),
+  }
+);
+
+const data = await response.json();
+
+window.snap.pay(data.token, {
+
+  onSuccess: async function(result) {
+
+    showNotif("Pembayaran berhasil!");
+
+    console.log(result);
+
+  },
+
+  onPending: function(result) {
+
+    showNotif("Menunggu pembayaran");
+
+    console.log(result);
+
+  },
+
+  onError: function(result) {
+
+    showNotif("Pembayaran gagal");
+
+    console.log(result);
+
+  },
+
+});
 
     // SAVE ORDER TO SUPABASE
 
