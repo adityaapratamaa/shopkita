@@ -546,6 +546,61 @@
     }
 
     .btn-cancel:hover { background: var(--border); }
+
+    /* ── IMAGE DELETE BUTTON ── */
+    .img-thumb-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .img-thumb-wrap img {
+      width: 56px; height: 56px;
+      object-fit: cover; border-radius: 8px;
+      border: 1.5px solid var(--border);
+      display: block;
+    }
+
+    .img-delete-btn {
+      position: absolute;
+      top: -6px; right: -6px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      border: 2px solid #fff;
+      font-size: 9px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+      font-weight: 700;
+      transition: background 0.14s, transform 0.14s;
+      padding: 0;
+    }
+
+    .img-delete-btn:hover { background: #dc2626; transform: scale(1.15); }
+
+    /* ── PRICE DISPLAY INPUT ── */
+    .price-wrap { position: relative; }
+    .price-prefix {
+      position: absolute;
+      left: 13px; top: 50%; transform: translateY(-50%);
+      font-size: 13.5px; font-weight: 600;
+      color: var(--muted); pointer-events: none;
+      user-select: none;
+    }
+    .price-display {
+      padding-left: 38px !important;
+    }
+
+    /* ── CATEGORY DATALIST ── */
+    .field-input[list]::-webkit-calendar-picker-indicator { opacity: 0.5; cursor: pointer; }
+
+    /* ── DESCRIPTION TEXTAREA ── */
+    textarea.field-input {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -707,7 +762,16 @@
 
       <div class="field-group">
         <label class="field-label">Harga (Rp)</label>
-        <input type="number" id="price" class="field-input" placeholder="mis. 18500000">
+        <div class="price-wrap">
+          <span class="price-prefix">Rp</span>
+          <input type="text" id="price" class="field-input price-display" placeholder="mis. 18.500.000"
+            oninput="formatPriceInput(this)" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Deskripsi Produk</label>
+        <textarea id="description" class="field-input" placeholder="mis. Spesifikasi, kondisi, keterangan produk..."></textarea>
       </div>
 
       <div class="field-group">
@@ -718,7 +782,24 @@
 
       <div class="field-group">
         <label class="field-label">Kategori</label>
-        <input type="text" id="category" class="field-input" placeholder="mis. hp, laptop, aksesoris">
+        <input type="text" id="category" class="field-input" list="category-options" placeholder="Pilih atau ketik kategori...">
+        <datalist id="category-options">
+          <option value="hp">
+          <option value="laptop">
+          <option value="tablet">
+          <option value="ipad">
+          <option value="aksesoris">
+          <option value="elektronik">
+          <option value="audio">
+          <option value="smartwatch">
+          <option value="kamera">
+          <option value="gaming">
+          <option value="komputer">
+          <option value="printer">
+          <option value="tv">
+          <option value="fashion">
+          <option value="lainnya">
+        </datalist>
       </div>
 
       <button class="btn-primary" onclick="addProduct()">+ Tambah Produk</button>
@@ -754,20 +835,45 @@
     </div>
     <div class="field-group">
       <label class="field-label">Harga</label>
-      <input type="number" id="editPrice" class="field-input" placeholder="Harga">
+      <div class="price-wrap">
+        <span class="price-prefix">Rp</span>
+        <input type="text" id="editPrice" class="field-input price-display" placeholder="mis. 8.199.000"
+          oninput="formatPriceInput(this)" inputmode="numeric">
+      </div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Deskripsi Produk</label>
+      <textarea id="editDescription" class="field-input" placeholder="Deskripsi produk..."></textarea>
     </div>
     <div class="field-group">
       <label class="field-label">Gambar saat ini</label>
       <div class="preview-wrap" id="editCurrentImages"></div>
     </div>
     <div class="field-group">
-      <label class="field-label">Ganti Gambar</label>
+      <label class="field-label">Tambah / Ganti Gambar</label>
       <input type="file" id="editImage" class="field-input" accept="image/*" multiple style="padding:8px 12px;cursor:pointer;">
       <p style="font-size:11px;color:var(--muted);margin-top:6px;">Kosongkan jika tidak ingin mengganti gambar</p>
     </div>
     <div class="field-group">
       <label class="field-label">Kategori</label>
-      <input type="text" id="editCategory" class="field-input" placeholder="Kategori">
+      <input type="text" id="editCategory" class="field-input" list="edit-category-options" placeholder="Pilih atau ketik kategori...">
+      <datalist id="edit-category-options">
+        <option value="hp">
+        <option value="laptop">
+        <option value="tablet">
+        <option value="ipad">
+        <option value="aksesoris">
+        <option value="elektronik">
+        <option value="audio">
+        <option value="smartwatch">
+        <option value="kamera">
+        <option value="gaming">
+        <option value="komputer">
+        <option value="printer">
+        <option value="tv">
+        <option value="fashion">
+        <option value="lainnya">
+      </datalist>
     </div>
 
     <div class="modal-actions">
@@ -791,6 +897,16 @@
 
   document.getElementById('dateDisplay').textContent =
     new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+
+  // ── PRICE FORMATTER ──
+  window.formatPriceInput = function(input) {
+    const raw = input.value.replace(/\D/g, '')
+    input.value = raw ? Number(raw).toLocaleString('id-ID') : ''
+  }
+
+  function getRawPrice(inputId) {
+    return document.getElementById(inputId).value.replace(/\./g, '').replace(/,/g, '')
+  }
 
   async function checkAuth() {
     const { data } = await supabase.auth.getSession()
@@ -922,10 +1038,11 @@
   }
 
   window.addProduct = async function () {
-    const title    = document.getElementById('title').value.trim()
-    const price    = document.getElementById('price').value.trim()
-    const files    = document.getElementById('image').files
-    const category = document.getElementById('category').value.trim()
+    const title       = document.getElementById('title').value.trim()
+    const price       = getRawPrice('price')
+    const files       = document.getElementById('image').files
+    const category    = document.getElementById('category').value.trim()
+    const description = document.getElementById('description').value.trim()
 
     if (!title || !price || files.length === 0 || !category) {
       alert('Semua field wajib diisi!'); return
@@ -935,16 +1052,17 @@
     if (!imageUrls) return
 
     const { error } = await supabase.from('products').insert([{
-      title, price: Number(price), image: imageUrls[0], images: imageUrls, category
+      title, price: Number(price), image: imageUrls[0], images: imageUrls, category, description
     }])
 
     if (error) { alert('Gagal tambah produk!'); return }
 
     alert(`✅ Produk berhasil ditambah! (${imageUrls.length} gambar)`)
-    document.getElementById('title').value    = ''
-    document.getElementById('price').value    = ''
-    document.getElementById('image').value    = ''
-    document.getElementById('category').value = ''
+    document.getElementById('title').value       = ''
+    document.getElementById('price').value       = ''
+    document.getElementById('image').value       = ''
+    document.getElementById('category').value    = ''
+    document.getElementById('description').value = ''
     document.getElementById('imagePreviewContainer').innerHTML = ''
     loadProducts(); loadStats()
   }
@@ -961,29 +1079,52 @@
     const { data, error } = await supabase.from('products').select('*').eq('id', id).single()
     if (error) return
 
-    document.getElementById('editTitle').value    = data.title
-    document.getElementById('editPrice').value    = data.price
-    document.getElementById('editCategory').value = data.category
+    document.getElementById('editTitle').value       = data.title
+    document.getElementById('editPrice').value       = Number(data.price).toLocaleString('id-ID')
+    document.getElementById('editCategory').value    = data.category
+    document.getElementById('editDescription').value = data.description || ''
 
     currentImageUrls = (data.images && data.images.length > 0) ? data.images : (data.image ? [data.image] : [])
-    document.getElementById('editCurrentImages').innerHTML = currentImageUrls.map(url =>
-      `<img src="${url}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1.5px solid var(--border)">`
-    ).join('')
+    renderEditImages()
 
     document.getElementById('editModal').classList.add('open')
   }
 
+  function renderEditImages() {
+    const container = document.getElementById('editCurrentImages')
+    container.innerHTML = ''
+    currentImageUrls.forEach((url, idx) => {
+      const wrap = document.createElement('div')
+      wrap.className = 'img-thumb-wrap'
+      wrap.innerHTML = `
+        <img src="${url}" alt="img-${idx}">
+        <button class="img-delete-btn" title="Hapus gambar ini" onclick="removeEditImage(${idx})">✕</button>
+      `
+      container.appendChild(wrap)
+    })
+    if (currentImageUrls.length === 0) {
+      container.innerHTML = '<span style="font-size:12px;color:var(--muted)">Tidak ada gambar</span>'
+    }
+  }
+
+  window.removeEditImage = function(idx) {
+    currentImageUrls.splice(idx, 1)
+    renderEditImages()
+  }
+
   window.closeEditModal = function () {
     document.getElementById('editModal').classList.remove('open')
-    document.getElementById('editImage').value = ''
+    document.getElementById('editImage').value       = ''
+    document.getElementById('editDescription').value = ''
     selectedProductId = null; currentImageUrls = []
   }
 
   window.updateProduct = async function () {
-    const title    = document.getElementById('editTitle').value.trim()
-    const price    = document.getElementById('editPrice').value.trim()
-    const files    = document.getElementById('editImage').files
-    const category = document.getElementById('editCategory').value.trim()
+    const title       = document.getElementById('editTitle').value.trim()
+    const price       = getRawPrice('editPrice')
+    const files       = document.getElementById('editImage').files
+    const category    = document.getElementById('editCategory').value.trim()
+    const description = document.getElementById('editDescription').value.trim()
 
     if (!title || !price || !category) { alert('Semua field wajib diisi!'); return }
 
@@ -991,11 +1132,13 @@
     if (files.length > 0) {
       const newUrls = await uploadImages(files)
       if (!newUrls) return
-      imageUrls = newUrls
+      imageUrls = [...currentImageUrls, ...newUrls]
     }
 
+    if (imageUrls.length === 0) { alert('Produk harus memiliki minimal 1 gambar!'); return }
+
     const { error } = await supabase.from('products').update({
-      title, price: Number(price), image: imageUrls[0], images: imageUrls, category
+      title, price: Number(price), image: imageUrls[0], images: imageUrls, category, description
     }).eq('id', selectedProductId)
 
     if (error) { alert('Gagal update produk!'); return }
