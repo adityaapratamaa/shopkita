@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pengaturan — ShopKita Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f7f6f3;
+      --white:       #ffffff;
+      --ink:         #0f0e0c;
+      --ink2:        #2a2925;
+      --muted:       #9e9b94;
+      --border:      #e8e5de;
+      --sidebar-bg:  #0f0e0c;
+      --accent:      #e8440a;
+      --accent-hover:#c93a08;
+      --green:       #16a34a;
+      --green-soft:  rgba(22,163,74,0.10);
+      --red-soft:    rgba(220,38,38,0.08);
+      --red:         #dc2626;
+    }
+
+    html, body { height: 100%; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); display: flex; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 232px; flex-shrink: 0; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 24px 16px; height: 100vh; }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 4px 8px 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .brand-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .brand-name { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
+    .nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 16px 8px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45); cursor: pointer; text-decoration: none; transition: background 0.14s, color 0.14s; margin-bottom: 1px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: rgba(232,68,10,0.15); color: #fff; }
+    .nav-item.active .nav-dot { background: var(--accent); }
+    .nav-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-left: auto; flex-shrink: 0; }
+    .sidebar-flex { flex: 1; }
+    .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+    .user-row { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.04); margin-bottom: 8px; }
+    .user-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ff8c5a); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,80,80,0.15); background: transparent; color: rgba(255,100,100,0.7); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.14s, color 0.14s; }
+    .btn-logout:hover { background: rgba(255,80,80,0.08); color: #ff7070; }
+
+    /* MAIN */
+    .main { flex: 1; overflow-y: auto; padding: 32px 36px; display: flex; flex-direction: column; gap: 22px; }
+    .main::-webkit-scrollbar { width: 5px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: flex-end; justify-content: space-between; }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; line-height: 1; }
+    .topbar-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* LAYOUT */
+    .settings-layout { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: start; }
+
+    /* SETTINGS NAV */
+    .settings-nav { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; gap: 1px; position: sticky; top: 0; }
+    .snav-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all 0.14s; border: none; background: none; font-family: 'Plus Jakarta Sans', sans-serif; text-align: left; width: 100%; }
+    .snav-item:hover { background: var(--bg); color: var(--ink); }
+    .snav-item.active { background: rgba(232,68,10,0.08); color: var(--accent); font-weight: 600; }
+
+    /* PANELS */
+    .settings-panels { display: flex; flex-direction: column; gap: 16px; }
+    .panel { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .panel-head { padding: 20px 24px 0; margin-bottom: 20px; }
+    .panel-title { font-size: 15px; font-weight: 700; color: var(--ink); letter-spacing: -0.2px; }
+    .panel-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+    .panel-body { padding: 0 24px 24px; display: flex; flex-direction: column; gap: 18px; }
+    .panel-divider { height: 1px; background: var(--border); margin: 0 24px; }
+
+    /* FIELD */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .field-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink2); }
+    .field-hint { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .field-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 13px; color: var(--ink); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; outline: none; transition: border-color 0.16s, box-shadow 0.16s, background 0.16s; }
+    .field-input::placeholder { color: var(--muted); }
+    .field-input:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 3px rgba(232,68,10,0.08); }
+    .field-input:disabled { opacity: 0.5; cursor: not-allowed; }
+    select.field-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5L9 0z' fill='%239e9b94'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 8px; padding-right: 32px; }
+    textarea.field-input { resize: vertical; min-height: 80px; }
+
+    /* TOGGLE */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .toggle-info { flex: 1; }
+    .toggle-label { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+    .toggle-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: var(--border); border-radius: 22px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track::before { content:''; position: absolute; left: 3px; top: 3px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .toggle input:checked + .toggle-track { background: var(--accent); }
+    .toggle input:checked + .toggle-track::before { transform: translateX(18px); }
+
+    /* BUTTONS */
+    .btn-save { background: var(--ink); color: #fff; border: none; border-radius: 9px; padding: 10px 22px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: background 0.16s, transform 0.14s; }
+    .btn-save:hover { background: var(--ink2); transform: translateY(-1px); }
+    .btn-danger { background: var(--red-soft); color: var(--red); border: 1.5px solid rgba(220,38,38,0.2); border-radius: 9px; padding: 10px 22px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.14s; }
+    .btn-danger:hover { background: rgba(220,38,38,0.15); }
+    .btn-ghost { background: var(--bg); color: var(--ink2); border: 1.5px solid var(--border); border-radius: 9px; padding: 10px 22px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.14s; }
+    .btn-ghost:hover { background: var(--border); }
+
+    /* ADMIN PROFILE */
+    .profile-avatar-wrap { display: flex; align-items: center; gap: 16px; }
+    .profile-av-big { width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ff8c5a); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; color: #fff; }
+
+    /* STATUS BADGE */
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; background: var(--green-soft); color: var(--green); }
+    .status-dot-g { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+
+    /* INFO ROW */
+    .info-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--border); }
+    .info-row:last-child { border-bottom: none; }
+    .info-key { font-size: 13px; color: var(--muted); }
+    .info-val { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 18px; background: var(--ink); color: #fff; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.2); opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #dc2626; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">🛍️</div>
+    <span class="brand-name">ShopKita</span>
+  </div>
+  <div class="nav-section-label">Menu</div>
+  <a href="admin.html" class="nav-item">
+    <span>📦</span> Produk <span class="nav-dot"></span>
+  </a>
+  <a href="orders.html" class="nav-item">
+    <span>🛒</span> Orders <span class="nav-dot"></span>
+  </a>
+  <a href="pelanggan.html" class="nav-item">
+    <span>👥</span> Pelanggan <span class="nav-dot"></span>
+  </a>
+  <a href="analitik.html" class="nav-item">
+    <span>📊</span> Analitik <span class="nav-dot"></span>
+  </a>
+  <a href="pengaturan.html" class="nav-item active">
+    <span>⚙️</span> Pengaturan <span class="nav-dot"></span>
+  </a>
+  <div class="sidebar-flex"></div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-av">A</div>
+      <div>
+        <div class="user-name" id="sidebar-name">Admin</div>
+        <div class="user-role">Super Admin</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      ← Keluar
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>Pengaturan</h1>
+      <div class="topbar-date" id="dateDisplay"></div>
+    </div>
+  </div>
+
+  <div class="settings-layout">
+
+    <!-- SETTINGS NAV -->
+    <div class="settings-nav">
+      <button class="snav-item active" onclick="showPanel('profil', this)">👤 Profil</button>
+      <button class="snav-item" onclick="showPanel('toko', this)">🏪 Info Toko</button>
+      <button class="snav-item" onclick="showPanel('notifikasi', this)">🔔 Notifikasi</button>
+      <button class="snav-item" onclick="showPanel('keamanan', this)">🔒 Keamanan</button>
+      <button class="snav-item" onclick="showPanel('sistem', this)">⚙️ Sistem</button>
+    </div>
+
+    <!-- PANELS -->
+    <div class="settings-panels">
+
+      <!-- PROFIL -->
+      <div class="panel" id="panel-profil">
+        <div class="panel-head">
+          <div class="panel-title">Profil Admin</div>
+          <div class="panel-sub">Informasi akun administrator yang sedang aktif</div>
+        </div>
+        <div class="panel-body">
+          <div class="profile-avatar-wrap">
+            <div class="profile-av-big" id="profile-av-letter">A</div>
+            <div>
+              <div style="font-size:15px;font-weight:700;color:var(--ink)" id="profile-display-name">Admin</div>
+              <div style="font-size:12.5px;color:var(--muted);margin-top:2px" id="profile-email">—</div>
+              <div style="margin-top:6px"><span class="status-badge"><span class="status-dot-g"></span> Super Admin</span></div>
+            </div>
+          </div>
+          <div class="panel-divider" style="margin:0"></div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Nama Tampilan</label>
+              <input type="text" class="field-input" id="f-displayname" placeholder="Nama Admin">
+            </div>
+            <div class="field">
+              <label class="field-label">Email</label>
+              <input type="email" class="field-input" id="f-email" placeholder="admin@shopkita.id" disabled>
+              <div class="field-hint">Email tidak dapat diubah</div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Nomor Telepon</label>
+            <input type="text" class="field-input" id="f-phone" placeholder="+62 812 0000 0000">
+          </div>
+          <div>
+            <button class="btn-save" onclick="saveProfile()">Simpan Profil</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOKO -->
+      <div class="panel" id="panel-toko" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Informasi Toko</div>
+          <div class="panel-sub">Data toko yang ditampilkan ke pelanggan</div>
+        </div>
+        <div class="panel-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Nama Toko</label>
+              <input type="text" class="field-input" id="f-storename" placeholder="ShopKita">
+            </div>
+            <div class="field">
+              <label class="field-label">Tagline</label>
+              <input type="text" class="field-input" id="f-tagline" placeholder="Belanja Online Terpercaya">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Deskripsi Toko</label>
+            <textarea class="field-input" id="f-storedesc" placeholder="Deskripsi singkat tentang toko..."></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Email Toko</label>
+              <input type="email" class="field-input" id="f-storeemail" placeholder="hello@shopkita.id">
+            </div>
+            <div class="field">
+              <label class="field-label">WhatsApp CS</label>
+              <input type="text" class="field-input" id="f-wa" placeholder="+62 812 0000 0000">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Alamat Gudang / Toko</label>
+            <textarea class="field-input" id="f-storeaddr" placeholder="Jl. Contoh No. 1, Jakarta..." style="min-height:64px"></textarea>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Kurir Default</label>
+              <select class="field-input" id="f-courier">
+                <option value="jne">JNE</option>
+                <option value="jnt">J&T Express</option>
+                <option value="sicepat">SiCepat</option>
+                <option value="anteraja">AnterAja</option>
+                <option value="gojek">GoSend</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">Mata Uang</label>
+              <select class="field-input" id="f-currency" disabled>
+                <option value="IDR">IDR — Rupiah</option>
+              </select>
+              <div class="field-hint">Sementara hanya IDR</div>
+            </div>
+          </div>
+          <div>
+            <button class="btn-save" onclick="saveToko()">Simpan Info Toko</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFIKASI -->
+      <div class="panel" id="panel-notifikasi" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Preferensi Notifikasi</div>
+          <div class="panel-sub">Atur notifikasi yang ingin diterima admin</div>
+        </div>
+        <div class="panel-body">
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Order Baru Masuk</div>
+              <div class="toggle-desc">Notifikasi setiap kali ada order baru dari pelanggan</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="n-neworder" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Pembayaran Diterima</div>
+              <div class="toggle-desc">Notifikasi ketika pembayaran pelanggan berhasil dikonfirmasi</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="n-payment" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Stok Produk Habis</div>
+              <div class="toggle-desc">Peringatan saat stok produk mencapai batas minimum</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="n-stock"><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Laporan Harian</div>
+              <div class="toggle-desc">Ringkasan penjualan dan order dikirim setiap pagi</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="n-daily" checked><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Review Produk Baru</div>
+              <div class="toggle-desc">Notifikasi ketika pelanggan memberikan ulasan produk</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="n-review"><span class="toggle-track"></span></label>
+          </div>
+          <div>
+            <button class="btn-save" onclick="saveNotif()">Simpan Preferensi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEAMANAN -->
+      <div class="panel" id="panel-keamanan" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Keamanan Akun</div>
+          <div class="panel-sub">Kelola password dan keamanan akun admin</div>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label class="field-label">Password Baru</label>
+            <input type="password" class="field-input" id="f-newpass" placeholder="Minimal 8 karakter">
+          </div>
+          <div class="field">
+            <label class="field-label">Konfirmasi Password</label>
+            <input type="password" class="field-input" id="f-confpass" placeholder="Ulangi password baru">
+          </div>
+          <div>
+            <button class="btn-save" onclick="changePassword()">Ubah Password</button>
+          </div>
+
+          <div class="panel-divider" style="margin:0"></div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px">Sesi Login</div>
+            <div class="info-row">
+              <span class="info-key">Status Sesi</span>
+              <span class="info-val" id="sess-status">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Email Akun</span>
+              <span class="info-val" id="sess-email">—</span>
+            </div>
+            <div class="info-row">
+              <span class="info-key">Terakhir Login</span>
+              <span class="info-val" id="sess-login">—</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px">Zona Berbahaya</div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Keluar dari semua perangkat yang sedang login dengan akun ini.</div>
+            <button class="btn-danger" onclick="if(confirm('Keluar dari semua sesi?')) logout()">Keluar Semua Sesi</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SISTEM -->
+      <div class="panel" id="panel-sistem" style="display:none">
+        <div class="panel-head">
+          <div class="panel-title">Informasi Sistem</div>
+          <div class="panel-sub">Detail teknis platform ShopKita</div>
+        </div>
+        <div class="panel-body">
+          <div class="info-row">
+            <span class="info-key">Versi Aplikasi</span>
+            <span class="info-val">v1.0.0</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Database</span>
+            <span class="info-val">Supabase (PostgreSQL)</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Storage</span>
+            <span class="info-val">Supabase Storage</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Payment Gateway</span>
+            <span class="info-val">Midtrans Sandbox</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Status Sistem</span>
+            <span class="info-val" style="color:var(--green)">● Semua Normal</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Project ID Supabase</span>
+            <span class="info-val">fctmswfmuvqwueeumtgw</span>
+          </div>
+
+          <div class="panel-divider" style="margin:0"></div>
+
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:8px">Preferensi Tampilan</div>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Mode Gelap Sidebar</div>
+              <div class="toggle-desc">Sidebar saat ini menggunakan dark mode (permanen)</div>
+            </div>
+            <label class="toggle"><input type="checkbox" checked disabled><span class="toggle-track"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Animasi UI</div>
+              <div class="toggle-desc">Aktifkan animasi transisi dan hover effect</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="s-anim" checked><span class="toggle-track"></span></label>
+          </div>
+
+          <div class="panel-divider" style="margin:0"></div>
+
+          <div>
+            <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Bersihkan cache data lokal aplikasi. Tidak berpengaruh ke database.</div>
+            <div style="display:flex;gap:10px">
+              <button class="btn-ghost" onclick="clearCache()">🗑 Bersihkan Cache</button>
+              <button class="btn-ghost" onclick="window.location.reload()">↺ Reload Halaman</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  const supabase = createClient(
+    'https://fctmswfmuvqwueeumtgw.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+  )
+
+  const { data: sd } = await supabase.auth.getSession()
+  if (!sd.session) window.location.href = 'login.html'
+
+  window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html' }
+
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+  function toast(msg, isErr=false) {
+    const el = document.getElementById('toast')
+    el.textContent = msg; el.className = 'toast show' + (isErr?' error':'')
+    clearTimeout(el._t); el._t = setTimeout(() => el.className='toast', 2800)
+  }
+
+  // Load user session data
+  const user = sd.session?.user
+  if (user) {
+    const email = user.email || '—'
+    const meta  = user.user_metadata || {}
+    const name  = meta.full_name || meta.name || 'Admin'
+    const initial = name.charAt(0).toUpperCase()
+
+    document.getElementById('f-email').value        = email
+    document.getElementById('f-displayname').value  = name
+    document.getElementById('profile-display-name').textContent = name
+    document.getElementById('profile-email').textContent        = email
+    document.getElementById('profile-av-letter').textContent    = initial
+    document.getElementById('sidebar-name').textContent         = name
+
+    document.getElementById('sess-status').textContent = '● Aktif'
+    document.getElementById('sess-status').style.color = 'var(--green)'
+    document.getElementById('sess-email').textContent  = email
+
+    const createdAt = new Date(user.created_at)
+    document.getElementById('sess-login').textContent = createdAt.toLocaleDateString('id-ID', {
+      weekday:'long', year:'numeric', month:'long', day:'numeric'
+    })
+  }
+
+  // Load saved settings from localStorage
+  function loadSaved() {
+    const toko = JSON.parse(localStorage.getItem('sk_toko')||'{}')
+    if (toko.storename) document.getElementById('f-storename').value = toko.storename
+    if (toko.tagline)   document.getElementById('f-tagline').value   = toko.tagline
+    if (toko.storedesc) document.getElementById('f-storedesc').value = toko.storedesc
+    if (toko.storeemail)document.getElementById('f-storeemail').value= toko.storeemail
+    if (toko.wa)        document.getElementById('f-wa').value        = toko.wa
+    if (toko.storeaddr) document.getElementById('f-storeaddr').value = toko.storeaddr
+    if (toko.courier)   document.getElementById('f-courier').value   = toko.courier
+
+    const notif = JSON.parse(localStorage.getItem('sk_notif')||'{}')
+    if ('neworder' in notif) document.getElementById('n-neworder').checked = notif.neworder
+    if ('payment'  in notif) document.getElementById('n-payment').checked  = notif.payment
+    if ('stock'    in notif) document.getElementById('n-stock').checked    = notif.stock
+    if ('daily'    in notif) document.getElementById('n-daily').checked    = notif.daily
+    if ('review'   in notif) document.getElementById('n-review').checked   = notif.review
+
+    const profil = JSON.parse(localStorage.getItem('sk_profil')||'{}')
+    if (profil.phone) document.getElementById('f-phone').value = profil.phone
+  }
+  loadSaved()
+
+  // Panel switching
+  window.showPanel = function(name, btn) {
+    document.querySelectorAll('[id^="panel-"]').forEach(el => el.style.display='none')
+    document.getElementById('panel-'+name).style.display = ''
+    document.querySelectorAll('.snav-item').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+  }
+
+  // Save Profil
+  window.saveProfile = async function() {
+    const name  = document.getElementById('f-displayname').value.trim()
+    const phone = document.getElementById('f-phone').value.trim()
+    if (!name) { toast('Nama tidak boleh kosong', true); return }
+
+    const { error } = await supabase.auth.updateUser({ data: { full_name: name } })
+    if (error) { toast('Gagal simpan: ' + error.message, true); return }
+
+    localStorage.setItem('sk_profil', JSON.stringify({ phone }))
+    document.getElementById('profile-display-name').textContent = name
+    document.getElementById('profile-av-letter').textContent    = name.charAt(0).toUpperCase()
+    document.getElementById('sidebar-name').textContent         = name
+    toast('✓ Profil berhasil disimpan')
+  }
+
+  // Save Toko
+  window.saveToko = function() {
+    const data = {
+      storename:  document.getElementById('f-storename').value.trim(),
+      tagline:    document.getElementById('f-tagline').value.trim(),
+      storedesc:  document.getElementById('f-storedesc').value.trim(),
+      storeemail: document.getElementById('f-storeemail').value.trim(),
+      wa:         document.getElementById('f-wa').value.trim(),
+      storeaddr:  document.getElementById('f-storeaddr').value.trim(),
+      courier:    document.getElementById('f-courier').value,
+    }
+    localStorage.setItem('sk_toko', JSON.stringify(data))
+    toast('✓ Info toko berhasil disimpan')
+  }
+
+  // Save Notifikasi
+  window.saveNotif = function() {
+    const data = {
+      neworder: document.getElementById('n-neworder').checked,
+      payment:  document.getElementById('n-payment').checked,
+      stock:    document.getElementById('n-stock').checked,
+      daily:    document.getElementById('n-daily').checked,
+      review:   document.getElementById('n-review').checked,
+    }
+    localStorage.setItem('sk_notif', JSON.stringify(data))
+    toast('✓ Preferensi notifikasi disimpan')
+  }
+
+  // Change Password
+  window.changePassword = async function() {
+    const np = document.getElementById('f-newpass').value
+    const cp = document.getElementById('f-confpass').value
+    if (!np) { toast('Password tidak boleh kosong', true); return }
+    if (np.length < 8) { toast('Password minimal 8 karakter', true); return }
+    if (np !== cp) { toast('Konfirmasi password tidak cocok', true); return }
+
+    const { error } = await supabase.auth.updateUser({ password: np })
+    if (error) { toast('Gagal ubah password: ' + error.message, true); return }
+
+    document.getElementById('f-newpass').value  = ''
+    document.getElementById('f-confpass').value = ''
+    toast('✓ Password berhasil diubah')
+  }
+
+  // Clear cache
+  window.clearCache = function() {
+    const keys = Object.keys(localStorage).filter(k => k.startsWith('sk_'))
+    if (keys.length === 0) { toast('Cache sudah kosong'); return }
+    if (!confirm(`Hapus ${keys.length} item cache lokal?`)) return
+    keys.forEach(k => localStorage.removeItem(k))
+    toast('✓ Cache berhasil dibersihkan')
+    loadSaved()
+  }
+</script>
+</body>
+</html>

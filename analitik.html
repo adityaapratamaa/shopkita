@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Analitik — ShopKita Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f7f6f3;
+      --white:       #ffffff;
+      --ink:         #0f0e0c;
+      --ink2:        #2a2925;
+      --muted:       #9e9b94;
+      --border:      #e8e5de;
+      --sidebar-bg:  #0f0e0c;
+      --accent:      #e8440a;
+      --green:       #16a34a;
+      --green-soft:  rgba(22,163,74,0.10);
+      --blue:        #2563eb;
+      --blue-soft:   rgba(37,99,235,0.10);
+      --yellow:      #b45309;
+      --yellow-soft: rgba(180,83,9,0.10);
+      --purple:      #7c3aed;
+      --purple-soft: rgba(124,58,237,0.10);
+    }
+
+    html, body { height: 100%; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); display: flex; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 232px; flex-shrink: 0; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 24px 16px; height: 100vh; }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 4px 8px 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .brand-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .brand-name { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
+    .nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 16px 8px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45); cursor: pointer; text-decoration: none; transition: background 0.14s, color 0.14s; margin-bottom: 1px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: rgba(232,68,10,0.15); color: #fff; }
+    .nav-item.active .nav-dot { background: var(--accent); }
+    .nav-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-left: auto; flex-shrink: 0; }
+    .sidebar-flex { flex: 1; }
+    .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+    .user-row { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.04); margin-bottom: 8px; }
+    .user-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ff8c5a); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,80,80,0.15); background: transparent; color: rgba(255,100,100,0.7); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.14s, color 0.14s; }
+    .btn-logout:hover { background: rgba(255,80,80,0.08); color: #ff7070; }
+
+    /* MAIN */
+    .main { flex: 1; overflow-y: auto; padding: 32px 36px; display: flex; flex-direction: column; gap: 22px; }
+    .main::-webkit-scrollbar { width: 5px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: flex-end; justify-content: space-between; }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; line-height: 1; }
+    .topbar-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .status-pill { display: flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--ink2); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .stat-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px 22px; transition: box-shadow 0.18s, transform 0.18s; }
+    .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); transform: translateY(-1px); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+    .stat-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
+    .stat-sub { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+    .stat-sub.up { color: var(--green); font-weight: 600; }
+
+    /* PERIOD FILTER */
+    .period-tabs { display: flex; align-items: center; gap: 4px; background: var(--white); border: 1.5px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; }
+    .pt { padding: 6px 16px; border-radius: 7px; font-size: 12.5px; font-weight: 500; color: var(--muted); cursor: pointer; border: none; background: none; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.14s; }
+    .pt:hover { color: var(--ink2); background: var(--bg); }
+    .pt.active { background: var(--ink); color: #fff; }
+
+    /* CARDS GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+    .card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 24px; }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--ink); letter-spacing: -0.2px; margin-bottom: 4px; }
+    .card-sub { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+
+    /* PRODUCT RANK */
+    .prod-rank { display: flex; flex-direction: column; gap: 10px; }
+    .prod-rank-item { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; background: var(--bg); }
+    .rank-num { font-size: 13px; font-weight: 800; color: var(--muted); width: 20px; text-align: center; flex-shrink: 0; }
+    .rank-num.gold   { color: #f59e0b; }
+    .rank-num.silver { color: #94a3b8; }
+    .rank-num.bronze { color: #b45309; }
+    .rank-name { flex: 1; font-size: 12.5px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rank-val { font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+    .rank-bar-wrap { width: 100%; height: 3px; background: var(--border); border-radius: 2px; margin-top: 3px; }
+    .rank-bar { height: 3px; background: var(--accent); border-radius: 2px; transition: width 0.6s ease; }
+
+    /* STATUS DONUT LEGEND */
+    .donut-legend { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
+    .legend-item { display: flex; align-items: center; justify-content: space-between; }
+    .legend-left { display: flex; align-items: center; gap: 8px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { font-size: 12.5px; color: var(--ink2); }
+    .legend-val { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+    /* SKELETON */
+    .sk-line { height: 11px; background: linear-gradient(90deg, var(--border) 25%, #eeebe3 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 6px; animation: sweep 1.5s infinite; }
+    @keyframes sweep { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">🛍️</div>
+    <span class="brand-name">ShopKita</span>
+  </div>
+  <div class="nav-section-label">Menu</div>
+  <a href="admin.html" class="nav-item">
+    <span>📦</span> Produk <span class="nav-dot"></span>
+  </a>
+  <a href="orders.html" class="nav-item">
+    <span>🛒</span> Orders <span class="nav-dot"></span>
+  </a>
+  <a href="pelanggan.html" class="nav-item">
+    <span>👥</span> Pelanggan <span class="nav-dot"></span>
+  </a>
+  <a href="analitik.html" class="nav-item active">
+    <span>📊</span> Analitik <span class="nav-dot"></span>
+  </a>
+  <a href="pengaturan.html" class="nav-item">
+    <span>⚙️</span> Pengaturan <span class="nav-dot"></span>
+  </a>
+  <div class="sidebar-flex"></div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-av">A</div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">Super Admin</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      ← Keluar
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>Analitik</h1>
+      <div class="topbar-date" id="dateDisplay"></div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      Live data
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total Revenue</span>
+        <div class="stat-icon" style="background:var(--green-soft)">💰</div>
+      </div>
+      <div class="stat-value" id="s-revenue" style="font-size:17px;margin-top:3px">—</div>
+      <div class="stat-sub up" id="s-rev-sub">Semua waktu</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total Orders</span>
+        <div class="stat-icon" style="background:rgba(15,14,12,0.06)">🛒</div>
+      </div>
+      <div class="stat-value" id="s-orders">—</div>
+      <div class="stat-sub">Semua status</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Avg Order Value</span>
+        <div class="stat-icon" style="background:var(--blue-soft)">📈</div>
+      </div>
+      <div class="stat-value" id="s-aov" style="font-size:17px;margin-top:3px">—</div>
+      <div class="stat-sub">Per transaksi</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Completion Rate</span>
+        <div class="stat-icon" style="background:var(--yellow-soft)">🎯</div>
+      </div>
+      <div class="stat-value" id="s-rate" style="color:var(--green)">—</div>
+      <div class="stat-sub">Order selesai</div>
+    </div>
+  </div>
+
+  <!-- REVENUE CHART + STATUS DONUT -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Revenue Bulanan</div>
+      <div class="card-sub">12 bulan terakhir</div>
+      <canvas id="revenueChart" height="110"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Distribusi Status Order</div>
+      <div class="card-sub">Semua waktu</div>
+      <div style="display:flex;align-items:center;gap:24px">
+        <div style="width:160px;height:160px;flex-shrink:0">
+          <canvas id="statusChart"></canvas>
+        </div>
+        <div class="donut-legend" id="donutLegend">
+          <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:#b45309"></div><span class="legend-label">Pending</span></div><span class="legend-val" id="l-pending">—</span></div>
+          <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:#2563eb"></div><span class="legend-label">Paid</span></div><span class="legend-val" id="l-paid">—</span></div>
+          <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:#7c3aed"></div><span class="legend-label">Shipped</span></div><span class="legend-val" id="l-shipped">—</span></div>
+          <div class="legend-item"><div class="legend-left"><div class="legend-dot" style="background:#16a34a"></div><span class="legend-label">Completed</span></div><span class="legend-val" id="l-completed">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT RANKING + DAILY TREND -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Produk Terlaris</div>
+      <div class="card-sub">Berdasarkan total penjualan</div>
+      <div class="prod-rank" id="prodRank">
+        <div class="sk-line" style="width:100%;height:40px;border-radius:10px;margin-bottom:4px"></div>
+        <div class="sk-line" style="width:100%;height:40px;border-radius:10px;margin-bottom:4px"></div>
+        <div class="sk-line" style="width:100%;height:40px;border-radius:10px"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Order Harian</div>
+      <div class="card-sub">30 hari terakhir</div>
+      <canvas id="dailyChart" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- CATEGORY BREAKDOWN -->
+  <div class="card">
+    <div class="card-title">Revenue per Kategori Produk</div>
+    <div class="card-sub">Berdasarkan semua order yang masuk</div>
+    <canvas id="categoryChart" height="60"></canvas>
+  </div>
+
+</div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  const supabase = createClient(
+    'https://fctmswfmuvqwueeumtgw.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+  )
+
+  const { data: sd } = await supabase.auth.getSession()
+  if (!sd.session) window.location.href = 'login.html'
+
+  window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html' }
+
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+  const fmt = n => 'Rp ' + Number(n||0).toLocaleString('id-ID')
+
+  const CHART_DEFAULTS = {
+    responsive: true,
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#0f0e0c', titleColor: '#f0ece4', bodyColor: '#9e9b94',
+      borderColor: 'rgba(255,255,255,0.08)', borderWidth: 1
+    }},
+    scales: {
+      x: { grid: { display:false }, ticks: { color:'#9e9b94', font:{ family:'Plus Jakarta Sans', size:11 } } },
+      y: { grid: { color:'rgba(0,0,0,0.05)' }, ticks: { color:'#9e9b94', font:{ family:'Plus Jakarta Sans', size:11 } } }
+    }
+  }
+
+  async function load() {
+    const [{ data: orders }, { data: products }] = await Promise.all([
+      supabase.from('orders').select('*').order('created_at', {ascending:true}),
+      supabase.from('products').select('id,title,category')
+    ])
+
+    if (!orders) return
+
+    // ── Stats
+    const total    = orders.length
+    const revenue  = orders.reduce((s,o) => s+(o.total_price||0), 0)
+    const aov      = total ? Math.round(revenue/total) : 0
+    const completed = orders.filter(o=>o.status==='completed').length
+    const rate     = total ? Math.round(completed/total*100) : 0
+
+    document.getElementById('s-revenue').textContent = fmt(revenue)
+    document.getElementById('s-orders').textContent  = total
+    document.getElementById('s-aov').textContent     = fmt(aov)
+    document.getElementById('s-rate').textContent    = rate + '%'
+
+    // ── Status counts
+    const pending   = orders.filter(o=>o.status==='pending').length
+    const paid      = orders.filter(o=>o.status==='paid').length
+    const shipped   = orders.filter(o=>o.status==='shipped').length
+    document.getElementById('l-pending').textContent   = pending
+    document.getElementById('l-paid').textContent      = paid
+    document.getElementById('l-shipped').textContent   = shipped
+    document.getElementById('l-completed').textContent = completed
+
+    // ── Revenue chart (monthly)
+    const monthly = Array(12).fill(0)
+    orders.forEach(o => { const m = new Date(o.created_at).getMonth(); monthly[m] += o.total_price||0 })
+    const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des']
+    new Chart(document.getElementById('revenueChart'), {
+      type: 'bar',
+      data: {
+        labels: months,
+        datasets: [{
+          data: monthly,
+          backgroundColor: 'rgba(15,14,12,0.08)', borderColor: '#0f0e0c',
+          borderWidth: 1.5, borderRadius: 5,
+          hoverBackgroundColor: 'rgba(232,68,10,0.15)', hoverBorderColor: '#e8440a'
+        }]
+      },
+      options: { ...CHART_DEFAULTS, plugins: { ...CHART_DEFAULTS.plugins, tooltip: { ...CHART_DEFAULTS.plugins.tooltip, callbacks: { label: ctx => fmt(ctx.raw) } } }, scales: { ...CHART_DEFAULTS.scales, y: { ...CHART_DEFAULTS.scales.y, ticks: { ...CHART_DEFAULTS.scales.y.ticks, callback: v => 'Rp '+(v/1000000).toFixed(0)+'jt' } } } }
+    })
+
+    // ── Status donut
+    new Chart(document.getElementById('statusChart'), {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [pending||0.1, paid||0.1, shipped||0.1, completed||0.1],
+          backgroundColor: ['#b45309','#2563eb','#7c3aed','#16a34a'],
+          borderWidth: 2, borderColor: '#fff', hoverOffset: 4
+        }]
+      },
+      options: { responsive: true, cutout: '65%', plugins: { legend:{ display:false }, tooltip:{ backgroundColor:'#0f0e0c', titleColor:'#f0ece4', bodyColor:'#9e9b94' } } }
+    })
+
+    // ── Daily chart (last 30 days)
+    const days = {}
+    const now = new Date()
+    for (let i=29; i>=0; i--) {
+      const d = new Date(now); d.setDate(d.getDate()-i)
+      days[d.toISOString().slice(0,10)] = 0
+    }
+    orders.forEach(o => {
+      const d = o.created_at ? o.created_at.slice(0,10) : null
+      if (d && days[d] !== undefined) days[d]++
+    })
+    const dayLabels = Object.keys(days).map(d => d.slice(5))
+    const dayData   = Object.values(days)
+    new Chart(document.getElementById('dailyChart'), {
+      type: 'line',
+      data: {
+        labels: dayLabels,
+        datasets: [{
+          data: dayData, fill: true,
+          backgroundColor: 'rgba(232,68,10,0.07)',
+          borderColor: '#e8440a', borderWidth: 2,
+          pointRadius: 0, tension: 0.4
+        }]
+      },
+      options: { ...CHART_DEFAULTS, scales: { ...CHART_DEFAULTS.scales, x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, maxTicksLimit: 8 } } } }
+    })
+
+    // ── Product ranking
+    const prodMap = {}
+    orders.forEach(o => {
+      (o.products||[]).forEach(p => {
+        const key = p.name||'Unknown'
+        if (!prodMap[key]) prodMap[key] = { name:key, revenue:0, qty:0, cat:'' }
+        prodMap[key].revenue += (p.price||0)*(p.qty||1)
+        prodMap[key].qty     += p.qty||1
+        if (products) {
+          const match = products.find(pr => pr.title === key)
+          if (match) prodMap[key].cat = match.category||''
+        }
+      })
+    })
+    const ranked = Object.values(prodMap).sort((a,b)=>b.revenue-a.revenue).slice(0,5)
+    const maxRev = ranked[0]?.revenue || 1
+    const rankClasses = ['gold','silver','bronze','','']
+    document.getElementById('prodRank').innerHTML = ranked.length
+      ? ranked.map((p,i) => `
+          <div class="prod-rank-item">
+            <div class="rank-num ${rankClasses[i]}">${i+1}</div>
+            <div style="flex:1;min-width:0">
+              <div class="rank-name">${p.name}</div>
+              <div class="rank-bar-wrap"><div class="rank-bar" style="width:${Math.round(p.revenue/maxRev*100)}%"></div></div>
+            </div>
+            <div>
+              <div class="rank-val">${fmt(p.revenue)}</div>
+              <div style="font-size:11px;color:var(--muted);text-align:right">${p.qty} terjual</div>
+            </div>
+          </div>`).join('')
+      : '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Belum ada data produk</div>'
+
+    // ── Category revenue chart
+    const catMap = {}
+    orders.forEach(o => {
+      (o.products||[]).forEach(p => {
+        let cat = 'Lainnya'
+        if (products) {
+          const match = products.find(pr => pr.title === p.name)
+          if (match) cat = match.category || 'Lainnya'
+        }
+        if (!catMap[cat]) catMap[cat] = 0
+        catMap[cat] += (p.price||0)*(p.qty||1)
+      })
+    })
+    const catLabels = Object.keys(catMap)
+    const catData   = Object.values(catMap)
+    const catColors = ['#e8440a','#2563eb','#7c3aed','#16a34a','#b45309','#0891b2','#be185d']
+    if (catLabels.length) {
+      new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: {
+          labels: catLabels,
+          datasets: [{ data: catData, backgroundColor: catColors.slice(0,catLabels.length), borderRadius: 6, borderWidth: 0 }]
+        },
+        options: { ...CHART_DEFAULTS, indexAxis:'y', plugins: { ...CHART_DEFAULTS.plugins, tooltip: { ...CHART_DEFAULTS.plugins.tooltip, callbacks: { label: ctx => fmt(ctx.raw) } } }, scales: { x: { ...CHART_DEFAULTS.scales.x, ticks: { ...CHART_DEFAULTS.scales.x.ticks, callback: v => 'Rp '+(v/1000000).toFixed(1)+'jt' } }, y: { ...CHART_DEFAULTS.scales.y, grid:{ display:false } } } }
+      })
+    } else {
+      document.getElementById('categoryChart').parentElement.innerHTML += '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Belum ada data kategori</div>'
+    }
+  }
+
+  load()
+</script>
+</body>
+</html>
