@@ -707,7 +707,7 @@
         padding: 24px 24px 0 !important;
         display: grid !important;
         grid-template-columns: 500px 1fr !important;
-        grid-template-rows: auto auto !important;
+        grid-template-rows: auto auto auto !important;
         gap: 20px !important;
         align-items: start !important;
       }
@@ -735,6 +735,7 @@
         padding: 24px !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
         margin-bottom: 0 !important;
+        margin-top: 0 !important;
       }
 
       /* Related products section — full width */
@@ -746,6 +747,7 @@
         padding: 24px !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
         margin-bottom: 24px !important;
+        margin-top: 0 !important;
       }
 
       #detailRelatedSection #relatedProductsGrid {
@@ -1070,6 +1072,22 @@
        but set a safe default mobile fallback ── */
     @media (max-width: 767px) {
       #sortBar { top: 88px; } /* header ~88px on mobile */
+    }
+
+    /* ── 21. DETAIL DESC + RELATED: force block layout on mobile ── */
+    @media (max-width: 767px) {
+      #detailDescSection,
+      #detailRelatedSection {
+        display: block !important;
+        position: relative !important;
+        z-index: 1 !important;
+        margin-top: 8px !important;
+        grid-column: unset !important;
+        grid-row: unset !important;
+      }
+      #detailContent {
+        display: block !important;
+      }
     }
   </style>
 </head>
