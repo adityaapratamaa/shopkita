@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pelanggan — ShopKita Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #f7f6f3;
+      --white:       #ffffff;
+      --ink:         #0f0e0c;
+      --ink2:        #2a2925;
+      --muted:       #9e9b94;
+      --border:      #e8e5de;
+      --sidebar-bg:  #0f0e0c;
+      --accent:      #e8440a;
+      --accent-hover:#c93a08;
+      --green:       #16a34a;
+      --green-soft:  rgba(22,163,74,0.10);
+      --blue:        #2563eb;
+      --blue-soft:   rgba(37,99,235,0.10);
+      --yellow:      #b45309;
+      --yellow-soft: rgba(180,83,9,0.10);
+      --purple:      #7c3aed;
+      --purple-soft: rgba(124,58,237,0.10);
+    }
+
+    html, body { height: 100%; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--ink); display: flex; overflow: hidden; }
+
+    /* SIDEBAR */
+    .sidebar { width: 232px; flex-shrink: 0; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 24px 16px; height: 100vh; }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; padding: 4px 8px 24px; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .brand-mark { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+    .brand-name { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -0.2px; }
+    .nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 16px 8px 6px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 9px 10px; border-radius: 8px; font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.45); cursor: pointer; text-decoration: none; transition: background 0.14s, color 0.14s; margin-bottom: 1px; }
+    .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.8); }
+    .nav-item.active { background: rgba(232,68,10,0.15); color: #fff; }
+    .nav-item.active .nav-dot { background: var(--accent); }
+    .nav-dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; margin-left: auto; flex-shrink: 0; }
+    .sidebar-flex { flex: 1; }
+    .sidebar-footer { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px; }
+    .user-row { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,0.04); margin-bottom: 8px; }
+    .user-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #ff8c5a); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .user-name { font-size: 12.5px; font-weight: 600; color: rgba(255,255,255,0.8); }
+    .user-role { font-size: 11px; color: rgba(255,255,255,0.3); }
+    .btn-logout { width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 8px; border: 1px solid rgba(255,80,80,0.15); background: transparent; color: rgba(255,100,100,0.7); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 500; cursor: pointer; transition: background 0.14s, color 0.14s; }
+    .btn-logout:hover { background: rgba(255,80,80,0.08); color: #ff7070; }
+
+    /* MAIN */
+    .main { flex: 1; overflow-y: auto; padding: 32px 36px; display: flex; flex-direction: column; gap: 22px; }
+    .main::-webkit-scrollbar { width: 5px; }
+    .main::-webkit-scrollbar-track { background: transparent; }
+    .main::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: flex-end; justify-content: space-between; }
+    .topbar h1 { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.4px; line-height: 1; }
+    .topbar-date { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .status-pill { display: flex; align-items: center; gap: 6px; background: var(--white); border: 1.5px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--ink2); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+    /* STATS */
+    .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; }
+    .stat-card { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; padding: 20px 22px; transition: box-shadow 0.18s, transform 0.18s; cursor: default; }
+    .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); transform: translateY(-1px); }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+    .stat-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.8px; color: var(--ink); line-height: 1; }
+    .stat-sub { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+
+    /* TOOLBAR */
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .search-wrap { position: relative; }
+    .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .search-input { padding: 8px 14px 8px 36px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 13px; color: var(--ink); width: 240px; transition: border-color 0.14s, width 0.25s; outline: none; }
+    .search-input::placeholder { color: var(--muted); }
+    .search-input:focus { border-color: var(--ink2); width: 280px; }
+
+    /* SORT SELECT */
+    .sort-select { appearance: none; padding: 8px 32px 8px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M0 0l4.5 5L9 0z' fill='%239e9b94'/%3E%3C/svg%3E") no-repeat right 10px center; background-size: 8px; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12.5px; font-weight: 500; color: var(--ink2); cursor: pointer; outline: none; }
+
+    /* TABLE */
+    .table-wrap { background: var(--white); border: 1.5px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .table-header { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 80px; gap: 0; padding: 12px 20px; border-bottom: 1.5px solid var(--border); background: var(--bg); }
+    .th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); }
+    .customer-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 80px; gap: 0; padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.12s; animation: fadeUp 0.2s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:translateY(0);} }
+    .customer-row:last-child { border-bottom: none; }
+    .customer-row:hover { background: var(--bg); }
+
+    .cust-info { display: flex; align-items: center; gap: 10px; }
+    .cust-av { width: 36px; height: 36px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--ink2); flex-shrink: 0; }
+    .cust-name { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+    .cust-addr { font-size: 11.5px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+    .td { font-size: 13px; color: var(--ink2); }
+    .td-muted { font-size: 12.5px; color: var(--muted); }
+    .td-value { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+    .badge-top { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge-top.high { background: var(--green-soft); color: var(--green); }
+    .badge-top.mid  { background: var(--blue-soft);  color: var(--blue); }
+    .badge-top.low  { background: var(--yellow-soft); color: var(--yellow); }
+
+    .btn-detail { padding: 5px 12px; border-radius: 7px; border: 1.5px solid var(--border); background: transparent; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--ink2); cursor: pointer; transition: all 0.14s; }
+    .btn-detail:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* EMPTY */
+    .empty-state { padding: 60px 20px; text-align: center; }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; }
+    .empty-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+    .empty-sub { font-size: 13px; color: var(--muted); }
+
+    /* SKELETON */
+    .sk-row { display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 80px; gap: 0; padding: 14px 20px; border-bottom: 1px solid var(--border); align-items: center; }
+    .sk-line { height: 11px; background: linear-gradient(90deg, var(--border) 25%, #eeebe3 50%, var(--border) 75%); background-size: 200% 100%; border-radius: 6px; animation: sweep 1.5s infinite; }
+    @keyframes sweep { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+    .sk-circle { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(90deg, var(--border) 25%, #eeebe3 50%, var(--border) 75%); background-size: 200% 100%; animation: sweep 1.5s infinite; flex-shrink: 0; }
+
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15,14,12,0.55); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 100; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--white); border: 1.5px solid var(--border); border-radius: 16px; padding: 30px; width: 480px; max-height: 90vh; overflow-y: auto; animation: modalIn 0.22s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes modalIn { from{opacity:0;transform:scale(0.96) translateY(8px);} to{opacity:1;transform:scale(1) translateY(0);} }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+    .modal-close { background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: var(--muted); transition: all 0.14s; }
+    .modal-close:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    .detail-section { margin-bottom: 20px; }
+    .detail-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 10px; }
+    .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-key { font-size: 12.5px; color: var(--muted); }
+    .detail-val { font-size: 13px; font-weight: 600; color: var(--ink); }
+
+    .order-mini { background: var(--bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 6px; }
+    .order-mini-head { display: flex; justify-content: space-between; align-items: center; }
+    .order-mini-id { font-size: 11.5px; font-weight: 600; color: var(--muted); }
+    .order-mini-total { font-size: 13px; font-weight: 700; color: var(--ink); }
+    .order-mini-status { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; }
+    .order-mini-status.completed { background: var(--green-soft); color: var(--green); }
+    .order-mini-status.pending   { background: var(--yellow-soft); color: var(--yellow); }
+    .order-mini-status.shipped   { background: var(--purple-soft); color: var(--purple); }
+    .order-mini-status.paid      { background: var(--blue-soft); color: var(--blue); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 28px; right: 28px; padding: 12px 18px; background: var(--ink); color: #fff; border-radius: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.2); opacity: 0; transform: translateY(8px); transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-mark">🛍️</div>
+    <span class="brand-name">ShopKita</span>
+  </div>
+  <div class="nav-section-label">Menu</div>
+  <a href="admin.html" class="nav-item">
+    <span>📦</span> Produk <span class="nav-dot"></span>
+  </a>
+  <a href="orders.html" class="nav-item">
+    <span>🛒</span> Orders <span class="nav-dot"></span>
+  </a>
+  <a href="pelanggan.html" class="nav-item active">
+    <span>👥</span> Pelanggan <span class="nav-dot"></span>
+  </a>
+  <a href="analitik.html" class="nav-item">
+    <span>📊</span> Analitik <span class="nav-dot"></span>
+  </a>
+  <a href="pengaturan.html" class="nav-item">
+    <span>⚙️</span> Pengaturan <span class="nav-dot"></span>
+  </a>
+  <div class="sidebar-flex"></div>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-av">A</div>
+      <div>
+        <div class="user-name">Admin</div>
+        <div class="user-role">Super Admin</div>
+      </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      ← Keluar
+    </button>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="topbar">
+    <div>
+      <h1>Pelanggan</h1>
+      <div class="topbar-date" id="dateDisplay"></div>
+    </div>
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      Live sync
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total Pelanggan</span>
+        <div class="stat-icon" style="background:rgba(15,14,12,0.06)">👥</div>
+      </div>
+      <div class="stat-value" id="s-total">—</div>
+      <div class="stat-sub">Unik dari orders</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Pelanggan Aktif</span>
+        <div class="stat-icon" style="background:var(--green-soft)">✅</div>
+      </div>
+      <div class="stat-value" id="s-aktif" style="color:var(--green)">—</div>
+      <div class="stat-sub">Pernah completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Avg. Order Value</span>
+        <div class="stat-icon" style="background:var(--blue-soft)">💳</div>
+      </div>
+      <div class="stat-value" id="s-avg" style="font-size:17px;margin-top:3px">—</div>
+      <div class="stat-sub">Per pelanggan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Top Spender</span>
+        <div class="stat-icon" style="background:var(--yellow-soft)">🏆</div>
+      </div>
+      <div class="stat-value" id="s-top" style="font-size:14px;margin-top:4px">—</div>
+      <div class="stat-sub" id="s-top-val">—</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Cari nama atau nomor telp…" oninput="renderTable()" />
+    </div>
+    <select class="sort-select" id="sortSelect" onchange="renderTable()">
+      <option value="total_desc">Total Belanja ↓</option>
+      <option value="total_asc">Total Belanja ↑</option>
+      <option value="orders_desc">Jumlah Order ↓</option>
+      <option value="name_asc">Nama A–Z</option>
+    </select>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <div class="table-header">
+      <div class="th">Pelanggan</div>
+      <div class="th">No. Telp</div>
+      <div class="th">Total Order</div>
+      <div class="th">Total Belanja</div>
+      <div class="th">Segmen</div>
+      <div class="th"></div>
+    </div>
+    <div id="customer-list">
+      <!-- skeleton -->
+      <div class="sk-row" id="skel-1">
+        <div style="display:flex;align-items:center;gap:10px"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:60%;margin-bottom:6px"></div><div class="sk-line" style="width:40%"></div></div></div>
+        <div class="sk-line" style="width:70%"></div>
+        <div class="sk-line" style="width:40%"></div>
+        <div class="sk-line" style="width:60%"></div>
+        <div class="sk-line" style="width:50%"></div>
+        <div class="sk-line" style="width:80%"></div>
+      </div>
+      <div class="sk-row" id="skel-2">
+        <div style="display:flex;align-items:center;gap:10px"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:55%;margin-bottom:6px"></div><div class="sk-line" style="width:45%"></div></div></div>
+        <div class="sk-line" style="width:65%"></div>
+        <div class="sk-line" style="width:35%"></div>
+        <div class="sk-line" style="width:55%"></div>
+        <div class="sk-line" style="width:45%"></div>
+        <div class="sk-line" style="width:80%"></div>
+      </div>
+      <div class="sk-row" id="skel-3">
+        <div style="display:flex;align-items:center;gap:10px"><div class="sk-circle"></div><div style="flex:1"><div class="sk-line" style="width:70%;margin-bottom:6px"></div><div class="sk-line" style="width:35%"></div></div></div>
+        <div class="sk-line" style="width:60%"></div>
+        <div class="sk-line" style="width:40%"></div>
+        <div class="sk-line" style="width:50%"></div>
+        <div class="sk-line" style="width:55%"></div>
+        <div class="sk-line" style="width:80%"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-cust-name">Detail Pelanggan</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Info Kontak</div>
+      <div class="detail-row"><span class="detail-key">Nama</span><span class="detail-val" id="m-name">—</span></div>
+      <div class="detail-row"><span class="detail-key">No. Telp</span><span class="detail-val" id="m-phone">—</span></div>
+      <div class="detail-row"><span class="detail-key">Alamat</span><span class="detail-val" id="m-addr" style="max-width:260px;text-align:right">—</span></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Ringkasan Belanja</div>
+      <div class="detail-row"><span class="detail-key">Total Order</span><span class="detail-val" id="m-count">—</span></div>
+      <div class="detail-row"><span class="detail-key">Total Belanja</span><span class="detail-val" id="m-total">—</span></div>
+      <div class="detail-row"><span class="detail-key">Rata-rata per Order</span><span class="detail-val" id="m-avg">—</span></div>
+      <div class="detail-row"><span class="detail-key">Segmen</span><span class="detail-val" id="m-seg">—</span></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">Riwayat Order</div>
+      <div id="m-orders">—</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+  const supabase = createClient(
+    'https://fctmswfmuvqwueeumtgw.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjdG1zd2ZtdXZxd3VlZXVtdGd3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNDY2OTAsImV4cCI6MjA5MzkyMjY5MH0.LaRSaorosvdlrS2ndiTnfT4ZenKPmoslXpU1wi2BIgA'
+  )
+
+  const { data: sd } = await supabase.auth.getSession()
+  if (!sd.session) window.location.href = 'login.html'
+
+  window.logout = async () => { await supabase.auth.signOut(); window.location.href = 'login.html' }
+
+  document.getElementById('dateDisplay').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' })
+
+  const fmt = n => 'Rp ' + Number(n||0).toLocaleString('id-ID')
+  const init = n => (n||'?').charAt(0).toUpperCase()
+  const padId = id => '#' + String(id).padStart(4,'0')
+
+  function toast(msg) {
+    const el = document.getElementById('toast')
+    el.textContent = msg; el.className = 'toast show'
+    clearTimeout(el._t); el._t = setTimeout(() => el.className='toast', 2800)
+  }
+
+  let customers = []
+
+  function getSegmen(total) {
+    if (total >= 50000000) return { label:'High Value', cls:'high' }
+    if (total >= 10000000) return { label:'Mid Value',  cls:'mid' }
+    return { label:'New / Low', cls:'low' }
+  }
+
+  window.renderTable = function() {
+    const q    = document.getElementById('searchInput').value.trim().toLowerCase()
+    const sort = document.getElementById('sortSelect').value
+
+    let list = customers.filter(c =>
+      !q ||
+      c.name.toLowerCase().includes(q) ||
+      (c.phone||'').includes(q)
+    )
+
+    list = [...list].sort((a,b) => {
+      if (sort === 'total_desc')  return b.total - a.total
+      if (sort === 'total_asc')   return a.total - b.total
+      if (sort === 'orders_desc') return b.orders.length - a.orders.length
+      if (sort === 'name_asc')    return a.name.localeCompare(b.name)
+      return 0
+    })
+
+    const container = document.getElementById('customer-list')
+    if (!list.length) {
+      container.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Tidak ada pelanggan</div><div class="empty-sub">Coba ubah kata kunci pencarian</div></div>`
+      return
+    }
+
+    container.innerHTML = list.map((c, i) => {
+      const seg = getSegmen(c.total)
+      return `
+        <div class="customer-row" style="animation-delay:${i*0.03}s">
+          <div class="cust-info">
+            <div class="cust-av">${init(c.name)}</div>
+            <div>
+              <div class="cust-name">${c.name}</div>
+              <div class="cust-addr">${c.address||'—'}</div>
+            </div>
+          </div>
+          <div class="td-muted">${c.phone||'—'}</div>
+          <div class="td">${c.orders.length} order</div>
+          <div class="td-value">${fmt(c.total)}</div>
+          <div><span class="badge-top ${seg.cls}">${seg.label}</span></div>
+          <div><button class="btn-detail" onclick="openDetail('${encodeURIComponent(c.name)}')">Detail</button></div>
+        </div>`
+    }).join('')
+  }
+
+  window.openDetail = function(encodedName) {
+    const name = decodeURIComponent(encodedName)
+    const c = customers.find(x => x.name === name)
+    if (!c) return
+
+    const seg = getSegmen(c.total)
+    document.getElementById('modal-cust-name').textContent = c.name
+    document.getElementById('m-name').textContent  = c.name
+    document.getElementById('m-phone').textContent = c.phone||'—'
+    document.getElementById('m-addr').textContent  = c.address||'—'
+    document.getElementById('m-count').textContent = c.orders.length + ' order'
+    document.getElementById('m-total').textContent = fmt(c.total)
+    document.getElementById('m-avg').textContent   = fmt(c.orders.length ? Math.round(c.total / c.orders.length) : 0)
+    document.getElementById('m-seg').textContent   = seg.label
+
+    document.getElementById('m-orders').innerHTML = c.orders.map(o => `
+      <div class="order-mini">
+        <div class="order-mini-head">
+          <span class="order-mini-id">${padId(o.id)}</span>
+          <span class="order-mini-status ${o.status||'pending'}">${o.status||'pending'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px">
+          <span style="font-size:11.5px;color:var(--muted)">${o.products ? o.products.map(p=>p.name).join(', ').substring(0,50)+'…' : '—'}</span>
+          <span class="order-mini-total">${fmt(o.total_price)}</span>
+        </div>
+      </div>`).join('')
+
+    document.getElementById('detailModal').classList.add('open')
+  }
+
+  window.closeModal = () => document.getElementById('detailModal').classList.remove('open')
+
+  async function load() {
+    const { data, error } = await supabase.from('orders').select('*').order('id', {ascending:false})
+    if (error || !data) return
+
+    // Group by customer_name
+    const map = {}
+    data.forEach(o => {
+      const key = o.customer_name || 'Unknown'
+      if (!map[key]) map[key] = { name: key, phone: o.customer_phone, address: o.customer_address, orders: [], total: 0 }
+      map[key].orders.push(o)
+      map[key].total += o.total_price || 0
+    })
+
+    customers = Object.values(map)
+
+    const total    = customers.length
+    const aktif    = customers.filter(c => c.orders.some(o => o.status === 'completed')).length
+    const avgTotal = total ? Math.round(customers.reduce((s,c) => s+c.total, 0) / total) : 0
+    const top      = customers.sort((a,b) => b.total - a.total)[0]
+
+    // re-sort for display
+    customers = Object.values(map).sort((a,b) => b.total - a.total)
+
+    document.getElementById('s-total').textContent = total
+    document.getElementById('s-aktif').textContent = aktif
+    document.getElementById('s-avg').textContent   = fmt(avgTotal)
+    document.getElementById('s-top').textContent   = top ? top.name : '—'
+    document.getElementById('s-top-val').textContent = top ? fmt(top.total) : '—'
+
+    renderTable()
+  }
+
+  load()
+</script>
+</body>
+</html>
