@@ -700,27 +700,56 @@
         border-bottom: 1px solid rgba(255,255,255,0.15) !important;
       }
 
-      /* Two-column layout wrapper */
+      /* Two-column layout wrapper — uses named template areas so desc+related span full width */
       #detailContent {
         max-width: 1200px !important;
         margin: 0 auto !important;
-        padding: 24px 24px 40px !important;
+        padding: 24px 24px 0 !important;
         display: grid !important;
         grid-template-columns: 500px 1fr !important;
+        grid-template-rows: auto auto !important;
         gap: 20px !important;
         align-items: start !important;
       }
 
-      /* Left column: image area */
+      /* Left column: image area — sticky */
       #detailImgCol {
         position: sticky !important;
         top: 70px !important;
         grid-column: 1 !important;
+        grid-row: 1 !important;
       }
 
-      /* Right column: all info */
+      /* Right column: product info */
       #detailInfoCol {
         grid-column: 2 !important;
+        grid-row: 1 !important;
+      }
+
+      /* Description section — full width below both columns */
+      #detailDescSection {
+        grid-column: 1 / -1 !important;
+        grid-row: 2 !important;
+        background: white !important;
+        border-radius: 8px !important;
+        padding: 24px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+        margin-bottom: 0 !important;
+      }
+
+      /* Related products section — full width */
+      #detailRelatedSection {
+        grid-column: 1 / -1 !important;
+        grid-row: 3 !important;
+        background: white !important;
+        border-radius: 8px !important;
+        padding: 24px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+        margin-bottom: 24px !important;
+      }
+
+      #detailRelatedSection #relatedProductsGrid {
+        grid-template-columns: repeat(6, 1fr) !important;
       }
 
       /* Desktop image slider height */
@@ -2468,24 +2497,27 @@ function toggleDesc() {
  */
 function loadRelatedProducts(p) {
   const grid = document.getElementById('relatedProductsGrid');
-  const section = document.getElementById('relatedProductsSection');
+  const section = document.getElementById('detailRelatedSection');
   if (!grid || !section) return;
 
   const related = products.filter(x => x.category === p.category && x.id !== p.id).slice(0, 8);
   if (related.length === 0) {
-    section.style.display = 'none';
+    if(section) section.style.display = 'none';
     return;
   }
 
   grid.innerHTML = related.map(r => `
-    <div class="cursor-pointer group" onclick="openDetailPage(${r.id})">
-      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-1.5">
+    <div class="cursor-pointer group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200" onclick="openDetailPage(${r.id})">
+      <div class="aspect-square bg-gray-50 overflow-hidden">
         <img src="${r.images[0] || ''}" alt="${r.name}"
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           onerror="this.src='https://placehold.co/200x200/D94B38/white?text=SK'"/>
       </div>
-      <p class="text-gray-800 text-xs font-semibold leading-snug line-clamp-2 mb-1" style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">${r.name}</p>
-      <p class="text-primary text-xs font-black">${fmt(r.price)}</p>
+      <div class="p-2">
+        <p class="text-gray-800 text-xs font-medium leading-snug mb-1.5" style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;height:2.6em;">${r.name}</p>
+        <p class="text-primary text-sm font-black">${fmt(r.price)}</p>
+        <p class="text-gray-400 text-[10px] mt-0.5">Terjual ${fmtSold(r.sold)}</p>
+      </div>
     </div>
   `).join('');
 
@@ -2612,22 +2644,6 @@ function buildDetailContent(p) {
         <button class="border border-gray-200 text-gray-600 text-xs font-semibold px-3 py-1.5 rounded-lg">Kunjungi</button>
       </div>
 
-      <div class="bg-white mt-2 px-4 py-4">
-        <h3 class="text-gray-800 font-black text-sm mb-3">Deskripsi Produk</h3>
-        <div id="descWrapper" style="position:relative;overflow:hidden;max-height:160px;transition:max-height 0.4s ease;">
-          <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="descText">${p.description || 'Belum ada deskripsi untuk produk ini.'}</p>
-          <div id="descFade" style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,white);pointer-events:none;"></div>
-        </div>
-        <button id="descToggleBtn" onclick="toggleDesc()" class="mt-2 text-primary text-sm font-bold flex items-center gap-1">
-          Selengkapnya <span id="descArrow">▼</span>
-        </button>
-      </div>
-
-      <div class="bg-white mt-2 px-4 py-4" id="relatedProductsSection">
-        <h3 class="text-gray-800 font-black text-sm mb-3">Produk Lainnya</h3>
-        <div id="relatedProductsGrid" class="grid grid-cols-3 gap-2 md:grid-cols-4"></div>
-      </div>
-
       <div class="bg-white mt-2 px-4 py-4 pb-8">
         <div class="flex items-center justify-between mb-3">
           <h3 class="text-gray-800 font-black text-sm">Penilaian Produk</h3>
@@ -2669,6 +2685,24 @@ function buildDetailContent(p) {
         </div>
       </div>
 
+    </div>
+
+    <!-- DESCRIPTION — full width below both columns on desktop -->
+    <div id="detailDescSection" class="bg-white mt-2 px-4 py-5">
+      <h3 class="text-gray-800 font-black text-base mb-4">Deskripsi Produk</h3>
+      <div id="descWrapper" style="position:relative;overflow:hidden;max-height:200px;transition:max-height 0.45s ease;">
+        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="descText">${p.description || 'Belum ada deskripsi untuk produk ini.'}</p>
+        <div id="descFade" style="position:absolute;bottom:0;left:0;right:0;height:64px;background:linear-gradient(to bottom,transparent,white);pointer-events:none;"></div>
+      </div>
+      <button id="descToggleBtn" onclick="toggleDesc()" class="mt-3 flex items-center gap-1.5 border border-primary text-primary text-sm font-bold px-5 py-2 rounded-lg hover:bg-primaryLight transition-colors">
+        Selengkapnya <span id="descArrow" class="text-xs">▼</span>
+      </button>
+    </div>
+
+    <!-- RELATED PRODUCTS — full width -->
+    <div id="detailRelatedSection" class="bg-white mt-2 px-4 py-5 mb-4">
+      <h3 class="text-gray-800 font-black text-base mb-4">Produk Lainnya dari Kategori Ini</h3>
+      <div id="relatedProductsGrid" class="grid grid-cols-3 gap-3"></div>
     </div>
   `;
 }
