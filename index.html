@@ -2421,6 +2421,9 @@ function openDetailPage(id) {
   updateDetailWishlistBtn();
   document.getElementById('detailContent').innerHTML = buildDetailContent(p);
 
+  // Load related products after content is injected
+  setTimeout(() => loadRelatedProducts(p), 0);
+
   const page = document.getElementById('detailPage');
   page.classList.add('open');
 
@@ -2435,6 +2438,71 @@ function openDetailPage(id) {
 
   history.pushState({ sk: 'detail', id }, '');
   attachImageSwipe();
+}
+
+/**
+ * Toggle description expand/collapse
+ */
+function toggleDesc() {
+  const wrapper = document.getElementById('descWrapper');
+  const fade    = document.getElementById('descFade');
+  const btn     = document.getElementById('descToggleBtn');
+  const arrow   = document.getElementById('descArrow');
+  if (!wrapper) return;
+  const expanded = wrapper.style.maxHeight === 'none';
+  if (expanded) {
+    wrapper.style.maxHeight = '160px';
+    if (fade)  fade.style.display = '';
+    if (arrow) arrow.textContent = '▼';
+    if (btn)   btn.innerHTML = 'Selengkapnya <span id="descArrow">▼</span>';
+  } else {
+    wrapper.style.maxHeight = 'none';
+    if (fade)  fade.style.display = 'none';
+    if (arrow) arrow.textContent = '▲';
+    if (btn)   btn.innerHTML = 'Sembunyikan <span id="descArrow">▲</span>';
+  }
+}
+
+/**
+ * Load related products (same category, excluding current product)
+ */
+function loadRelatedProducts(p) {
+  const grid = document.getElementById('relatedProductsGrid');
+  const section = document.getElementById('relatedProductsSection');
+  if (!grid || !section) return;
+
+  const related = products.filter(x => x.category === p.category && x.id !== p.id).slice(0, 8);
+  if (related.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  grid.innerHTML = related.map(r => `
+    <div class="cursor-pointer group" onclick="openDetailPage(${r.id})">
+      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-1.5">
+        <img src="${r.images[0] || ''}" alt="${r.name}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onerror="this.src='https://placehold.co/200x200/D94B38/white?text=SK'"/>
+      </div>
+      <p class="text-gray-800 text-xs font-semibold leading-snug line-clamp-2 mb-1" style="display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;">${r.name}</p>
+      <p class="text-primary text-xs font-black">${fmt(r.price)}</p>
+    </div>
+  `).join('');
+
+  // Auto-expand description if short
+  setTimeout(() => {
+    const descText = document.getElementById('descText');
+    const wrapper  = document.getElementById('descWrapper');
+    const btn      = document.getElementById('descToggleBtn');
+    const fade     = document.getElementById('descFade');
+    if (descText && wrapper && btn) {
+      if (descText.scrollHeight <= 160) {
+        wrapper.style.maxHeight = 'none';
+        if (fade) fade.style.display = 'none';
+        btn.style.display = 'none';
+      }
+    }
+  }, 50);
 }
 
 /**
@@ -2546,7 +2614,18 @@ function buildDetailContent(p) {
 
       <div class="bg-white mt-2 px-4 py-4">
         <h3 class="text-gray-800 font-black text-sm mb-3">Deskripsi Produk</h3>
-        <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line">${p.description || 'Belum ada deskripsi untuk produk ini.'}</p>
+        <div id="descWrapper" style="position:relative;overflow:hidden;max-height:160px;transition:max-height 0.4s ease;">
+          <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line" id="descText">${p.description || 'Belum ada deskripsi untuk produk ini.'}</p>
+          <div id="descFade" style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(to bottom,transparent,white);pointer-events:none;"></div>
+        </div>
+        <button id="descToggleBtn" onclick="toggleDesc()" class="mt-2 text-primary text-sm font-bold flex items-center gap-1">
+          Selengkapnya <span id="descArrow">▼</span>
+        </button>
+      </div>
+
+      <div class="bg-white mt-2 px-4 py-4" id="relatedProductsSection">
+        <h3 class="text-gray-800 font-black text-sm mb-3">Produk Lainnya</h3>
+        <div id="relatedProductsGrid" class="grid grid-cols-3 gap-2 md:grid-cols-4"></div>
       </div>
 
       <div class="bg-white mt-2 px-4 py-4 pb-8">
