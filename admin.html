@@ -1051,11 +1051,14 @@
     const imageUrls = await uploadImages(files)
     if (!imageUrls) return
 
-    const { error } = await supabase.from('products').insert([{
-      title, price: Number(price), image: imageUrls[0], images: imageUrls, category, description
-    }])
+    const payload = { title, price: Number(price), image: imageUrls[0], images: imageUrls, category }
 
-    if (error) { alert('Gagal tambah produk!'); return }
+    let { error } = await supabase.from('products').insert([{ ...payload, description }])
+    if (error) {
+      console.warn('Insert with description failed, retrying:', error.message)
+      const { error: err2 } = await supabase.from('products').insert([payload])
+      if (err2) { alert('Gagal tambah produk! Error: ' + err2.message); return }
+    }
 
     alert(`✅ Produk berhasil ditambah! (${imageUrls.length} gambar)`)
     document.getElementById('title').value       = ''
@@ -1124,7 +1127,8 @@
     const price       = getRawPrice('editPrice')
     const files       = document.getElementById('editImage').files
     const category    = document.getElementById('editCategory').value.trim()
-    const description = document.getElementById('editDescription').value.trim()
+    const descEl      = document.getElementById('editDescription')
+    const description = descEl ? descEl.value.trim() : ''
 
     if (!title || !price || !category) { alert('Semua field wajib diisi!'); return }
 
@@ -1137,11 +1141,19 @@
 
     if (imageUrls.length === 0) { alert('Produk harus memiliki minimal 1 gambar!'); return }
 
-    const { error } = await supabase.from('products').update({
-      title, price: Number(price), image: imageUrls[0], images: imageUrls, category, description
-    }).eq('id', selectedProductId)
+    const payload = { title, price: Number(price), image: imageUrls[0], images: imageUrls, category }
 
-    if (error) { alert('Gagal update produk!'); return }
+    // Try with description, fallback without (in case column not yet in DB)
+    let { error } = await supabase.from('products').update({ ...payload, description }).eq('id', selectedProductId)
+
+    if (error) {
+      console.warn('Retry without description:', error.message)
+      const { error: err2 } = await supabase.from('products').update(payload).eq('id', selectedProductId)
+      if (err2) { alert('Gagal update produk! Error: ' + err2.message); return }
+      alert('✅ Produk berhasil diupdate! (Tambahkan kolom description di Supabase agar deskripsi tersimpan)')
+      closeEditModal(); loadProducts(); return
+    }
+
     alert('✅ Produk berhasil diupdate!')
     closeEditModal(); loadProducts()
   }
