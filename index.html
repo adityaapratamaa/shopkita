@@ -203,11 +203,22 @@
 
     /* ── Detail Image Slider ── */
     #detailImgTrack { transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
-    /* Fix: prevent scroll-related image bug — isolate slider from parent scroll reflow */
+    /* Fix: prevent scroll-related image bug — clip content strictly */
     #imgSliderWrap {
-      contain: layout style;
+      overflow: hidden !important;
+      position: relative !important;
+      flex-shrink: 0;
+      /* clip-path ensures child content never bleeds outside during scroll/sticky */
+      clip-path: inset(0);
+      -webkit-clip-path: inset(0);
+    }
+    /* Prevent the track from causing horizontal overflow on parent */
+    #detailImgTrack {
       overflow: hidden;
-      position: relative;
+    }
+    /* Each slide must never overflow its own box */
+    #detailImgTrack > div {
+      overflow: hidden;
       flex-shrink: 0;
     }
     #imgSliderWrap img {
@@ -727,7 +738,6 @@
       /* Left column: image area — sticky */
       #detailImgCol {
         overflow: hidden;
-        contain: layout;
         position: sticky !important;
         top: 70px !important;
         grid-column: 1 !important;
@@ -2579,12 +2589,12 @@ function buildDetailContent(p) {
   return `
     <!-- LEFT COLUMN: images (sticky on desktop) -->
     <div id="detailImgCol">
-      <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px); contain:layout style; position:relative;">
-        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;">
+      <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px); position:relative; clip-path:inset(0);">
+        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden; overflow:hidden;">
           ${p.images.map((img,i)=>`
             <div class="flex-shrink-0 flex items-center justify-center cursor-zoom-in bg-gray-100"
-                 style="width:${imgPct}%; height:100%;" onclick="openLightbox(${i})">
-              <img src="${img}" alt="${p.name}"
+                 style="width:${imgPct}%; height:100%; overflow:hidden;" onclick="openLightbox(${i})">
+              <img src="${img}" alt=""
                    class="max-w-full max-h-full w-full h-full object-contain select-none"
                    draggable="false"
                    onerror="this.src='https://placehold.co/600x600/D94B38/white?text=ShopKita'"/>
