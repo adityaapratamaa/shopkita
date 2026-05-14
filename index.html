@@ -2548,11 +2548,18 @@ function loadRelatedProducts(p) {
   const section = document.getElementById('detailRelatedSection');
   if (!grid || !section) return;
 
-  const related = products.filter(x => x.category === p.category && x.id !== p.id).slice(0, 8);
+  // Filter by same category first; fallback to all other products if category tidak match
+  let related = products.filter(x => x.category && p.category && x.category === p.category && x.id !== p.id);
+  if (related.length < 2) {
+    related = products.filter(x => x.id !== p.id);
+  }
+  related = related.slice(0, 8);
+
   if (related.length === 0) {
-    if(section) section.style.display = 'none';
+    section.style.display = 'none';
     return;
   }
+  section.style.display = '';
 
   grid.innerHTML = related.map(r => `
     <div class="cursor-pointer group bg-white rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow duration-200" onclick="openDetailPage(${r.id})">
