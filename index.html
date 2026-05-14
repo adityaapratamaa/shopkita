@@ -730,7 +730,7 @@
         padding: 24px 24px 0 !important;
         display: grid !important;
         grid-template-columns: 500px 1fr !important;
-        grid-template-rows: auto auto auto !important;
+        grid-template-rows: auto !important;
         grid-template-areas:
           "img   info"
           "desc  desc"
@@ -739,13 +739,16 @@
         align-items: start !important;
       }
 
-      /* Left column: image area — sticky */
+      /* Left column: image area — sticky
+         CRITICAL: overflow must NOT be hidden here — it kills position:sticky.
+         overflow is handled by #imgSliderWrap inside instead. */
       #detailImgCol {
-        overflow: hidden;
+        overflow: visible !important;
         position: sticky !important;
         top: 70px !important;
         grid-area: img !important;
         z-index: 5 !important;
+        align-self: start !important;
       }
 
       /* Right column: product info */
