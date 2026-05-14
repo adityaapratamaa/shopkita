@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,65 +19,65 @@ serve(async (req) => {
 
     const body = await req.json();
 
-    console.log("BODY:", body);
+    console.log("MIDTRANS WEBHOOK:", body);
 
     const order_id = body.order_id;
-    const gross_amount = Number(body.gross_amount);
+    const transaction_status = body.transaction_status;
 
-    const customer = body.customer || {};
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    const serverKey = Deno.env.get("MIDTRANS_SERVER_KEY");
+    let status = "pending";
 
-    console.log("SERVER KEY ADA:", !!serverKey);
+    if (
+      transaction_status === "settlement" ||
+      transaction_status === "capture"
+    ) {
+      status = "completed";
+    }
 
-    const encodedKey = btoa(`${serverKey}:`);
+    if (
+      transaction_status === "cancel" ||
+      transaction_status === "expire" ||
+      transaction_status === "deny"
+    ) {
+      status = "cancelled";
+    }
 
-    const payload = {
-      transaction_details: {
-        order_id,
-        gross_amount,
-      },
-      customer_details: {
-        first_name: customer.first_name || "Customer",
-        email: customer.email || "customer@email.com",
-      },
-    };
+    const { data, error } = await supabase
+      .from("orders")
+      .update({
+        status: status,
+      })
+      .eq("order_id", order_id);
 
-    console.log("PAYLOAD:", payload);
+    if (error) {
+      throw error;
+    }
 
-    const response = await fetch(
-      "https://app.sandbox.midtrans.com/snap/v1/transactions",
+    return new Response(
+      JSON.stringify({
+        success: true,
+        status,
+        data,
+      }),
       {
-        method: "POST",
+        status: 200,
         headers: {
-          "Accept": "application/json",
+          ...corsHeaders,
           "Content-Type": "application/json",
-          "Authorization": `Basic ${encodedKey}`,
         },
-        body: JSON.stringify(payload),
       }
     );
 
-    const data = await response.json();
-
-    console.log("MIDTRANS RESPONSE:", data);
-
-    return new Response(JSON.stringify(data), {
-      status: response.status,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      },
-    });
-
   } catch (err) {
-
-    console.log("ERROR:", err);
 
     return new Response(
       JSON.stringify({
         success: false,
-        error: String(err),
+        error: err.message,
       }),
       {
         status: 500,

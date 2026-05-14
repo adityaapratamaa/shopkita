@@ -3512,31 +3512,32 @@ async function processOrder() {
 const data = await response.json();
 
 window.snap.pay(data.token, {
+  async onSuccess(result) {
+    alert("Pembayaran berhasil!");
 
-  onSuccess: async function(result) {
+    await supabase
+      .from("orders")
+      .update({
+        payment_status: "paid",
+      })
+      .eq("midtrans_order_id", result.order_id);
 
-    showNotif("Pembayaran berhasil!");
-
-    console.log(result);
-
+    window.location.href = "/success.html";
   },
 
-  onPending: function(result) {
-
-    showNotif("Menunggu pembayaran");
-
+  onPending(result) {
+    alert("Menunggu pembayaran");
     console.log(result);
-
   },
 
-  onError: function(result) {
-
-    showNotif("Pembayaran gagal");
-
+  onError(result) {
+    alert("Pembayaran gagal");
     console.log(result);
-
   },
 
+  onClose() {
+    alert("Popup pembayaran ditutup");
+  },
 });
 
     // SAVE ORDER TO SUPABASE
