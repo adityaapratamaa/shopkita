@@ -718,6 +718,9 @@
         top: 70px !important;
         grid-column: 1 !important;
         grid-row: 1 !important;
+        /* FIX: prevent compositing-layer bleed from will-change:transform on children */
+        overflow: hidden !important;
+        contain: paint !important;
       }
 
       /* Right column: product info */
@@ -759,6 +762,9 @@
         height: 500px !important;
         border-radius: 8px !important;
         overflow: hidden !important;
+        /* FIX: enforce paint containment so overflow:hidden clips compositing children */
+        contain: paint !important;
+        transform: translateZ(0) !important;
       }
       #detailInnerWrap #detailImgTrack { height:100% !important; }
       #detailInnerWrap #detailImgTrack > div { height:100% !important; }
@@ -2566,7 +2572,7 @@ function buildDetailContent(p) {
     <!-- LEFT COLUMN: images (sticky on desktop) -->
     <div id="detailImgCol">
       <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px);">
-        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform;">
+        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%;">
           ${p.images.map((img,i)=>`
             <div class="flex-shrink-0 flex items-center justify-center cursor-zoom-in bg-gray-100"
                  style="width:${imgPct}%; height:100%;" onclick="openLightbox(${i})">
