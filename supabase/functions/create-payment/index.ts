@@ -8,7 +8,6 @@ const corsHeaders = {
 
 serve(async (req) => {
 
-  // HANDLE CORS PREFLIGHT
   if (req.method === "OPTIONS") {
     return new Response("ok", {
       headers: corsHeaders,
@@ -17,44 +16,53 @@ serve(async (req) => {
 
   try {
 
-    // AMBIL DATA DARI FRONTEND
     const body = await req.json();
 
-    const order_id = body.order_id;
-    const gross_amount = body.gross_amount;
-    const customer = body.customer;
+    console.log("BODY:", body);
 
-    // AMBIL SERVER KEY DARI SUPABASE SECRET
+    const order_id = body.order_id;
+    const gross_amount = Number(body.gross_amount);
+
+    const customer = body.customer || {};
+
     const serverKey = Deno.env.get("MIDTRANS_SERVER_KEY");
 
-    // ENCODE BASIC AUTH
+    console.log("SERVER KEY ADA:", !!serverKey);
+
     const encodedKey = btoa(`${serverKey}:`);
 
-    // REQUEST KE MIDTRANS
+    const payload = {
+      transaction_details: {
+        order_id,
+        gross_amount,
+      },
+      customer_details: {
+        first_name: customer.first_name || "Customer",
+        email: customer.email || "customer@email.com",
+      },
+    };
+
+    console.log("PAYLOAD:", payload);
+
     const response = await fetch(
       "https://app.sandbox.midtrans.com/snap/v1/transactions",
       {
         method: "POST",
         headers: {
+          "Accept": "application/json",
           "Content-Type": "application/json",
-          Authorization: `Basic ${encodedKey}`,
+          "Authorization": `Basic ${encodedKey}`,
         },
-        body: JSON.stringify({
-          transaction_details: {
-            order_id,
-            gross_amount,
-          },
-          customer_details: customer,
-        }),
+        body: JSON.stringify(payload),
       }
     );
 
-    // RESPONSE DARI MIDTRANS
     const data = await response.json();
-    console.log(data);
+
+    console.log("MIDTRANS RESPONSE:", data);
 
     return new Response(JSON.stringify(data), {
-      status: 200,
+      status: response.status,
       headers: {
         ...corsHeaders,
         "Content-Type": "application/json",
@@ -63,10 +71,12 @@ serve(async (req) => {
 
   } catch (err) {
 
+    console.log("ERROR:", err);
+
     return new Response(
       JSON.stringify({
         success: false,
-        error: err.message,
+        error: String(err),
       }),
       {
         status: 500,
