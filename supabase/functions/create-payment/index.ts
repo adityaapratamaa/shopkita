@@ -51,6 +51,7 @@ serve(async (req) => {
 
     // RESPONSE DARI MIDTRANS
     const data = await response.json();
+    console.log(data);
 
     return new Response(JSON.stringify(data), {
       status: 200,
