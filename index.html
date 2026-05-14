@@ -723,7 +723,7 @@
         border-bottom: 1px solid rgba(255,255,255,0.15) !important;
       }
 
-      /* Two-column layout wrapper — uses named template areas so desc+related span full width */
+      /* Two-column layout wrapper — named grid areas prevent sticky overlap */
       #detailContent {
         max-width: 1200px !important;
         margin: 0 auto !important;
@@ -731,6 +731,10 @@
         display: grid !important;
         grid-template-columns: 500px 1fr !important;
         grid-template-rows: auto auto auto !important;
+        grid-template-areas:
+          "img   info"
+          "desc  desc"
+          "rel   rel" !important;
         gap: 20px !important;
         align-items: start !important;
       }
@@ -740,38 +744,40 @@
         overflow: hidden;
         position: sticky !important;
         top: 70px !important;
-        grid-column: 1 !important;
-        grid-row: 1 !important;
+        grid-area: img !important;
+        z-index: 5 !important;
       }
 
       /* Right column: product info */
       #detailInfoCol {
-        grid-column: 2 !important;
-        grid-row: 1 !important;
+        grid-area: info !important;
+        z-index: 5 !important;
       }
 
-      /* Description section — full width below both columns */
+      /* Description section — full width below both columns, must NOT overlap sticky img */
       #detailDescSection {
-        grid-column: 1 / -1 !important;
-        grid-row: 2 !important;
+        grid-area: desc !important;
         background: white !important;
         border-radius: 8px !important;
         padding: 24px !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
         margin-bottom: 0 !important;
         margin-top: 0 !important;
+        position: relative !important;
+        z-index: 1 !important;
       }
 
       /* Related products section — full width */
       #detailRelatedSection {
-        grid-column: 1 / -1 !important;
-        grid-row: 3 !important;
+        grid-area: rel !important;
         background: white !important;
         border-radius: 8px !important;
         padding: 24px !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
         margin-bottom: 24px !important;
         margin-top: 0 !important;
+        position: relative !important;
+        z-index: 1 !important;
       }
 
       #detailRelatedSection #relatedProductsGrid {
