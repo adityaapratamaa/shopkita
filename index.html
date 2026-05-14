@@ -3546,11 +3546,18 @@ const { error: orderError } = await supabase
   .from('orders')
   .insert([
     {
+      order_id: orderId,
+      midtrans_order_id: orderId,
+
       customer_name: checkoutData.address.name,
       customer_phone: checkoutData.address.phone,
       customer_address: checkoutData.address.addr,
+
       products: cart,
-      total_price: total
+      total_price: total,
+
+      payment_status: "pending",
+      status: "pending"
     }
   ])
 
