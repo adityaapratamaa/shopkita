@@ -1,7 +1,22 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
 serve(async (req) => {
+
+  // HANDLE PREFLIGHT
+  if (req.method === "OPTIONS") {
+    return new Response("ok", {
+      headers: corsHeaders,
+    });
+  }
+
   try {
+
     const body = await req.json();
 
     const order_id = body.order_id;
@@ -34,11 +49,13 @@ serve(async (req) => {
 
     return new Response(JSON.stringify(data), {
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
       },
     });
+
   } catch (err) {
+
     return new Response(
       JSON.stringify({
         error: err.message,
@@ -46,9 +63,12 @@ serve(async (req) => {
       {
         status: 500,
         headers: {
+          ...corsHeaders,
           "Content-Type": "application/json",
         },
       }
     );
+
   }
+
 });
