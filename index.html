@@ -203,6 +203,18 @@
 
     /* ── Detail Image Slider ── */
     #detailImgTrack { transition: transform 0.35s cubic-bezier(.4,0,.2,1); }
+    /* Fix: prevent scroll-related image bug — isolate slider from parent scroll reflow */
+    #imgSliderWrap {
+      contain: layout style;
+      overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
+    }
+    #imgSliderWrap img {
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
 
     /* ── Sort / Category / Tab Active States ── */
     .sort-btn.active   { background:#D94B38; color:white; border-color:#D94B38; }
@@ -229,7 +241,7 @@
     /* ── Product Detail Page (full-screen overlay) ──
        Opened by openDetailPage(), closed by closeDetailPage()
     ── */
-    #detailPage { display:none; position:fixed; inset:0; z-index:60; background:#fff; overflow-y:auto; overscroll-behavior:contain; }
+    #detailPage { display:none; position:fixed; inset:0; z-index:60; background:#fff; overflow-y:auto; overscroll-behavior:contain; overflow-x:hidden; isolation:isolate; }
     #detailPage.open { display:block; }
     @media (max-width:767px) {
       #detailInnerWrap { padding-bottom:80px; }
@@ -714,13 +726,12 @@
 
       /* Left column: image area — sticky */
       #detailImgCol {
+        overflow: hidden;
+        contain: layout;
         position: sticky !important;
         top: 70px !important;
         grid-column: 1 !important;
         grid-row: 1 !important;
-        /* FIX: prevent compositing-layer bleed from will-change:transform on children */
-        overflow: hidden !important;
-        contain: paint !important;
       }
 
       /* Right column: product info */
@@ -762,9 +773,6 @@
         height: 500px !important;
         border-radius: 8px !important;
         overflow: hidden !important;
-        /* FIX: enforce paint containment so overflow:hidden clips compositing children */
-        contain: paint !important;
-        transform: translateZ(0) !important;
       }
       #detailInnerWrap #detailImgTrack { height:100% !important; }
       #detailInnerWrap #detailImgTrack > div { height:100% !important; }
@@ -2571,8 +2579,8 @@ function buildDetailContent(p) {
   return `
     <!-- LEFT COLUMN: images (sticky on desktop) -->
     <div id="detailImgCol">
-      <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px);">
-        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%;">
+      <div class="relative bg-gray-100 overflow-hidden" id="imgSliderWrap" style="height:min(100vw,420px); contain:layout style; position:relative;">
+        <div id="detailImgTrack" class="flex h-full" style="width:${p.images.length*100}%; will-change:transform; backface-visibility:hidden; -webkit-backface-visibility:hidden;">
           ${p.images.map((img,i)=>`
             <div class="flex-shrink-0 flex items-center justify-center cursor-zoom-in bg-gray-100"
                  style="width:${imgPct}%; height:100%;" onclick="openLightbox(${i})">
@@ -2742,7 +2750,7 @@ function goDetailImg(idx) {
   detailCurrentImg = idx;
   const track = document.getElementById('detailImgTrack');
   if(!track) return;
-  track.style.transform = `translateX(-${idx * (100/p.images.length)}%)`;
+  track.style.transform = `translate3d(-${idx * (100/p.images.length)}%, 0, 0)`;
   document.getElementById('imgCounter').textContent = `${idx+1} / ${p.images.length}`;
   document.querySelectorAll('.img-dot').forEach((d,i) => {
     d.classList.toggle('bg-primary', i===idx);
